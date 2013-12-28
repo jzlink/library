@@ -1,0 +1,6 @@
+export l=$HOME/library; alias l='cd $l'
+export lb=$l/bin      ; alias lb='cd $lb'
+export lsql=$l/sql      ; alias lsql='cd $lsql'
+
+alias jdb='mysql -ujlink -peggplant --database=julia'
+alias ldb='mysql -ujlink -peggplant --database=library'
