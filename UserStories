@@ -1,0 +1,26 @@
+*I would like the home page to show a four column chart the columns are:
+   Title, Author, Notes, Date Read
+   The chart will be populated by all of the books I have read
+   I should be able to to sort the whole chart by any of the columns by clicking on the column heading
+
+*on the home page there should also be a search box that lets me search by by various options:
+    search by author, title, read status
+ 
+*On the home page there should be a button I can click to add a new entry
+    the add a new entry page should give me an option to add another new entry or return to the home page when I am done
+
+*Also on the home page should be an option to quickly pull up my list of books to be read
+      this list should include the notes column
+
+* I would like to search for a title by key word
+  results should return a list of titles that are hyperlinks
+  clicking a hyperlink will take you to a detaied info page about the title
+  this detailed info page should let me edit any part of the entry including adding notes or a date read
+
+* Searching for an author should return a list of authors that are hyperlinks
+  clicking on the hyperlinks should take me to a page that lists all of the books that this author has written that is in the data base, as well as an area for notes on the specific author ****add notes column to author table*****, and a notation re:its read status.
+  this list of titles should also be hyperlinks that direct me to the same detailed info page as above.
+
+*I would like to generate reports about the pace at which I read books.
+   What time of year or month do I read the most?
+   What is a monthly/yearly average of books read?
