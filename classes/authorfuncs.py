@@ -2,11 +2,13 @@
 
 import MySQLdb
 
+library= MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
+cursor=library.cursor()
+
 class Author:
 
     def countAuthors(self):
-        library= MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
-        cursor=library.cursor()
+        '''Behavior: Returns the number of authors in the library'''
 
         sql='select count(author_id) from author'
         cursor.execute(sql)
@@ -16,18 +18,19 @@ class Author:
 
         print "There are %s authors in the library." %(answer)
         
-        library.close()
+       
 
     def booksByAuthor(self):
-        library= MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
-        cursor=library.cursor()
+        '''Behavior: returns a list of all authors by name and all of the
+        books they have in the database
+        '''
+
 
         sql= """select author, count(book_id)
         from book_author inner join author
         on author.author_id=book_author.author_id
         group by author
         """
-
         cursor.execute(sql)
 
         template= '{0:40}|{1:5}'
@@ -36,9 +39,5 @@ class Author:
 
         for (author, count) in cursor.fetchall():
             print template.format(author,count)
-
-        library.close()
-
-
 
 
