@@ -4,7 +4,7 @@
    I should be able to to sort the whole chart by any of the columns by clicking on the column heading
 
 *on the home page there should also be a search box that lets me search by by various options:
-    search by author, title, read status
+    search by author, title, read status, series
  
 *On the home page there should be a button I can click to add a new entry
     the add a new entry page should give me an option to add another new entry or return to the home page when I am done
@@ -24,3 +24,4 @@
 *I would like to generate reports about the pace at which I read books.
    What time of year or month do I read the most?
    What is a monthly/yearly average of books read?
+   When do I read more when I am in school or working full time? 
