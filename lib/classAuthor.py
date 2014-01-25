@@ -15,7 +15,7 @@ class Author:
 
         sql='select count(author_id) from author'
 
-        output=execute(self.cursor,sql)
+        output=execute(self.cursor, sql)[0]
         
         return output
         
