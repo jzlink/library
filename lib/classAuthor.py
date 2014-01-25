@@ -7,17 +7,16 @@ from  database import *
 
 class Author:
 
+    def __init__(self):
+        self.cursor = getConnection()
+
     def countAuthors(self):
         '''Behavior: Returns the number of authors in the library'''
 
-        cursor=getConnection()
-
         sql='select count(author_id) from author'
 
-        output=execute(cursor,sql)
+        output=execute(self.cursor,sql)
         
-        cursor.close()
-
         return output
         
        
@@ -25,7 +24,6 @@ class Author:
         '''Behavior: returns a list of all authors by name and all of the
         books they have in the database
         '''
-        cursor=getConnection()
         
         sql= """select author, count(book_id)
         from book_author inner join author
@@ -33,10 +31,8 @@ class Author:
         group by author
         """
 
-        output=execute(cursor,sql)
+        output=execute(self.cursor,sql)
         
-        cursor.close()
-
         return output
 
 
