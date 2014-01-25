@@ -11,7 +11,7 @@ results = authors.booksByAuthor()
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += ' <tr><th>Author</th><th>Books</th></tr>\n'
 for r in results:
-    table += ' <tr><td>%s</td><td align="right">%s</td<</tr>\n' % r
+    table += ' <tr><td>%s</td><td align="right">%s</td></tr>\n' % r
 table += '</table>\n'
 
 # Output HTML
