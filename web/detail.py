@@ -2,12 +2,23 @@
 
 '''Display Book Record Details'''
 
+# call like this: http://julia-link.com/detail.py?book_id=50
+
+import cgi
+
 from book import Book
 
-BOOK_ID = 7 # pass this in as arg later.
+# get book_id 
+form = cgi.FieldStorage()
+if 'book_id' not in form:
+    book_id = 1
+else:
+    book_id = form['book_id'].value
+
 
 # build report body:
-book = Book(BOOK_ID)
+
+book = Book(book_id)
 
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
