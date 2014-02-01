@@ -1,7 +1,7 @@
-import MySQLdb
 from database import *
 
 class Books:
+    '''Preside over Book records in the database'''
 
     def __init__(self):
         self.connection = getConnection()
