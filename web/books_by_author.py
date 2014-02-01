@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from classAuthor import Author
+from author import Author
 #from authors import Authors
 
 # build report body:

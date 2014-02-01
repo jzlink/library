@@ -40,4 +40,4 @@ class Author:
         for (author, count) in cursor.fetchall():
             print template.format(author,count)
 
-        list enumerate(cursor.fetchall())
+
