@@ -1,13 +1,13 @@
-#!/usr/bin/env python                                                           
+#!/usr/bin/env python
 
 from books import Books
-#from book class import book functions                                                    
+#from book class import book functions
 
-# build report body:                                                            
+# build report body:
 books = Books()
 results = books.booksNotesAuthors()
 
-# build html table                                                              
+# build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += '<tr><th>#</th><th>Title</th><th>Author</th><th>Notes</th></tr>\n'
 
@@ -18,7 +18,7 @@ for (title, author, notes) in results:
 table += '</table>\n'
 
 
-# Output HTML                                                                   
+# Output HTML
 print 'Content-Type: text/html\n'
 
 print "<html>"
