@@ -31,7 +31,14 @@ table += '<tr><th>Column</th><th>Value</th></tr>\n'
 
 for key, value in book.data.items():
     column_name = key.replace('_', ' ').title()
+
+    # spec. handling for Owner status lookup data
+    if key == 'owner_status_id':
+        column_name = 'Owner Status'
+        value = book.owner_status['status']
+
     table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (column_name, value)
+    
 table += '</table>\n'
 
 
