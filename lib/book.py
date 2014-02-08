@@ -16,11 +16,10 @@ class Book(object):
             raise Exception('Unable to get book for book_id: %s' %self.book_id)
         self.data = result[0]
 
-    # TO DO: - make work
     @property
     def owner_status(self):
         sql = 'select * from owner_status where owner_status_id = %s' \
-            % self.data.owner_status_id
+            % self.data['owner_status_id']
         result = execute(self.connection, sql)
         if not result:
             return {}
