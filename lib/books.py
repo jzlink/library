@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from database import *
 
 class Books:
@@ -17,10 +18,11 @@ class Books:
         ''' Behavior: returns a list of all books, authors, and notes
         sorted by author'''
 
-        sql= """select title, author, notes                                  
-        from book, book_author, author                                    
+        sql= """select book.book_id, title, author, notes, when_read                                  
+        from book, book_author, author, when_read                                    
         where book.book_id=book_author.book_id and                             
-        author.author_id=book_author.author_id                                 
+        author.author_id=book_author.author_id and
+        book.book_id=when_read.book_id
         """
 
         output=execute(self.connection, sql)
