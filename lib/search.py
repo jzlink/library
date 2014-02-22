@@ -8,19 +8,21 @@ class Search:
         self.connection = getDictConnection()
 
     def setTerm(self, term):
-        self.term=term
-        self.term= "%" + self.term + "%"
+       '''behavior: accepts term and adds % to either end of it for use in query'''
+       self.term=term
+       self.term= "%" + self.term + "%"
 
     def getTerm(self):
         return self.term
     
     def reveal(self):
+        '''behavior: prints what term is for tesing purposes'''
         print "Term is: %s" % self.term
 
     def searchTitle(self):
-        '''accepts keyword 'term', searches titles
-        returns titles and associated info. of books that have term in the title
-        '''
+        '''searches titles using self.term
+        returns dictonary of titles and associated info. of books that 
+        have term in the title'''
 
         sql='''select title, book.book_id, author                                     
         from book, book_author, author                                                
@@ -33,7 +35,8 @@ class Search:
 
 
 if __name__ == '__main__':
-#test code                                                                            
+#test code code works if output shows "Term is: %witch% and
+#books having witch in the title                                                          
     test= Search()
     test.setTerm('witch')
     test.reveal()
