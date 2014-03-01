@@ -2,7 +2,7 @@
 
 import cgi
 
-#enables colored error messages to appear in browser. 
+# enables colored error messages to appear in browser. 
 import cgitb
 cgitb.enable()
 
