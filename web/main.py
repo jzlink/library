@@ -16,7 +16,7 @@ term= form.getvalue('term', '')
 # build report body:
 books = Books()
 books.getTerm(term)
-results = books.booksNotesAuthors()
+results = books.retrieveCoreData()
 
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
@@ -24,7 +24,7 @@ table += '<tr><th>#</th><th>Title</th><th>Author</th><th>Notes</th><th>Date</th>
 
 i=1
 for (book_id, title, author, notes, when_read) in results:
-    table += ' <tr><td>%d</td><td><a href=\"detail.py?book_id=%d">%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n' %(i, book_id, title,author,notes, when_read)
+    table += ' <tr><td>%d</td><td><a href=\"detail.py?book_id=%d">%s</td><td>%s</td><td>%s</td><td><nobr>%s</nobr></td></tr>\n' %(i, book_id, title,author,notes, when_read)
     i=i+1
 table += '</table>\n'
 

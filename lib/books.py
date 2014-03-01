@@ -16,9 +16,10 @@ class Books:
        '''Behavior: accepts 'term' and holds it for later use'''
        self.term=term
 
-    def booksNotesAuthors (self):
-        ''' Behavior: returns a list of all books, authors, and notes
-        sorted by author. Has an option to filter results by search term.'''
+    def retrieveCoreData(self):
+        ''' Behavior: returns core data of all titles sorted by author.
+        core data= title, author, notes, when read.
+        Has an option to filter results by search term self.term if receieved.'''
         
         sql="""
         select book.book_id, title, author, notes, when_read
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     term='dog'
     results = books.getBooks()
     kwdtest=books.getTerm(term)
-    bNAtest=books.booksNotesAuthors()
+    bNAtest=books.retrieveCoreData()
     print "Num of books:", len(results)
     print kwdtest
     print bNAtest
