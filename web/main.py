@@ -15,8 +15,7 @@ term= form.getvalue('term', '')
 
 # build report body:
 books = Books()
-books.getTerm(term)
-results = books.retrieveCoreData()
+results = books.retrieveCoreData(term)
 
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'

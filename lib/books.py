@@ -12,15 +12,11 @@ class Books:
                           'select book_id, title from book')
         return results
 
-    def getTerm(self,term):
-       '''Behavior: accepts 'term' and holds it for later use'''
-       self.term=term
-
-    def retrieveCoreData(self):
+    def retrieveCoreData(self, term=None):
         ''' Behavior: returns core data of all titles sorted by author.
         core data= title, author, notes, when read.
         Has an option to filter results by search term self.term if receieved.'''
-        
+
         sql="""
         select book.book_id, title, author, notes, when_read
         from book, book_author, author, when_read 
@@ -28,8 +24,8 @@ class Books:
         author.author_id=book_author.author_id and 
         book.book_id=when_read.book_id
         """
-        if self.term:
-            kwd= "%" + self.term + "%"
+        if term:
+            kwd= "%" + term + "%"
             sql= sql + ' and title like "%s"' % kwd
 
         output=execute(self.connection, sql)
