@@ -12,10 +12,10 @@ class Books:
                           'select book_id, title from book')
         return results
 
-    def retrieveCoreData(self, term=None):
+    def retrieveCoreData(self, filter=None):
         ''' Behavior: returns core data of all titles sorted by author.
         core data= title, author, notes, when read.
-        Has an option to filter results by search term self.term if receieved.'''
+        Has an option to filter results by search filter if receieved.'''
 
         sql="""
         select book.book_id, title, author, notes, when_read
@@ -24,8 +24,8 @@ class Books:
         author.author_id=book_author.author_id and 
         book.book_id=when_read.book_id
         """
-        if term:
-            kwd= "%" + term + "%"
+        if filter:
+            kwd= "%" + filter + "%"
             sql= sql + ' and title like "%s"' % kwd
 
         output=execute(self.connection, sql)
@@ -35,14 +35,10 @@ class Books:
 
 if __name__ == '__main__':
     # test code:
-    books = Books()
-    term='dog'
-    results = books.getBooks()
-    kwdtest=books.getTerm(term)
-    bNAtest=books.retrieveCoreData()
+    filter = 'dog'
+    results = Books().retrieveCoreData(filter)
+    print "Filter: %s" % filter
     print "Num of books:", len(results)
-    print kwdtest
-    print bNAtest
 
 
 
