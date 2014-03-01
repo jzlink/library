@@ -21,7 +21,7 @@ class Author:
         
        
     def booksByAuthor(self):
-        '''Behavior: returns a list of all authors by name and all of the
+        '''Behavior: returns a list of all authors by name and the number of
         books they have in the database
         '''
         

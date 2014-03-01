@@ -10,8 +10,8 @@ from search import Search
 
 form = cgi.FieldStorage()
 
-term= form.getvalue('term', 'not entered')
-#sets term to 'term'  or else defaults 'term' to not entered 
+term= form.getvalue('term', '')
+#sets term to 'term'  or else defaults 'term' to an empty string 
 
 print "Content-type: text/html\n"
 print "<html>"
@@ -23,12 +23,13 @@ Search Titles For: <input type='text' name = 'term'/>
 </form>"""
 #generates from that accepts keyword search term
 
-print "<h3> Search Term Is: %s</h3>" %term
-
-titles = Search()
-titles.setTerm(term)
-result=titles.searchTitle()
-
-print result
+if term:
+    titles = Search()
+    titles.setTerm(term)
+    result=titles.searchTitle()
+    print "<h3> Search Term Is: %s</h3>" %term
+    print result
+else:
+    print "No search entered"
 print "</html>"
 

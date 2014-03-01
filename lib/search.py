@@ -8,12 +8,9 @@ class Search:
         self.connection = getDictConnection()
 
     def setTerm(self, term):
-       '''behavior: accepts term and adds % to either end of it for use in query'''
+       '''accepts term and returns term with % to either end of it for use in query'''
        self.term=term
        self.term= "%" + self.term + "%"
-
-    def getTerm(self):
-        return self.term
     
     def reveal(self):
         '''behavior: prints what term is for tesing purposes'''

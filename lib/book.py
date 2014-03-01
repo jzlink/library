@@ -18,6 +18,12 @@ class Book(object):
 
     @property
     def owner_status(self):
+        '''Return a DICT of the order status for the record
+        or empty DICT if there is no order status'''
+
+        if not self.data['owner_status_id']:
+            return {}
+
         sql = 'select * from owner_status where owner_status_id = %s' \
             % self.data['owner_status_id']
         result = execute(self.connection, sql)

@@ -4,6 +4,6 @@ from books import *
 
 test=Books()
 
-test.booksNotesAuthors()
-for row in test.booksNotesAuthors():
-    print row
+result = filter(test.booksNotesAuthors, 'dog')
+
+print result
