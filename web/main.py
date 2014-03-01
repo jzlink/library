@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 
 import cgi
+
+#enables colored error messages to appear in browser. 
 import cgitb
 cgitb.enable()
-#enables colored error messages to appear in browser. 
 
 from books import Books
-#from book class import book functions
 
+# process form inputs
 form = cgi.FieldStorage()
-
-term= form.getvalue('term', '')
-#sets term to 'term'  or else defaults 'term' to empty string 
+term = form.getvalue('term', '')
 
 # build report body:
 books = Books()
@@ -36,9 +35,9 @@ print "<h3>Books, Authors, and Notes</h3>"
 
 print """
 <form method= 'GET' action= " "> 
-Search Titles For: <input type='text' name ='term'/>
+Search Titles For: <input type='text' name ='term' value='%s'/>
 <input type =  'submit' />
-</form>"""
+</form>""" % term
 #generates from that accepts keyword search term
 
 if term:
