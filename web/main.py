@@ -41,7 +41,9 @@ Search Titles For: <input type='text' name ='term'/>
 <input type =  'submit' />
 </form>"""
 #generates from that accepts keyword search term
+
 if term:
     print 'Search term is %s' %term
+
 print table
 print "</html>"
