@@ -41,7 +41,7 @@ print "<html>"
 print """
 <head>
 <title> Read A Book! </title>
-<link href="css/main2.css" rel="stylesheet" type="text/css">
+<link href="css/main.css" rel="stylesheet" type="text/css">
 </head>"""
 
 print "<body>"
