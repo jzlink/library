@@ -1,0 +1,18 @@
+h3 {
+    color: 339900;
+}
+
+body {
+    background-color: #ffffcc;
+}
+
+a.navLink {
+    color:black;
+    text-decoration:none;
+}
+
+a.navLink:hover {
+    color:white;
+    background-color:black;
+}
+    
