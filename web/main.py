@@ -18,7 +18,14 @@ results = books.retrieveCoreData(term)
 
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
-table += '<tr><th>#</th><th>Title</th><th>Author</th><th>Notes</th><th>Date</th></tr>\n'
+table += """
+<tr>
+<th>#</th>
+<th><a class="navLink" href= "main.py">Title</th>
+<th><a class="navLink" href= "main.py">Author</th>
+<th><a class="navLink" href= "main.py">Notes</th>
+<th><a class="navLink" href= "main.py">Date</th>
+</tr>\n"""
 
 i=1
 for (book_id, title, author, notes, when_read) in results:
@@ -31,6 +38,13 @@ table += '</table>\n'
 print 'Content-Type: text/html\n'
 
 print "<html>"
+print """
+<head>
+<title> Read A Book! </title>
+<link href="css/main2.css" rel="stylesheet" type="text/css">
+</head>"""
+
+print "<body>"
 print "<h3>Books, Authors, and Notes</h3>"
 
 print """
@@ -44,4 +58,5 @@ if term:
     print 'Search term is %s' %term
 
 print table
+print "</body>"
 print "</html>"
