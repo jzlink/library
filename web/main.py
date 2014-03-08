@@ -11,25 +11,33 @@ from books import Books
 # process form inputs
 form = cgi.FieldStorage()
 term = form.getvalue('term', '')
+order_by= form.getvalue('order_by', '')
 
 # build report body:
 books = Books()
-results = books.retrieveCoreData(term)
+results = books.retrieveCoreData(term, order_by)
 
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += """
 <tr>
 <th>#</th>
-<th><a class="navLink" href= "main.py">Title</th>
-<th><a class="navLink" href= "main.py">Author</th>
-<th><a class="navLink" href= "main.py">Notes</th>
-<th><a class="navLink" href= "main.py">Date</th>
+<th><a href= "main.py?order_by=title">Title</a></th>
+<th><a href= "main.py?order_by=author">Author</th>
+<th><a href= "main.py?order_by=notes">Notes</th>
+<th><a href= "main.py?order_by=when_read">Date</th>
 </tr>\n"""
 
 i=1
 for (book_id, title, author, notes, when_read) in results:
-    table += ' <tr><td>%d</td><td><a href=\"detail.py?book_id=%d">%s</td><td>%s</td><td>%s</td><td><nobr>%s</nobr></td></tr>\n' %(i, book_id, title,author,notes, when_read)
+    table += """
+<tr>
+<td>%d</td>
+<td><a href=\"detail.py?book_id=%d">%s</td>
+<td>%s</td>
+<td>%s</td>
+<td><nobr>%s</nobr></td>
+</tr>\n""" %(i, book_id, title,author,notes, when_read)
     i=i+1
 table += '</table>\n'
 
