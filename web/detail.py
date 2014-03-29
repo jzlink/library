@@ -41,6 +41,12 @@ for key, value in book.data.items():
 
     if value == None:
         value= 'Unknown'
+
+    #Special Handeling for binary field published
+    if key == 'published' and value == 1:
+        value = 'Yes'
+    if key == 'published' and value == 0:
+        value = 'No'
         
     
     table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (column_name, value)
