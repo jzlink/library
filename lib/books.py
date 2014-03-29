@@ -18,7 +18,8 @@ class Books:
         Has an option to filter results by search filter if receieved.'''
 
         sql="""
-        select book.book_id, title, author, notes, when_read
+        select book.book_id, title, concat(author.last_name, ', ', author.first_name) as author,
+ notes, when_read
         from book, book_author, author, when_read 
         where book.book_id=book_author.book_id and
         author.author_id=book_author.author_id and 

@@ -25,7 +25,7 @@ class Author:
         books they have in the database
         '''
         
-        sql= """select author, count(book_id)
+        sql= """select concat(author.last_name, ', ', author.first_name) as author, count(book_id)
         from book_author inner join author
         on author.author_id=book_author.author_id
         group by author

@@ -4,5 +4,6 @@ create table author(
         last_name varchar(150),
 	first_name varchar(150),
 	last_updated timestamp not null default current_timestamp on update current_timestamp,
-	created datetime default null
-        ) engine InnoDB;
+	created datetime default null,
+
+        )engine InnoDB;

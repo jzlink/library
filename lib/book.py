@@ -10,7 +10,18 @@ class Book(object):
         self.getData()
 
     def getData(self):
-        sql = 'select * from book where book_id = %s' % self.book_id
+        sql = '''select title, notes, published, read_status.status, 
+owner_status.status, series.series, series.number, type, 
+concat(last_name, ', ', first_name) as author 
+from book inner join read_status on book.read_status_id= read_status.read_status_id
+inner join owner_status on book.owner_status_id=owner_status.owner_status_id
+inner join series on book.series_id=series.series_id
+inner join type on book.type_id=type.type_id
+inner join book_author on book.book_id= book_author.book_id
+inner join author on book_author.author_id=author.author_id
+where book.book_id=%s''' % self.book_id
+
+
         result = execute(self.connection, sql)
         if not result:
             raise Exception('Unable to get book for book_id: %s' %self.book_id)

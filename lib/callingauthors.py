@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from classAuthor import *
+from author import *
 
 stats= Author()
 

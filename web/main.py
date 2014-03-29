@@ -2,11 +2,13 @@
 
 import cgi
 
-# enables colored error messages to appear in browser. 
+#enables color coded error messages
 import cgitb
 cgitb.enable()
 
 from books import Books
+
+from htmltable import HtmlTable
 
 # process form inputs
 form = cgi.FieldStorage()
@@ -17,12 +19,14 @@ order_by= form.getvalue('order_by', '')
 books = Books()
 results = books.retrieveCoreData(term, order_by)
 
+title= '=title'
+
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += """
 <tr>
 <th>#</th>
-<th><a href= "main.py?order_by=title">Title</a></th>
+<th><form> <input type = "submit" name = 'order_by' value = 'Title'/></form></th>
 <th><a href= "main.py?order_by=author">Author</th>
 <th><a href= "main.py?order_by=notes">Notes</th>
 <th><a href= "main.py?order_by=when_read">Date</th>
@@ -56,11 +60,10 @@ print "<body>"
 print "<h3>Books, Authors, and Notes</h3>"
 
 print """
-<form method= 'GET' action= " "> 
+<form method= 'GET' action= "main.py "> 
 Search Titles For: <input type='text' name ='term' value='%s'/>
 <input type =  'submit' />
-</form>""" % term
-#generates from that accepts keyword search term
+</form>""" %term 
 
 if term:
     print 'Search term is %s' %term

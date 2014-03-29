@@ -41,7 +41,8 @@ for key, value in book.data.items():
 
     if value == None:
         value= 'Unknown'
-
+        
+    
     table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (column_name, value)
     
 table += '</table>\n'
