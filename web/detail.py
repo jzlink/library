@@ -17,39 +17,35 @@ if 'book_id' not in form:
 else:
     book_id = form['book_id'].value
 
+if 'activity' not in form:
+    activity = 'view'
+else:
+    activity = form['activity'].value 
 
 # build report body:
 
-book = Book(book_id)
+book = Book(book_id, activity)
 
 # build html table
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += '<tr><th>Column</th><th>Value</th></tr>\n'
 
-#data = {}
-#data['title'] = book.data.title
-#data['Status'] = book.data.owner_status.status
-#data['Status'] = book.data.owner_status
 
 for key, value in book.data.items():
-    column_name = key.replace('_', ' ').title()
-
-    # spec. handling for owner_status lookup data
-    if key == 'owner_status_id':
-        column_name = 'Owner Status'
-        value = book.owner_status.get('status', None)
 
     if value == None:
         value= 'Unknown'
 
     #Special Handeling for binary field published
-    if key == 'published' and value == 1:
+    if key =='published':
+        key = 'Published'
+    if key == 'Published' and value == 1:
         value = 'Yes'
-    if key == 'published' and value == 0:
+    if key == 'Published' and value == 0:
         value = 'No'
         
     
-    table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (column_name, value)
+    table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (key, value)
     
 table += '</table>\n'
 
@@ -58,6 +54,6 @@ table += '</table>\n'
 print 'Content-Type: text/html\n'
 
 print "<html>"
-print "<h3>Books, Authors, and Notes</h3>"
+print "<h3>Book Record</h3>"
 print table
 print "</html>"
