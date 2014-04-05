@@ -23,7 +23,8 @@ concat(series.series) as 'Series Title',
 concat(series.number) as  'Series No.',                       
 concat(type) as Type,                                                       
 concat(last_name) as 'Author Last Name',
-concat(first_name) as 'Author First Name'
+concat(first_name) as 'Author First Name',
+when_read.when_read
 '''
         else:
             select ='''
@@ -34,7 +35,8 @@ concat(read_status.status) as 'Read Status',
 concat(owner_status.status) as Ownership,                                   
 concat(series.series,' #', series.number) as Series,                        
 concat(type) as Type,                                                       
-concat(last_name, ', ', first_name) as Author
+concat(last_name, ', ', first_name) as Author,
+when_read.when_read
 '''
             
         sql = '''
@@ -47,7 +49,8 @@ from
    left join series on book.series_id=series.series_id 
    left join type on book.type_id=type.type_id
    left join book_author on book.book_id= book_author.book_id
-   left join author on book_author.author_id=author.author_id 
+   left join author on book_author.author_id=author.author_id
+   left join when_read on book.book_id= when_read.book_id
 where 
    book.book_id=%s''' % (select, self.book_id)
 

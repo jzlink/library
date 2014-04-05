@@ -19,18 +19,18 @@ else:
     book_id = form['book_id'].value
 
 if 'activity' not in form:
-    activity = 'view'
+    activity = 'edit'
 else:
     activity = form['activity'].value 
 
-# build report body:
-
 book = Book(book_id, activity)
 
-# build html table
-table = '<table border="1" cellpadding="3" cellspacing="0">\n'
-table += '<tr><th>Column</th><th>Value</th></tr>\n'
+# build form fields
+foo = 'view'
 
+form = '''
+<form method = "POST" action = "detail.py/book_id%s&activity=%s">
+'''% (book_id, foo)
 
 for key, value in book.data.items():
 
@@ -50,19 +50,19 @@ for key, value in book.data.items():
         key= 'Date Read'
         value =date2str(value)
     
-    table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (key, value)
-    
-table += '</table>\n'
+    form +='''<br>
+    %s: <input type = "textfield" name = "entry" value = "%s"><br>
+    '''% (key, value)
 
-foo= 'edit'
+form += '''<br>
+    <input type = "submit" value = "Update Record">
+    </form>\n
+    '''
 
 # Output HTML
 print 'Content-Type: text/html\n'
 
-print "<html>"
-print "<h3>Book Record</h3>"
-print table
-print '''
-<a href =  "edit.py?book_id=%s&activity=%s"> Edit Record </a>
-'''% (book_id, foo)
-print "</html>"
+print '<html>'
+print '<h3>Edit Book Record</h3>'
+print form
+print '</html>'
