@@ -50,9 +50,40 @@ for key, value in book.data.items():
         key= 'Date Read'
         value =date2str(value)
     
-    form +='''<br>
-    %s: <input type = "textfield" name = "entry" value = "%s"><br>
-    '''% (key, value)
+#    form +='''<br>
+#    %s: <input type = "textfield" name = "entry" value = "%s"><br>
+#    '''% (key, value)
+
+    if key == 'title':
+        key = 'Title'
+        form += '''<br>
+        %s: <input type = "textfield" name = "entry" value = "%s"><br>
+        '''% (key, value)
+
+    if key == 'last_name':
+        key = 'Author Last Name'
+        form += '''<br>                                                      
+        %s: <input type = "textfield" name = "entry" value = "%s">  
+        '''% (key, value)
+
+    if key == 'first_name':
+        key = 'First Name'
+        form += '''                                                      
+        %s: <input type = "textfield" name = "entry" value = "%s"><br>
+        '''% (key, value)
+
+    if key == 'notes':
+        key = 'Notes'
+        form += ''' <br>
+        %s: <input type = "textfield" name = "entry" value = "%s"><br>      
+        '''% (key, value)
+
+    if key == 'Date Read':
+        form += ''' <br>
+        %s: <input type = "textfield" name = "entry" value = "%s"><br>      
+        '''% (key, value)
+
+
 
 form += '''<br>
     <input type = "submit" value = "Update Record">

@@ -5,14 +5,12 @@ create table book (
   published smallint unsigned default 1,
   owner_status_id integer  unsigned,
   read_status_id integer unsigned,
-  series_id integer unsigned,
   type_id integer unsigned,
   last_updated timestamp not null default current_timestamp on update current_timestamp,
   created datetime default null,
 
   foreign key (owner_status_id) references owner_status (owner_status_id),
   foreign key (read_status_id) references read_status (read_status_id),
-  foreign key (series_id) references series (series_id),
   foreign key (type_id) references type (type_id)
   
 ) engine InnoDB;

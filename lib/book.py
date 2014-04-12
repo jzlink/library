@@ -14,16 +14,16 @@ class Book:
     def getData(self):
         if self.activity == 'edit':
             select = '''
-concat(title) as Title,                                                     
-concat(notes) as Notes,                                                     
+title,
+notes,
 published,                                                                  
-concat(read_status.status) as 'Read Status',                                
-concat(owner_status.status) as Ownership,                                   
-concat(series.series) as 'Series Title',
-concat(series.number) as  'Series No.',                       
-concat(type) as Type,                                                       
-concat(last_name) as 'Author Last Name',
-concat(first_name) as 'Author First Name',
+read_status.status,
+owner_status.status,
+series.series,
+series.number,
+type,
+last_name,
+first_name,
 when_read.when_read
 '''
         else:
