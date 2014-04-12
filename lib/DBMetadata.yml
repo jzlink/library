@@ -47,7 +47,7 @@ library_columns = [
   'record display': True,
   'editable': False,
   'edit type': ,
-  'select': 'concat(series.series,' #', series.number) as Series',
+  'select': 'concat(series.series,' No.', book_series.series_num) as Series',
  },
  {'name': 'series',
   'display name': 'Series Name',
