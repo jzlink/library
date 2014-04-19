@@ -20,7 +20,7 @@ published,
 read_status.status,
 owner_status.status,
 series.series,
-book_series.series_num,
+book.series_num,
 type,
 last_name,
 first_name,
@@ -33,7 +33,7 @@ concat(notes) as Notes,
 published,                                                                  
 concat(read_status.status) as 'Read Status',                                
 concat(owner_status.status) as Ownership,                                   
-concat(series.series,' No.', book_series.series_num) as Series,                        
+concat(series.series,' No.', book.series_num) as Series,
 concat(type) as Type,                                                       
 concat(last_name, ', ', first_name) as Author,
 when_read.when_read
@@ -50,8 +50,7 @@ from
    left join book_author on book.book_id= book_author.book_id
    left join author on book_author.author_id=author.author_id
    left join when_read on book.book_id= when_read.book_id
-   left join book_series on book.book_id = book_series.book_id
-   left join series on book_series.series_id =  series.series_id
+   left join series on book.series_id=series.series_id
 where 
    book.book_id=%s''' % (select, self.book_id)
 

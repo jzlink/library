@@ -11,58 +11,73 @@ cgitb.enable()
 from book import Book
 from utils import date2str
 
-# get book_id 
+# get form values 
 form = cgi.FieldStorage()
-if 'book_id' not in form:
-    book_id = 1
-else:
-    book_id = form['book_id'].value
-
-if 'activity' not in form:
-    activity = 'view'
-else:
-    activity = form['activity'].value 
-
-# build report body:
+book_id= form.getvalue('book_id', '1')
+activity= form.getvalue('activity', 'view')
 
 book = Book(book_id, activity)
 
-# build html table
+# construct page output
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += '<tr><th>Column</th><th>Value</th></tr>\n'
 
+if activity == 'edit':
+    header= 'Edit Record'
+    for key, value in book.data.items():            
+        table+= '''
+            <form method = "POST" action = "detail.py" name = "edit">
+            <tr><td>%s</td><td><input type = 'text' name = '%s' value = '%s' size = '100'</td></tr>\n
+    '''% (key, key, value)
+    button = '''
+     <input type = "hidden" name = "book_id" value = "%s"/>
+     <input type = "button" value = "Submit"
+          onclick = "javascript: document.edit.submit()";/>
+'''% (book_id)
 
-for key, value in book.data.items():
+else:
+    header= 'Book Record'
+    for key, value in book.data.items():
 
-    if value == None:
-        value= 'Unknown'
+        if value == None:
+            value= 'Unknown'
 
     #Special Handeling for binary field published
-    if key =='published':
-        key = 'Published'
-    if key == 'Published' and value == 1:
-        value = 'Yes'
-    if key == 'Published' and value == 0:
-        value = 'No'
+        if key =='published':
+            key = 'Published'
+        if key == 'Published' and value == 1:
+            value = 'Yes'
+        if key == 'Published' and value == 0:
+            value = 'No'
     
     #Special handeling for date output
-    if key == 'when_read':
-        key= 'Date Read'
-        value =date2str(value)
+        if key == 'when_read':
+            key= 'Date Read'
+            value =date2str(value)
     
-    table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (key, value)
+        table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (key, value)
     
-table += '</table>\n'
 
-foo= 'edit'
+    eactivity= 'edit'
+
+    button= '''
+       <form method = "POST" action = "detail.py" name = "editbutton">
+       <input type = "hidden" name = "book_id" value = "%s"/>
+       <input type = "hidden" name = "activity" value = "%s"/>
+       <input type = "button" value = "Edit"
+              onclick = "javascript: document.editbutton.submit()";/>
+       </form>
+    '''% (book_id, eactivity)
+
+table += '</table>\n'
 
 # Output HTML
 print 'Content-Type: text/html\n'
 
 print "<html>"
-print "<h3>Book Record</h3>"
+print "<h3>%s</h3>" %header
 print table
-print '''
-<a href =  "edit.py?book_id=%s&activity=%s"> Edit Record </a>
-'''% (book_id, foo)
+print "<br>"
+print  button
+print "Activity=%s Book ID= %s" % (activity, book_id)
 print "</html>"

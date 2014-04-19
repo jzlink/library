@@ -7,67 +7,86 @@ import cgitb
 cgitb.enable()
 
 from books import Books
-
 from htmltable import HtmlTable
+from utils import date2str
 
-# process form inputs
+### PROCESS INPUTS
+
 form = cgi.FieldStorage()
 term = form.getvalue('term', '')
+term2 = form.getvalue('term2', '')
 order_by= form.getvalue('order_by', '')
 
-# build report body:
-books = Books()
-results = books.retrieveCoreData(term, order_by)
 
-title= '=title'
+### START HTML
 
-# build html table
-table = '<table border="1" cellpadding="3" cellspacing="0">\n'
-table += """
-<tr>
-<th>#</th>
-<th><form> <input type = "submit" name = 'order_by' value = 'Title'/></form></th>
-<th><a href= "main.py?order_by=author">Author</th>
-<th><a href= "main.py?order_by=notes">Notes</th>
-<th><a href= "main.py?order_by=when_read">Date</th>
-</tr>\n"""
-
-i=1
-for (book_id, title, author, notes, when_read) in results:
-    table += """
-<tr>
-<td>%d</td>
-<td><a href=\"detail.py?book_id=%d">%s</td>
-<td>%s</td>
-<td>%s</td>
-<td><nobr>%s</nobr></td>
-</tr>\n""" %(i, book_id, title,author,notes, when_read)
-    i=i+1
-table += '</table>\n'
-
-
-# Output HTML
 print 'Content-Type: text/html\n'
-
 print "<html>"
 print """
 <head>
 <title> Read A Book! </title>
 <link href="css/main.css" rel="stylesheet" type="text/css">
 </head>"""
-
 print "<body>"
+
+
+### TITLE
+
 print "<h3>Books, Authors, and Notes</h3>"
 
+### SEARCH SECTION
+
 print """
-<form method= 'GET' action= "main.py "> 
-Search Titles For: <input type='text' name ='term' value='%s'/>
-<input type =  'submit' />
-</form>""" %term 
+<form method="POST" action="main.py" name="form1"> 
+Search Titles For: 
+
+<input type='textfield' name ='term' value='%s'/>
+<input type='submit' value='submit'/>
+<input type='button' value='clear' 
+       onclick="javascript:document.form1.term.value=''; 
+                document.form1.submit();"/>
+<input type='hidden' name='order_by' value='%s'/>
+</form>""" % (term, order_by)
 
 if term:
     print 'Search term is %s' %term
 
-print table
+
+### TABLE OF BOOKS
+
+books = Books()
+results = books.retrieveCoreData(term, order_by)
+
+# build html table
+table = HtmlTable(border=1, cellpadding=3)
+
+# table header
+header = ['#']
+for field, name in [['title'    , 'Title'],
+                    ['author'   , 'Author'],
+                    ['notes'    , 'Notes'],
+                    ['when_read', 'Date']]:
+    sortflag =''
+    if field == order_by:
+        sortflag = ' ^'
+    js =  "document.form1.order_by.value='%s';" % field
+    js += "document.form1.submit();"
+    h = '<a onclick="javascript:%s">%s%s</a>' % (js, name, sortflag)
+    header.append(h)
+table.addHeader(header)
+
+# table body
+i = 0
+activity = 'view'
+for (book_id, title, author, notes, when_read) in results:
+    i += 1
+    href = '<a href="detail.py?book_id=%d&activity=%s">%s' % (book_id, activity, title)
+    date = '<nobr>%s</nobr>' % date2str(when_read)
+    table.addRow([i, href, author, notes, date])
+
+print table.getTable()
+
+### FOOTER
+
 print "</body>"
 print "</html>"

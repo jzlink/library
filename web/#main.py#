@@ -34,10 +34,10 @@ print "<body>"
 
 print "<h3>Books, Authors, and Notes</h3>"
 
-### SEACH SECTION
+### SEARCH SECTION
 
 print """
-<form method="POST" action="main4.py" name="form1"> 
+<form method="POST" action="main.py" name="form1"> 
 Search Titles For: 
 
 <input type='textfield' name ='term' value='%s'/>
