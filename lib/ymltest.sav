@@ -21,22 +21,7 @@ people:
    -  name: jules
       color: blue
 """
-
-y="""
-   - name: david
-     color: green
-
-   - name: jules
-     color: blue
-"""
-
 #for data in yaml.load(y):
     #pprint.pprint(data)
-
-#people= yaml.load(y)
-#pprint.pprint(people)
-#for person in people:
-#    print person['name']
-
-people= yaml.load(open('people.yml'))
+people= yaml.load(y)
 pprint.pprint(people)

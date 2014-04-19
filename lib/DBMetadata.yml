@@ -1,117 +1,115 @@
 # attributes:
 # name           = actual cloumn name in DB
-# display name   = name to be displayed on site
+# display_name   = name to be displayed on site
 # position       = numerical positioning to follow for display
-# record display = data is shown on the detail page boolean T|F
+# display_record = data is shown on the detail page boolean T|F
 # editable       = field is shown on the edit page boolean T|F
-# edit type      = format accepted for editing: string, date, int, drop down
-# select         = select clause default = name
+# edit_type      = format accepted for editing: string, date, int, drop down
+# select         = select clause
 
 #YAML
-library_columns = [
- {'name': title,
-  'display name': 'Title',
-  'position': 100,
-  'record display': True,
-  'editable': True,
-  'edit type': 'string',
-  'select': book.title,
- },
-  {'name': ,
-  'display name': 'Author',
-  'position': 200,
-  'record display': True,
-  'editable': False,
-  'edit type': ,
-  'select': concat(last_name, ', ', first_name) as Author,
- },
- {'name': 'author_last',
-  'display name': 'Author Last',
-  'position':210 ,
-  'record display': False,
-  'editable': True,
-  'edit type': 'string',
-  'select': 'author.author_last',
- },
- {'name': 'author_first',
-  'display name': 'Author First' ,
-  'position': 215,
-  'record display': False,
-  'editable': True,
-  'edit type': 'string',
-  'select': 'author.author_first',
- },
- {'name': ,
-  'display name': 'Series',
-  'position': 300,
-  'record display': True,
-  'editable': False,
-  'edit type': ,
-  'select': 'concat(series.series,' No.', book_series.series_num) as Series',
- },
- {'name': 'series',
-  'display name': 'Series Name',
-  'position': 310,
-  'record display': False,
-  'editable': True,
-  'edit type': 'drop down',
-  'edit type': 'string',
-  'select': 'series.series',
- },
- {'name': 'series_num',
-  'display name': 'Series No.',
-  'position': 315,
-  'record display': False,
-  'editable': True,
-  'edit type': 'int',
-  'select': 'book_series.series_num',
- },
- {'name': 'when_read',
-  'display name': 'Date',
-  'position': 400,
-  'record display': True,
-  'editable': True,
-  'edit type': 'date',
-  'select': 'when_read.when_read',
- },
- {'name': 'notes',
-  'display name': 'Notes',
-  'position': 500,
-  'record display': True,
-  'editable': True,
-  'edit type': 'string',
-  'select': 'book.notes',
- },
- {'name': 'status',
-  'display name': 'Read Status',
-  'position': 600,
-  'record display': True,
-  'editable': True,
-  'edit type': 'drop down',
-  'select': 'read_status.status',
- },
- {'name': 'published',
-  'display name': Published,
-  'position': 700,
-  'record display': True,
-  'editable': True,
-  'edit type': 'drop down',
-  'select': 'book.published',
- },
- {'name': 'status',
-  'display name': 'Ownership',
-  'position': 800,
-  'record display': True,
-  'editable': True,
-  'edit type': 'drop down',
-  'select': 'owner_status.status',
- },
- {'name': 'type',
-  'display name': 'Type',
-  'position': 900,
-  'record display': True,
-  'editable': True,
-  'edit type': 'drop down',
-  'select': 'type.type',
- }
-]
+ -name: title
+  display_name: Title
+  position: 100
+  display_record: True
+  editable: True
+  edit_type: string
+  select: book.title
+ 
+ -name: 
+  display_name: Author
+  position: 200
+  display_record: True
+  editable: False
+  edit_type: 
+  select: concat(last_name, ' ,', first_name) as Author
+ 
+ -name: author_last
+  display_name: Author Last
+  position:210 
+  display_record: False
+  editable: True
+  edit_type: string
+  select: author.author_last
+ 
+ -name: author_first
+  display_name: Author First
+  position: 215
+  display_record: False
+  editable: True
+  edit_type: string
+  select: author.author_first
+ 
+ -name: 
+  display_name: Series
+  position: 300
+  display_record: True
+  editable: False
+  edit_type: 
+  select: concat(series.series, ' No.', book_series.series_num) as Series
+ 
+ -name: series
+  display_name: Series Name
+  position: 310
+  display_record: False
+  editable: True
+  edit_type: drop down
+  edit_type: string
+  select: series.series
+ 
+ -name: series_num
+  display_name: Series No.
+  position: 315
+  display_record: False
+  editable: True
+  edit_type: int
+  select: book_series.series_num
+ 
+ -name: when_read
+  display_name: Date
+  position: 400
+  display_record: True
+  editable: True
+  edit_type: date
+  select: when_read.when_read
+ 
+ -name: notes
+  display_name: Notes
+  position: 500
+  display_record: True
+  editable: True
+  edit_type: string
+  select: book.notes
+ 
+ -name: status
+  display_name: Read Status
+  position: 600
+  display_record: True
+  editable: True
+  edit_type: drop down
+  select: read_status.status
+ 
+ -name: published
+  display_name: Published
+  position: 700
+  display_record: True
+  editable: True
+  edit_type: drop down
+  select: book.published
+ 
+ -name: status
+  display_name: Ownership
+  position: 800
+  display_record: True
+  editable: True
+  edit_type: drop down
+  select: owner_status.status
+ 
+ -name: type
+  display_name: Type
+  position: 900
+  display_record: True
+  editable: True
+  edit_type: drop down
+  select: type.type
+ 

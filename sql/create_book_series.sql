@@ -1,3 +1,5 @@
+--DO NOT CREATE! TABLE WAS DROPPED FROM DB--
+
 create table book_series (
 
        bs_id integer unsigned not null auto_increment primary key,
