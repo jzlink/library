@@ -12,8 +12,7 @@ class Book:
         self.getData()
 
     def getData(self):
-        if self.activity == 'edit':
-            select = '''
+        select = '''
 title,
 notes,
 published,                                                                  
@@ -26,18 +25,7 @@ last_name,
 first_name,
 when_read.when_read
 '''
-        else:
-            select ='''
-concat(title) as Title,                                                     
-concat(notes) as Notes,                                                     
-published,                                                                  
-concat(read_status.status) as 'Read Status',                                
-concat(owner_status.status) as Ownership,                                   
-concat(series.series,' No.', book.series_num) as Series,
-concat(type) as Type,                                                       
-concat(last_name, ', ', first_name) as Author,
-when_read.when_read
-'''
+
             
         sql = '''
 select 

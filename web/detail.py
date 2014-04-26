@@ -10,74 +10,116 @@ cgitb.enable()
 
 from book import Book
 from utils import date2str
+from htmltable import HtmlTable
 
 # get form values 
 form = cgi.FieldStorage()
 book_id= form.getvalue('book_id', '1')
 activity= form.getvalue('activity', 'view')
 
+#get editable values from edit form
+title=form.getvalue('title')
+first_name=form.getvalue('first_name')
+last_name=form.getvalue('last_name')
+status=form.getvalue('status')
+series=form.getvalue('series')
+notes=form.getvalue('notes')
+series_num=form.getvalue('series_num')
+owner_status=form.getvalue('owner_status.status')
+publised=form.getvalue('published')
+type=form.getvalue('type')
+when_read=form.getvalue('when_read')
+
 book = Book(book_id, activity)
 
-# construct page output
-table = '<table border="1" cellpadding="3" cellspacing="0">\n'
-table += '<tr><th>Column</th><th>Value</th></tr>\n'
+#build html_header
+if activity == 'edit':
+    header = 'Edit Record'
+elif activity == 'update':
+    header = 'Preview Changes to Record'
+else:
+    header = 'Book Record' 
+
+html_header= '''
+   <html>
+   <h3>%s</h3>
+   '''%header
+
+#build debug_section
+debug_section =  'Activity = %s Book ID = %s' % (activity, book_id)
+if title:
+    debug_section  = 'Title = %s' %title
+
+#build form_header
+form_header = '''
+    <form method = "POST" action = "detail.py" name = "form">
+'''
+
+
+#bulid report
+table = HtmlTable(border=1, cellpadding=3)
+table.addHeader(['Field', 'Value'])
 
 if activity == 'edit':
-    header= 'Edit Record'
-    for key, value in book.data.items():            
-        table+= '''
-            <form method = "POST" action = "detail.py" name = "edit">
-            <tr><td>%s</td><td><input type = 'text' name = '%s' value = '%s' size = '100'</td></tr>\n
-    '''% (key, key, value)
-    button = '''
-     <input type = "hidden" name = "book_id" value = "%s"/>
-     <input type = "button" value = "Submit"
-          onclick = "javascript: document.edit.submit()";/>
-'''% (book_id)
-
+    for key, value in book.data.items():   
+        form_field='''
+        <input type = 'text' name = '%s' value = '%s' size = '100'> 
+    ''' % (key, value)
+        table.addRow([key, form_field])
+       
 else:
-    header= 'Book Record'
-    for key, value in book.data.items():
+    for key, value in book.data.items():   
+        string_value = '%s' %value
+        table.addRow([key, string_value]) 
 
-        if value == None:
-            value= 'Unknown'
+report = table.getTable()
+        
+#buld input_section
+eactivity = 'edit'
+uactivity = 'update'
+vactivity = 'view'
 
-    #Special Handeling for binary field published
-        if key =='published':
-            key = 'Published'
-        if key == 'Published' and value == 1:
-            value = 'Yes'
-        if key == 'Published' and value == 0:
-            value = 'No'
-    
-    #Special handeling for date output
-        if key == 'when_read':
-            key= 'Date Read'
-            value =date2str(value)
-    
-        table += ' <tr><td>%s</td><td>%s</td></tr>\n' % (key, value)
-    
-
-    eactivity= 'edit'
-
-    button= '''
-       <form method = "POST" action = "detail.py" name = "editbutton">
+edit_button= '''
        <input type = "hidden" name = "book_id" value = "%s"/>
        <input type = "hidden" name = "activity" value = "%s"/>
        <input type = "button" value = "Edit"
-              onclick = "javascript: document.editbutton.submit()";/>
-       </form>
+              onclick = "javascript: document.form.submit()";/>
     '''% (book_id, eactivity)
 
-table += '</table>\n'
+preview_button = '''
+     <input type = "hidden" name = "book_id" value = "%s"/>
+     <input type = "hidden" name = "activity" value = "%s"/>
+     <input type = "button" value = "Preview"
+          onclick = "javascript: document.form.submit()";/>
+     '''% (book_id, uactivity)
 
-# Output HTML
+submit_button= '''
+     <input type = "hidden" name = "book_id" value = "%s"/>
+     <input type = "hidden" name = "activity" value = "%s"/>
+     <input type = "button" value = "Submit"
+              onclick = "javascript: document.form.submit()";/>
+    '''% (book_id, vactivity)
+
+if activity == 'edit':
+    input_section = '<br> %s' %preview_button
+
+if activity == 'view':
+    input_section = '<br> %s' %edit_button
+
+if activity == 'update':
+    input_section = '<br> %s' %submit_button
+
+
+form_footer = '</form>'
+
+html_footer = '</html>'
+
 print 'Content-Type: text/html\n'
+print html_header
+print debug_section
+print form_header
+print table.getTable()
+print input_section
+print form_footer
+print html_footer
 
-print "<html>"
-print "<h3>%s</h3>" %header
-print table
-print "<br>"
-print  button
-print "Activity=%s Book ID= %s" % (activity, book_id)
-print "</html>"
