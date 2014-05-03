@@ -12,24 +12,19 @@ class Book:
         self.getData()
 
     def getData(self):
-        select = '''
-title,
-notes,
-published,                                                                  
-read_status.status,
-owner_status.status,
-series.series,
-book.series_num,
-type,
-last_name,
-first_name,
-when_read.when_read
-'''
-
-            
         sql = '''
 select 
-   %s
+   title,
+   notes,
+   published,                                                                  
+   read_status.status,
+   owner_status.status,
+   series.series,
+   series_num,
+   type,
+   last_name,  
+   first_name,
+   when_read.when_read
 from
    book 
    inner join read_status on book.read_status_id= read_status.read_status_id
@@ -40,7 +35,7 @@ from
    left join when_read on book.book_id= when_read.book_id
    left join series on book.series_id=series.series_id
 where 
-   book.book_id=%s''' % (select, self.book_id)
+   book.book_id=%s''' % (self.book_id)
 
 
         result = execute(self.connection, sql)
@@ -49,10 +44,63 @@ where
                            )
         self.data = result[0]
 
+
+    def editRecord (self, editDict):
+        booksql ='''
+update book
+set series_num = %s
+where book_id = %s
+''' % (editDict['series_num'], self.book_id) 
+
+        
+        sql = '''
+update book
+set 
+   title = %s,
+   notes = %s,
+   pubilshed = %s,
+   read_status_id = %s,
+   owner_status_id = %s,
+   type_id = %s,
+   series_num = %s
+where book_id = %s
+''' % (editDict['title'], 
+       editDict['notes'],
+       editDict['published'],
+       editDict['read_status.status'], 
+       editDict['owner_status.status'], 
+       editDict['type'], 
+       editDict['series_num'], 
+       self.book_id)
+
+        try:
+            print "booksql:", booksql
+            result = execute(self.connection, sql)
+            return "OK"
+
+        except Exception, e:
+            #raise
+            return "ERROR: %s" % e
+       
+edits = {
+        'read_status.status'  : 2,
+        'first_name'          : 'Kelley',
+        'last_name'           : 'Armstrong',
+        'title'               : 'PDK',
+        'series.series'       : 1,
+        'notes'               : 'TESTING TESTING',
+        'series_num'          : 2, 
+        'owner_status.status' : 2,
+        'published'           : 2,
+        'type'                : 3,
+        'when_read.when_read' : 2013-06-13
+        }
     
 def test():  
-    book = Book(15)
-    print book.data
+   book = Book(1, 'view')
+ # print book.data
+   print book.editRecord(edits)
+   
 
 if __name__ == '__main__':
     test()

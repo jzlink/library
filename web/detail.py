@@ -21,14 +21,28 @@ activity= form.getvalue('activity', 'view')
 title=form.getvalue('title')
 first_name=form.getvalue('first_name')
 last_name=form.getvalue('last_name')
-status=form.getvalue('status')
+read_status=form.getvalue('status')
 series=form.getvalue('series')
 notes=form.getvalue('notes')
 series_num=form.getvalue('series_num')
 owner_status=form.getvalue('owner_status.status')
-publised=form.getvalue('published')
+published=form.getvalue('published')
 type=form.getvalue('type')
 when_read=form.getvalue('when_read')
+
+dictionary = {
+        'read_status.status'  : read_status,
+        'first_name'          : first_name,
+        'last_name'           : last_name,
+        'title'               : title,
+        'series'              : series,
+        'notes'               : notes,
+        'series_num'          : series_num, 
+        'owner_status.status' : owner_status,
+        'published'           : published,
+        'type'                : type,
+        'when_read.when_read' : when_read
+        }
 
 book = Book(book_id, activity)
 
@@ -48,13 +62,13 @@ html_header= '''
 #build debug_section
 debug_section =  'Activity = %s Book ID = %s' % (activity, book_id)
 if title:
-    debug_section  = 'Title = %s' %title
+    debug_section  = debug_section + ' Title = %s' %title
+
 
 #build form_header
 form_header = '''
     <form method = "POST" action = "detail.py" name = "form">
 '''
-
 
 #bulid report
 table = HtmlTable(border=1, cellpadding=3)
@@ -64,13 +78,18 @@ if activity == 'edit':
     for key, value in book.data.items():   
         form_field='''
         <input type = 'text' name = '%s' value = '%s' size = '100'> 
-    ''' % (key, value)
+        ''' % (key, value)
         table.addRow([key, form_field])
-       
+
+elif activity == 'update':
+    for k ,v in dictionary.items():
+        table.addRow([k,v])
+
 else:
-    for key, value in book.data.items():   
-        string_value = '%s' %value
-        table.addRow([key, string_value]) 
+    for key, value in book.data.items():
+        string_value= '%s' %value
+        table.addRow([key, string_value])
+
 
 report = table.getTable()
         
@@ -118,7 +137,7 @@ print 'Content-Type: text/html\n'
 print html_header
 print debug_section
 print form_header
-print table.getTable()
+print report
 print input_section
 print form_footer
 print html_footer
