@@ -56,9 +56,9 @@ where book_id = %s
         sql = '''
 update book
 set 
-   title = %s,
-   notes = %s,
-   pubilshed = %s,
+   title = "%s",
+   notes = "%s",
+   published = %s,
    read_status_id = %s,
    owner_status_id = %s,
    type_id = %s,
@@ -74,7 +74,8 @@ where book_id = %s
        self.book_id)
 
         try:
-            print "booksql:", booksql
+           # print "booksql:", booksql
+            print 'sql:', sql
             result = execute(self.connection, sql)
             return "OK"
 
@@ -83,17 +84,17 @@ where book_id = %s
             return "ERROR: %s" % e
        
 edits = {
-        'read_status.status'  : 2,
-        'first_name'          : 'Kelley',
-        'last_name'           : 'Armstrong',
-        'title'               : 'PDK',
-        'series.series'       : 1,
-        'notes'               : 'TESTING TESTING',
-        'series_num'          : 2, 
-        'owner_status.status' : 2,
-        'published'           : 2,
-        'type'                : 3,
-        'when_read.when_read' : 2013-06-13
+        'read_status.status'  : 1,
+        'first_name'          : 'Christopher',
+        'last_name'           : 'Moore',
+        'title'               : 'Practical Demonkeeping',
+        'series.series'       : '',
+        'notes'               : '',
+        'series_num'          : 'NULL', 
+        'owner_status.status' : 1,
+        'published'           : 1,
+        'type'                : 1,
+        'when_read.when_read' : 2004-06-01
         }
     
 def test():  

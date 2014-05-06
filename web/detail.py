@@ -8,14 +8,14 @@ import cgi
 import cgitb
 cgitb.enable()
 
-from book import Book
+from book import *
 from utils import date2str
 from htmltable import HtmlTable
 
 # get form values 
 form = cgi.FieldStorage()
 book_id= form.getvalue('book_id', '1')
-activity= form.getvalue('activity', 'view')
+activity= form.getvalue('activity', 'edit')
 
 #get editable values from edit form
 title=form.getvalue('title')
@@ -30,7 +30,7 @@ published=form.getvalue('published')
 type=form.getvalue('type')
 when_read=form.getvalue('when_read')
 
-dictionary = {
+formDict = {
         'read_status.status'  : read_status,
         'first_name'          : first_name,
         'last_name'           : last_name,
@@ -43,14 +43,20 @@ dictionary = {
         'type'                : type,
         'when_read.when_read' : when_read
         }
+for k, v in formDict.items():
+    if v == 'None':
+        v = 'NULL'
 
 book = Book(book_id, activity)
+
+#if activity == 'update':
+#    book.editRecord(formDict)
+#    activity = 'view'
 
 #build html_header
 if activity == 'edit':
     header = 'Edit Record'
-elif activity == 'update':
-    header = 'Preview Changes to Record'
+
 else:
     header = 'Book Record' 
 
@@ -81,10 +87,6 @@ if activity == 'edit':
         ''' % (key, value)
         table.addRow([key, form_field])
 
-elif activity == 'update':
-    for k ,v in dictionary.items():
-        table.addRow([k,v])
-
 else:
     for key, value in book.data.items():
         string_value= '%s' %value
@@ -105,28 +107,18 @@ edit_button= '''
               onclick = "javascript: document.form.submit()";/>
     '''% (book_id, eactivity)
 
-preview_button = '''
-     <input type = "hidden" name = "book_id" value = "%s"/>
-     <input type = "hidden" name = "activity" value = "%s"/>
-     <input type = "button" value = "Preview"
-          onclick = "javascript: document.form.submit()";/>
-     '''% (book_id, uactivity)
-
 submit_button= '''
      <input type = "hidden" name = "book_id" value = "%s"/>
      <input type = "hidden" name = "activity" value = "%s"/>
-     <input type = "button" value = "Submit"
+     <input type = "button" value = "Confirm Changes"
               onclick = "javascript: document.form.submit()";/>
-    '''% (book_id, vactivity)
+    '''% (book_id, uactivity)
 
 if activity == 'edit':
-    input_section = '<br> %s' %preview_button
-
-if activity == 'view':
-    input_section = '<br> %s' %edit_button
-
-if activity == 'update':
     input_section = '<br> %s' %submit_button
+
+else:
+    input_section = '<br> %s' %edit_button
 
 
 form_footer = '</form>'
@@ -140,5 +132,9 @@ print form_header
 print report
 print input_section
 print form_footer
+if activity == 'update':
+    test = book.editRecord(formDict)
+    activity = 'view'
+    print test
 print html_footer
 

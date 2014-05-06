@@ -1,21 +1,19 @@
 import MySQLdb
 
-db = MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
+_db = MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
+
 def getConnection():
-    db = MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
-    cursor = db.cursor()
+    cursor = _db.cursor()
     return cursor
 
 def getDictConnection():    
-    #    db = MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
-    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    cursor = _db.cursor(MySQLdb.cursors.DictCursor)
     return cursor
 
 def execute(cursor, sql):
-    print "Database.execute: sql:",sql
+    #print "Database.execute: sql:",sql
     result = cursor.execute(sql)
-    print "result:", result
-    db.commit()
+    _db.commit()
     return cursor.fetchall()
 
 if __name__ == '__main__':
