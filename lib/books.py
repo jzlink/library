@@ -15,29 +15,34 @@ class Books:
     def retrieveCoreData(self, filter=None, order_by=None):
         ''' Behavior: returns core data of all titles sorted by author.
         core data= title, author, notes, when_read.
-        Has an option to filter results by search filter if receieved.'''
+        Has an option to filter results by search filter or add order by
+        if receieved.'''
 
         sql="""
    select
       book.book_id, 
       title, 
-      group_concat(distinct concat(last_name, ', ', first_name) order by last_name separator ' & ') as author,
+      group_concat(distinct concat(last_name, ', ', first_name)
+          order by last_name separator ' & ') as author,
       notes, 
       group_concat(distinct when_read separator ' & ') as date
    from 
       book
       left join book_author on book.book_id= book_author.book_id 
       left join author on book_author.author_id= author.author_id
-      left join when_read on book.book_id = when_read.book_id
-  group by title   
+      left join when_read on book.book_id = when_read.book_id   
         """
+        group = ' group by title'
+        where = ''
+        order = ''
         if filter:
-            kwd= "%" + filter + "%"
-            sql= sql + ' where title like "%s"' % kwd
+            kwd = "'%" + filter + "%'"
+            where = ' where title like %s' %kwd
 
         if order_by:
-            sql= sql + ' order by %s' % order_by
-
+            order = ' order by %s' % order_by
+        
+        sql = sql + where + group + order
 
         output=execute(self.connection, sql)
         
