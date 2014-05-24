@@ -15,13 +15,13 @@ class Book:
         sql = '''
 select 
    title,
-   notes,
-   published,                                                                  
-   read_status.status,
-   owner_status.status,
-   series.series,
-   series_num,
-   type,
+   coalesce(notes,'') as notes,
+   coalesce(published, '') as published,                          
+   coalesce(read_status.status, '') as read_status,
+   coalesce(owner_status.status, '') as owner_status,
+   coalesce(series.series, '') as series,
+   coalesce (series_num, '') as series_num,
+   coalesce(type, '') as type,
    group_concat(distinct concat(last_name, ', ', first_name) order by last_name
       separator ' & ') as  author,
    group_concat(distinct when_read separator ' & ') as Date
