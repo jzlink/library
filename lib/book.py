@@ -22,9 +22,9 @@ select
    series.series,
    series_num,
    type,
-   last_name,  
-   first_name,
-   when_read.when_read
+   group_concat(distinct concat(last_name, ', ', first_name) order by last_name
+      separator ' & ') as  author,
+   group_concat(distinct when_read separator ' & ') as Date
 from
    book 
    inner join read_status on book.read_status_id= read_status.read_status_id
