@@ -18,19 +18,26 @@ class Books:
         Has an option to filter results by search filter if receieved.'''
 
         sql="""
-        select book.book_id, title, concat(author.last_name, ', ', author.first_name) as author,
- notes, when_read
-        from book, book_author, author, when_read 
-        where book.book_id=book_author.book_id and
-        author.author_id=book_author.author_id and 
-        book.book_id=when_read.book_id
+   select
+      book.book_id, 
+      title, 
+      group_concat(distinct concat(last_name, ', ', first_name) order by last_name separator ' & ') as author,
+      notes, 
+      group_concat(distinct when_read separator ' & ') as date
+   from 
+      book
+      left join book_author on book.book_id= book_author.book_id 
+      left join author on book_author.author_id= author.author_id
+      left join when_read on book.book_id = when_read.book_id
+  group by title   
         """
         if filter:
             kwd= "%" + filter + "%"
-            sql= sql + ' and title like "%s"' % kwd
+            sql= sql + ' where title like "%s"' % kwd
 
         if order_by:
             sql= sql + ' order by %s' % order_by
+
 
         output=execute(self.connection, sql)
         
@@ -39,12 +46,13 @@ class Books:
 
 if __name__ == '__main__':
     # test code:
-    filter = 'down'
     order_by = 'title'
     results = Books().retrieveCoreData(filter, order_by)
     print "Filter: %s" % filter
     print "Num of books:", len(results)
     print results
+    if not filter:
+        print "No"
 
 
 

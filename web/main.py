@@ -78,10 +78,10 @@ table.addHeader(header)
 # table body
 i = 0
 activity = 'view'
-for (book_id, title, author, notes, when_read) in results:
+for (book_id, title, author, notes, date) in results:
     i += 1
     href = '<a href="detail.py?book_id=%d&activity=%s">%s' % (book_id, activity, title)
-    date = '<nobr>%s</nobr>' % date2str(when_read)
+#    date = '<nobr>%s</nobr>' % date2str(when_read)
     table.addRow([i, href, author, notes, date])
 
 print table.getTable()
