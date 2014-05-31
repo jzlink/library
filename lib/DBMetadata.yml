@@ -1,115 +1,131 @@
 # attributes:
-# name           = actual cloumn name in DB
+# name           = sql cloumn name
 # display_name   = name to be displayed on site
-# position       = numerical positioning to follow for display
-# display_record = data is shown on the detail page boolean T|F
-# editable       = field is shown on the edit page boolean T|F
+# home_table	 = DB table(s) to be used in sql FROM clause if called 
+# display_type	 = format displayed in: string, date, int, concat
 # edit_type      = format accepted for editing: string, date, int, drop down
-# select         = select clause
+# output	 = list of tables called for and position in table for display
+# join_book	 = sql JOIN stmt used to join to book table
 
 #YAML
- -name: title
+columns:
+
+- 
+  name: book_id
+  home_table: book
+  output: 
+    main: 0
+-
+  name: title
   display_name: Title
-  position: 100
-  display_record: True
-  editable: True
+  home_table: book
+  display_type: string 
   edit_type: string
-  select: book.title
- 
- -name: 
+  output_tables:
+    main: 100 
+    record: 100
+-
+  name: group_concat(distinct concat(last_name, ', ', first_name) order by last_name separator ' & ') as  author
   display_name: Author
+  home_table: author
   position: 200
-  display_record: True
-  editable: False
-  edit_type: 
-  select: concat(last_name, ' ,', first_name) as Author
- 
- -name: author_last
-  display_name: Author Last
-  position:210 
-  display_record: False
-  editable: True
+  display_type: concat
+  output_tables: 
+
+-
+  name: last_name
+  display_name: Last Name
+  home_table: Author
+  position: 210
+  display_type: string
   edit_type: string
-  select: author.author_last
- 
- -name: author_first
-  display_name: Author First
+  output_tables: 
+
+-
+  name: first_name
+  display_name: First Name
+  home_table: author
   position: 215
-  display_record: False
-  editable: True
+  display_type: string
   edit_type: string
-  select: author.author_first
- 
- -name: 
+  output_tables: 
+
+-
+  name: concat(series, ' # ', series_num)
   display_name: Series
+  home_table: series
   position: 300
-  display_record: True
-  editable: False
-  edit_type: 
-  select: concat(series.series, ' No.', book_series.series_num) as Series
- 
- -name: series
-  display_name: Series Name
+  display_type: string
+  output_tables: 
+
+-
+  name: series 
+  display_name: Series Name 
+  home_table: series
   position: 310
-  display_record: False
-  editable: True
-  edit_type: drop down
+  display_type: string
   edit_type: string
-  select: series.series
- 
- -name: series_num
-  display_name: Series No.
+  output_tables: 
+
+-
+  name: series_num
+  display_name: Series #
+  home_table: book
   position: 315
-  display_record: False
-  editable: True
+  display_type: int
   edit_type: int
-  select: book_series.series_num
- 
- -name: when_read
+  output_tables: 
+
+-
+  name: when_read
   display_name: Date
+  home_table: when_read
   position: 400
-  display_record: True
-  editable: True
+  display_type: concat
   edit_type: date
-  select: when_read.when_read
- 
- -name: notes
+  output_tables: 
+
+-
+  name: notes
   display_name: Notes
+  home_table: notes
   position: 500
-  display_record: True
-  editable: True
+  display_type: string
   edit_type: string
-  select: book.notes
- 
- -name: status
+  output_tables: 
+
+-
+  name: read_status.status
   display_name: Read Status
+  home_table: read_status
   position: 600
-  display_record: True
-  editable: True
+  display_type: string
   edit_type: drop down
-  select: read_status.status
- 
- -name: published
-  display_name: Published
+  output_tables: 
+
+-
+  name: owner_status.status
+  display_name: Own Status
+  home_table: owner_status
   position: 700
-  display_record: True
-  editable: True
+  display_type: string
   edit_type: drop down
-  select: book.published
- 
- -name: status
-  display_name: Ownership
+  output_tables:  
+
+-
+  name: published
+  display_name: Published
+  home_table: book
   position: 800
-  display_record: True
-  editable: True
+  display_type: string
   edit_type: drop down
-  select: owner_status.status
- 
- -name: type
-  display_name: Type
+  output_tables: 
+
+-
+  name: type
+  display_name: Type 
+  home_table: type
   position: 900
-  display_record: True
-  editable: True
+  display_type: string
   edit_type: drop down
-  select: type.type
- 
+  output_tables: 
