@@ -1,0 +1,59 @@
+# delimiter: New line, 2 spaces, dash, space. "\n  - example".
+# attributes:
+# display_name	= name to be displayed on output
+# select	= name called in sql SELECT statement
+# from		= DB table element found in 
+# format	= format displayed or edited in: 
+#  		  	 string, date, int, concat, drop down
+# position	= relative position for display in table
+
+Record:
+  - display_name: Title 
+    select: title
+    from: book
+    format: string
+    position: 100 
+
+  - display_name: Author    
+    select: >
+       group_concat(distinct concat(last_name, ', ', first_name) order by
+                   last_name)
+    from: author
+    format: concat
+    position: 200
+
+  - display_name: Series
+    select: concat(series, ' No. ', series_num)  
+    format: string
+    position: 300
+
+  - display_name: Notes 
+    select: notes
+    from: book
+    format: string
+    position: 400
+
+  - display_name: Date     
+    select: group_concat(when_read) as Date
+    from: when_read
+    format: date
+    position: 500
+
+  - display_name: Ownership  
+    select: os.status
+    from: owner_status
+    format: string
+    position: 600 
+
+  - display_name: Read Status 
+    select: rs.status
+    from: read_status
+    format: string
+    position: 700
+
+  - display_name: Type 
+    select: type
+    from: type
+    format: string
+    position: 800
+
