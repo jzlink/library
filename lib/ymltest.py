@@ -11,5 +11,11 @@ import pprint
 #for person in people:
 #    print person['name']
 
-stuff= yaml.load(open('OutputTables.yml'))
-pprint.pprint(stuff)
+stuff= yaml.load(open('stuff.yml'))
+#pprint.pprint(stuff)
+
+for d in stuff['folks']:
+    for k, v in d:
+        if k == 'color':
+            print v
+
