@@ -1,0 +1,10 @@
+# Dev config for library system
+
+basedir: $HOME/library
+
+database:
+  - host    : localhost
+    schema  : library
+    user    : jlink
+    password: eggplant
+

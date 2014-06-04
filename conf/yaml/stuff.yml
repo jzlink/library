@@ -1,0 +1,19 @@
+folks:
+ - name: david
+   color: red
+ - name: jules
+   color: blue
+
+bands:
+ - beatles
+ - cream
+ - format
+ - spoon
+ - black keys: 
+    - red
+    - green
+
+
+# you must be a freak about consistency. List hieriarchy is self defined by the first example. In this case ": \n - <element>" spaces included. Sub-levels must follow this pattern. See black keys red/green. 
+
+# colon character ':' must ALWAYS be followed by a space before any content.

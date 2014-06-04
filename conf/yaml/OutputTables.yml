@@ -1,0 +1,81 @@
+# delimiter: New line, 2 spaces, dash, space. "\n  - example".
+# attributes:
+# display_name	= name to be displayed on output
+# position	= relative position on table
+
+#YAML
+main: 
+  - display_name: Book ID
+    position: 0
+
+  - display_name: Title   
+    position: 100
+
+  - display_name: Author    
+    position: 200
+
+  - display_name: Notes    
+    position: 300
+
+  - display_name: Date     
+    position: 400
+
+record:
+  - display_name: Title 
+    position: 100 
+
+  - display_name: Author    
+    position: 200
+
+  - display_name: Series
+    position: 300
+
+  - display_name: Notes 
+    position: 400
+
+  - display_name: Date     
+    position: 500
+
+  - display_name: Ownership  
+    position: 600 
+
+  - display_name: Read Status 
+    position: 700
+
+  - display_name: Type 
+    position: 800
+
+edit: 
+  - display_name: Title
+    position: 100 
+
+  - display_name: Last Name
+    position: 200
+
+  - display_name: First  Name
+    position: 210
+
+  - display_name: Series
+    position: 300
+
+  - display_name: Series No.
+    position: 310
+
+  - display_name: Notes
+    position: 400
+
+  - display_name: Date
+    position: 500
+
+  - display_name: Ownership
+    position: 600
+
+  - display_name: Read Status
+    position: 700
+
+  - display_name: Type
+    position: 800
+
+  - display_name: Published
+    position: 900
+
