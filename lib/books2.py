@@ -3,7 +3,7 @@
 from columns import Columns
 from database import *
 
-DEBUG_SQL = 0
+DEBUG_SQL = 1
 
 class Books(object):
 
@@ -17,7 +17,7 @@ class Books(object):
 
         # select
         selects = []
-        for rec in self.columns['Record']:
+        for rec in self.columns['record']:
             selects.append(rec['select'])
 
         # from

@@ -52,7 +52,7 @@ edit:
   - display_name: Last Name
     position: 200
 
-  - display_name: First  Name
+  - display_name: First Name
     position: 210
 
   - display_name: Series

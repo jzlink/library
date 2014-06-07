@@ -1,59 +1,106 @@
-# delimiter: New line, 2 spaces, dash, space. "\n  - example".
+## demarcation: newline, space, space, dash, space
 # attributes:
-# display_name	= name to be displayed on output
-# select	= name called in sql SELECT statement
-# from		= DB table element found in 
-# format	= format displayed or edited in: 
-#  		  	 string, date, int, concat, drop down
-# position	= relative position for display in table
+# display_name	= name to be displayed on site for humans
+# select	= sql select statement
+# from		= sql FROM clause
+# display_type	= format displayed in: string, date, int, concat
+# editable	= can the element be edited binary T|F
+# edit_type	= format accepted for editing: string, date, int, drop down
 
-Record:
-  - display_name: Title 
-    select: title
+#YAML
+
+Book ID:
+  - select: book.book_id
     from: book
-    format: string
-    position: 100 
+    editable: F 
 
-  - display_name: Author    
-    select: >
-       group_concat(distinct concat(last_name, ', ', first_name) order by
-                   last_name)
-    from: author
-    format: concat
-    position: 200
-
-  - display_name: Series
-    select: concat(series, ' No. ', series_num)  
-    format: string
-    position: 300
-
-  - display_name: Notes 
-    select: notes
+Title: 
+  - select: title
     from: book
-    format: string
-    position: 400
+    display_type: string 
+    editable: T
+    edit_type: string
 
-  - display_name: Date     
-    select: group_concat(when_read) as Date
-    from: when_read
-    format: date
-    position: 500
+Notes:
+  - select: notes
+    from: book
+    display_type: string 
+    editable: T
+    edit_type: string
 
-  - display_name: Ownership  
-    select: os.status
-    from: owner_status
-    format: string
-    position: 600 
+Published:
+  - select: published
+    from: book
+    display_type: string 
+    editable: T
+    edit_type: drop down
 
-  - display_name: Read Status 
-    select: rs.status
-    from: read_status
-    format: string
-    position: 700
-
-  - display_name: Type 
-    select: type
+Type:
+  - select: type
     from: type
-    format: string
-    position: 800
+    display_type: string 
+    editable: T
+    edit_type: drop down
 
+Series:
+  - select: concat(series, ' No. ', series_num)
+    from: series 
+    display_type: string
+    editable: F
+
+Series: 
+  - select: series
+    from: series
+    display_type: string 
+    editable: T
+    edit_type: string
+
+Series No.:
+  - select: series_num
+    from: book
+    display_type: int 
+    editable: T
+    edit_type: int
+
+Read Status:
+  - select: read_status.status
+    from: read_status
+    display_type: string
+    editable: T
+    edit_type: drop down
+
+Ownership:
+  - select: owner_status.status
+    from: owner_status
+    display_type: string
+    editable: T
+    edit_type: drop down
+
+Date:
+  - select: group_concat(distinct when_read separator ' & ')
+    from: when_read
+    display_type: date
+    editable: T
+    edit_type: concat
+
+Author:
+  - select: >
+            group_concat(distinct concat(last_name, ', ', first_name)
+            order by last_name separator ' & ') 
+    from: author
+    display_type: string 
+    editable: F
+
+Last Name: 
+  - select: last_name
+    from: author
+    display_type: string 
+    editable: T
+    edit_type: concat
+
+First Name:
+  - select: first_name
+    from: author
+    display_type: string 
+    editable: T
+    edit_type: concat
