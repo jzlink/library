@@ -8,75 +8,80 @@ from database import *
 class Query(object):
 
     def __init__(self):
-        dictionary = LoadYaml()
-        self.columns = dictionary.loadYaml('columns')
-        self.DBTables = dictionary.loadYaml('DBTables')        
-        self.OTables = dictionary.loadYaml('OutputTables')
+        loadyaml = LoadYaml()
+        self.columns = loadyaml.loadYaml('columns')
+        self.tablejoins = loadyaml.loadYaml('tablejoins')        
+        self.pages = loadyaml.loadYaml('pages')
         self.connection = getConnection()
 
-    def getTable(self, table): #, filter=None):
-        '''builds dynamic sql to get data for requested table
-           return query results'''
+    def getData (self, page, filter = None, sort = None):
+        ''' accepts request for page, calls SQL builder, executes SQL
+        returns query results'''
 
+        sql = self.getSQL(page, filter)
+        results = execute(self.connection, sql)
+        return results
+
+    def getSQL(self, page, filter = None, sort = None):
+        '''builds dynamic sql for requested table
+           return sql string'''
 
         # select
         columns = []
-        for rec in self.OTables[table]:
-            columns.append(rec['display_name'])
+        for rec in self.pages[page]:
+            columns.append(rec['column'])
 
         selects = []
-        ftable = []
-        x = len(columns)
-        i = 0
-        while i < x:
-            c = columns[i]
+        froms = []
+        for c in columns:
             for rec in self.columns[c]:
                 selects.append(rec['select'])
-                ftable.append(rec['from'])
-                i = i + 1
+                froms.append(rec['from'])
 
         # from
-        ftable  = list(set(ftable))
+        froms  = list(set(froms))
         joins = []
-        y = len(ftable)
-        j = 0
-        while j < y:
-            f = ftable[j]
-            for rec in self.DBTables[f]:
+
+        for f in froms:
+            for rec in self.tablejoins[f]:
                 joins.append(rec['join_book'])
-                j = j + 1
+        
+        # HACK. to make sure book goes to top of from stmt.
         joins = sorted(joins)
 
         # Where
-        pass
-
+        where = ''
+        if filter:
+            where = 'where ' + filter
+            
         # Groupby
         groupbys = []
         groupbys.append('book.title')
 
+        
+        #Order by
+        order = ''
+        if sort:
+            order = 'order by ' + sort 
+        
         # put it together
         sql = 'select '   
         sql += ','.join(selects)
         sql += ' from '
         sql += ' '.join(joins)
+        sql += ' ' + where
         sql += ' group by '
         sql += ' '.join(groupbys)
-        sql = sql.replace('\n', ' ')
+        sql += ' ' + order
 
-        results = execute(self.connection, sql)
         return sql
 
-#debug
-DEBUG_SQL = 0
-
-if DEBUG_SQL:
-    print 'sql:'
-    print sql
 
 def test():  
     test = Query()
-    data = test.getTable('main')
-    pprint(data)
+    data = test.getSQL('main', None, 'title')
+#    data = test.getData('main', 'book.book_id > 475, 'title')
+    print data
 
 if __name__ == '__main__':
     test()

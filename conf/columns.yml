@@ -1,106 +1,145 @@
 ## demarcation: newline, space, space, dash, space
 # attributes:
-# display_name	= name to be displayed on site for humans
+# display	= name to be displayed on site for humans
 # select	= sql select statement
 # from		= sql FROM clause
-# display_type	= format displayed in: string, date, int, concat
+# type		= data type string|date|int
 # editable	= can the element be edited binary T|F
-# edit_type	= format accepted for editing: string, date, int, drop down
+# foreign_table	= table that foreign key is from. used to identfy lookup fields
 
 #YAML
 
-Book ID:
+book_id:
   - select: book.book_id
     from: book
-    editable: F 
+    editable: F
+    type: int 
+    display: Book Id
 
-Title: 
+title: 
   - select: title
     from: book
-    display_type: string 
+    type: string 
     editable: T
-    edit_type: string
+    display: Title
 
-Notes:
+notes:
   - select: notes
     from: book
-    display_type: string 
+    type: string 
     editable: T
-    edit_type: string
+    display: Notes
 
-Published:
+published:
   - select: published
     from: book
-    display_type: string 
+    type: int
     editable: T
-    edit_type: drop down
+    display: published
 
-Type:
+type:
   - select: type
     from: type
-    display_type: string 
-    editable: T
-    edit_type: drop down
+    type: string 
+    editable: F
+    display: Type
 
-Series:
+type_id:
+  - select: type_id
+    from: book
+    type: int
+    editable: T
+    foreign_table: type
+
+series:
   - select: concat(series, ' No. ', series_num)
     from: series 
     display_type: string
     editable: F
 
-Series: 
+series_name: 
   - select: series
     from: series
-    display_type: string 
+    type: string 
     editable: T
-    edit_type: string
+    display: Series
 
-Series No.:
+series_num:
   - select: series_num
     from: book
-    display_type: int 
+    type: int 
     editable: T
-    edit_type: int
+    display: Series No.
 
-Read Status:
+read_status:
   - select: read_status.status
     from: read_status
-    display_type: string
-    editable: T
-    edit_type: drop down
+    type: string
+    editable: F
+    display: Read Status
 
-Ownership:
+read_status_id:
+  - select: read_status_id
+    from: book
+    type: int
+    editable: T
+    foreign_table: read_status
+
+ownership:
   - select: owner_status.status
     from: owner_status
-    display_type: string
-    editable: T
-    edit_type: drop down
+    type: string
+    editable: F
+    display: Ownership
 
-Date:
+owner_status:
+  - select: owner_status_id
+    from: book
+    type: int
+    editable: T
+    foreign_table: owner_status
+
+date:
   - select: group_concat(distinct when_read separator ' & ')
     from: when_read
-    display_type: date
-    editable: T
-    edit_type: concat
+    type: date
+    editable: F
+    display: Date
 
-Author:
+when_read:
+  - select: when_read
+    from: when_read
+    type: date
+    editable: T
+    display: Date
+    foreign_table: book
+    
+author:
   - select: >
             group_concat(distinct concat(last_name, ', ', first_name)
             order by last_name separator ' & ') 
     from: author
-    display_type: string 
+    type: string 
     editable: F
+    display: Author
 
-Last Name: 
+last_name:
   - select: last_name
     from: author
-    display_type: string 
+    type: string 
     editable: T
-    edit_type: concat
+    display: Last Name
 
-First Name:
+first_name:
   - select: first_name
     from: author
-    display_type: string 
+    type: string 
     editable: T
-    edit_type: concat
+    display: First Name
+
+author_id:
+  - select: author_id
+    from: book
+    type: int
+    editable: T
+    foreign_table: book_author
