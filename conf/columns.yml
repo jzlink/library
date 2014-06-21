@@ -14,7 +14,7 @@ book_id:
     from: book
     editable: F
     type: int 
-    display: Book Id
+    display: BookId
 
 title: 
   - select: title
@@ -54,7 +54,7 @@ type_id:
 series:
   - select: concat(series, ' No. ', series_num)
     from: series 
-    display_type: string
+    display: Series
     editable: F
 
 series_name: 
@@ -76,7 +76,7 @@ read_status:
     from: read_status
     type: string
     editable: F
-    display: Read Status
+    display: Status
 
 read_status_id:
   - select: read_status_id

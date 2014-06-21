@@ -6,7 +6,7 @@ import cgi
 import cgitb
 cgitb.enable()
 
-from books import Books
+from query import Query
 from htmltable import HtmlTable
 from utils import date2str
 
@@ -48,14 +48,17 @@ Search Titles For:
 <input type='hidden' name='order_by' value='%s'/>
 </form>""" % (term, order_by)
 
+where = ''
 if term:
     print 'Search term is %s' %term
+    kwd = "'%'" + term + "'%'"
+    where = " title like %s" %kwd
     
 
 ### TABLE OF BOOKS
 
-books = Books()
-results = books.retrieveCoreData(term, order_by)
+query= Query()
+results = query.getData('main', where, order_by)
 
 # build html table
 table = HtmlTable(border=1, cellpadding=3)
@@ -78,11 +81,11 @@ table.addHeader(header)
 # table body
 i = 0
 activity = 'view'
-for (book_id, title, author, notes, date) in results:
+for (BookId, Title, Author, Notes, Date) in results:
     i += 1
-    href = '<a href="detail.py?book_id=%d&activity=%s">%s' % (book_id, activity, title)
+    href = '<a href="detail2.py?book_id=%d&activity=%s">%s' % (BookId, activity, Title)
 #    date = '<nobr>%s</nobr>' % date2str(when_read)
-    table.addRow([i, href, author, notes, date])
+    table.addRow([i, href, Author, Notes, Date])
 
 print table.getTable()
 

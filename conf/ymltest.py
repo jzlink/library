@@ -3,19 +3,23 @@
 import yaml
 import pprint
 
-#for data in yaml.load(y):
-    #pprint.pprint(data)
+pages= yaml.load(open('conf/pages.yml'))
+columns = yaml.load(open('conf/columns.yml'))
+#pprint.pprint(stuff)
 
-#people= yaml.load(y)
-#pprint.pprint(people)
-#for person in people:
-#    print person['name']
+ # get list of columns assigned to each page
+cols = []
+for rec in pages['main']:
+    cols.append(rec)
 
-stuff= yaml.load(open('conf/columns.yml'))
-pprint.pprint(stuff)
+# retrieve select statement and from table for each column
+selects = []
+from_raw = []
+for c in cols:
+    for rec in columns[c]:
+        selects.append(rec['select'])
+        from_raw.append(rec['from'])
 
-#for d in stuff['folks']:
-#    for k, v in d:
-#        if k == 'color':
-#            print v
+print selects
+print from_raw
 

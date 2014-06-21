@@ -1,12 +1,14 @@
 #!/usr/bin/env python                                                           
 
 from books import Books
-#from book class import book functions                                                    
+#from query import Query
 
-# build report body:                                                            
+# build report body:                                                           
 books = Books()
 results = books.booksNotesAuthors()
 
+#query= Query()
+#catalog = query.getData('main')
 # build html table                                                              
 table = '<table border="1" cellpadding="3" cellspacing="0">\n'
 table += ' <tr><th>Title</th><th>Author</th><th>Notes</th></tr>\n'

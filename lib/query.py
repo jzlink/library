@@ -14,61 +14,69 @@ class Query(object):
         self.pages = loadyaml.loadYaml('pages')
         self.connection = getConnection()
 
-    def getData (self, page, filter = None, sort = None):
+    def getData (self, page, where = None, sort = None):
         ''' accepts request for page, calls SQL builder, executes SQL
         returns query results'''
 
-        sql = self.getSQL(page, filter)
+        sql = self.getSQL(page, where, sort)
         results = execute(self.connection, sql)
         return results
 
-    def getSQL(self, page, filter = None, sort = None):
+    def getSQL(self, page, where = None, sort = None):
         '''builds dynamic sql for requested table
            return sql string'''
 
-        # select
+        # get list of columns assigned to each page
         columns = []
         for rec in self.pages[page]:
-            columns.append(rec['column'])
+            columns.append(rec)
 
+        # retrieve select statement and from table for each column
         selects = []
-        froms = []
+        from_raw = []
         for c in columns:
             for rec in self.columns[c]:
-                selects.append(rec['select'])
-                froms.append(rec['from'])
+               select = rec['select']
+               display = rec['display']
+               select_stmt = select + " as " + display
+               selects.append(select_stmt)
+               from_raw.append(rec['from'])
 
-        # from
-        froms  = list(set(froms))
+        # get join statments and order them properly for use in from clause
+        from_raw  = list(set(from_raw))
         joins = []
-
-        for f in froms:
+        for f in from_raw:
             for rec in self.tablejoins[f]:
                 joins.append(rec['join_book'])
         
-        # HACK. to make sure book goes to top of from stmt.
-        joins = sorted(joins)
+        froms = []
+        for j in joins:
+            if "join" not in j:
+                froms.append(j)
+                joins.remove(j)               
+        for j in joins:
+            froms.append(j)
 
-        # Where
+        # bulid where clause if filter provided
         where = ''
-        if filter:
-            where = 'where ' + filter
+        if where:
+            where = 'where ' + where
             
-        # Groupby
+        # Group by
         groupbys = []
         groupbys.append('book.title')
 
         
-        #Order by
+        #build order clause if sort provided
         order = ''
         if sort:
             order = 'order by ' + sort 
         
-        # put it together
+        # put elements together to make functioning sql query
         sql = 'select '   
-        sql += ','.join(selects)
+        sql += ', '.join(selects)
         sql += ' from '
-        sql += ' '.join(joins)
+        sql += ' '.join(froms)
         sql += ' ' + where
         sql += ' group by '
         sql += ' '.join(groupbys)
@@ -79,8 +87,8 @@ class Query(object):
 
 def test():  
     test = Query()
-    data = test.getSQL('main', None, 'title')
-#    data = test.getData('main', 'book.book_id > 475, 'title')
+    data = test.getSQL('main', 'book.book_id > 475', 'title')
+#    data = test.getData('main', 'book.book_id > 475', 'title')
     print data
 
 if __name__ == '__main__':

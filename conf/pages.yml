@@ -1,36 +1,35 @@
 # delimiter: New line, 2 spaces, dash, space. "\n  - example".
 # attributes:
-# column	= name to be displayed on output
-# position	= relative position on table
+# list of possible tables/pages with all columns needed per table. 
 
 #YAML
 main: 
-  - column: book_id
-  - column: title   
-  - column: author    
-  - column: notes   
-  - column: date    
+  - book_id
+  - title   
+  - author    
+  - notes   
+  - date    
 
 record:
-  - column: title 
-  - column: author    
-  - column: series
-  - column: notes
-  - column: date    
-  - column: ownership  
-  - column: read_status 
-  - column: type 
+  - title 
+  - author    
+  - series
+  - notes
+  - date    
+  - ownership  
+  - read_status 
+  - type 
 
 edit: 
-  - column: title
-  - column: last_name
-  - column: first_name
-  - column: series_name
-  - column: series_num
-  - column: notes
-  - column: date
-  - column: ownership
-  - column: read_status
-  - column: type
-  - column: published
+  - title
+  - last_name
+  - first_name
+  - series_name
+  - series_num
+  - notes
+  - date
+  - ownership
+  - read_status
+  - type
+  - published
 

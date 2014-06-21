@@ -1,6 +1,7 @@
+
 # Dev config for library system
 
-basedir: home/jzlink/library
+basedir: /home/jzlink/library
 
 database:
   - host    : localhost
