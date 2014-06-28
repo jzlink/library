@@ -87,7 +87,7 @@ class Query(object):
 
 def test():  
     test = Query()
-#    data = test.getSQL('main', 'book.book_id > 475', 'title')
+#    data = test.getSQL('record', 'book.book_id > 475', 'title')
     data = test.getData('main', 'book.book_id = 475', None)
     print data
 

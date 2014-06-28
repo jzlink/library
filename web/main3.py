@@ -70,35 +70,34 @@ pages = loadyaml.loadYaml('pages')
 table = HtmlTable(border=1, cellpadding=3)
 
 # table header
-ordered_header = ['#']
+#use ordered list from pages.yml to make an ordered list of lists in this form:
+#['column', 'display name']. Use this list to develop the header.
 
-# make a dictionary of all of the columns and their display names needed for
-# the table header. Remove 'book_id' since we don't want that as a column
-
-col_order= []
+ordered_cols= []
 for item in pages['main']:
-    col_order.append(item)
-col_order.remove('book_id')
-header = []
-for item in col_order:
+    ordered_cols.append(item)
+ordered_cols.remove('book_id') #we don't want book_id to be a column heading
+
+display_names = []
+for item in ordered_cols:
     x = []
     x.append(item)
     for element in columns[item]:
         x.append(element['display'])
-    header.append(x)
+    display_names.append(x)
 
-#print header
+header = ['#']
 
-#use the display name dic to build a header that allows for sorting   
-for field, name in header:
+#use the display_name list to build a header that enables sorting   
+for field, name in display_names:
     sortflag =''
     if field == order_by:
         sortflag = ' ^'
     js =  "document.form1.order_by.value='%s';" % field
     js += "document.form1.submit();"
     h = '<a onclick="javascript:%s">%s%s</a>' % (js, name, sortflag)
-    ordered_header.append(h)
-table.addHeader(ordered_header)
+    header.append(h)
+table.addHeader(header)
 
 # table body
 i = 0
