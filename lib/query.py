@@ -12,7 +12,7 @@ class Query(object):
         self.columns = loadyaml.loadYaml('columns')
         self.tablejoins = loadyaml.loadYaml('tablejoins')        
         self.pages = loadyaml.loadYaml('pages')
-        self.connection = getConnection()
+        self.connection = getDictConnection()
 
     def getData (self, page, where = None, sort = None):
         ''' accepts request for page, calls SQL builder, executes SQL
@@ -22,7 +22,7 @@ class Query(object):
         results = execute(self.connection, sql)
         return results
 
-    def getSQL(self, page, where = None, sort = None):
+    def getSQL(self, page, filter = None, sort = None):
         '''builds dynamic sql for requested table
            return sql string'''
 
@@ -37,8 +37,8 @@ class Query(object):
         for c in columns:
             for rec in self.columns[c]:
                select = rec['select']
-               display = rec['display']
-               select_stmt = select + " as " + display
+              # display = rec['display']
+               select_stmt = select + " as " + c
                selects.append(select_stmt)
                from_raw.append(rec['from'])
 
@@ -59,8 +59,8 @@ class Query(object):
 
         # bulid where clause if filter provided
         where = ''
-        if where:
-            where = 'where ' + where
+        if filter:
+            where = 'where ' + filter
             
         # Group by
         groupbys = []
@@ -87,8 +87,8 @@ class Query(object):
 
 def test():  
     test = Query()
-    data = test.getSQL('main', 'book.book_id > 475', 'title')
-#    data = test.getData('main', 'book.book_id > 475', 'title')
+#    data = test.getSQL('main', 'book.book_id > 475', 'title')
+    data = test.getData('main', 'book.book_id = 475', None)
     print data
 
 if __name__ == '__main__':
