@@ -13,6 +13,7 @@ class Query(object):
         self.tablejoins = loadyaml.loadYaml('tablejoins')        
         self.pages = loadyaml.loadYaml('pages')
         self.connection = getDictConnection()
+        self.conn = getConnection()
 
     def getData (self, page, where = None, sort = None):
         ''' accepts request for page, calls SQL builder, executes SQL
@@ -84,11 +85,29 @@ class Query(object):
 
         return sql
 
+    def getDropDown(self, column):
+        '''accepts a columns with a foreign table
+           returns html for a dropdown menu for that column'''
+        for item in self.columns[column]:
+            select = item['drop_down_select']
+            table = item['foreign_table']
+        sql = 'select %s from %s' %(select, table)
+        table = execute(self.conn, sql)
+        options = ''
+        for item in table:
+            option = '''
+            <option value = "'%d'"> %s</option>
+            ''' %(item[0], item[1])
+            options += option
+          
+        return options
+
 
 def test():  
     test = Query()
 #    data = test.getSQL('record', 'book.book_id > 475', 'title')
-    data = test.getData('main', 'book.book_id = 475', None)
+#    data = test.getData('main', 'book.book_id = 475', None)
+    data = test.getDropDown('type_id')
     print data
 
 if __name__ == '__main__':

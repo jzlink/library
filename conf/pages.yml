@@ -28,8 +28,8 @@ edit:
   - series_num
   - notes
   - date
-  - ownership
-  - read_status
-  - type
+  - owner_status
+  - read_status_id
+  - type_id
   - published
 

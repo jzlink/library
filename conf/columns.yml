@@ -6,7 +6,10 @@
 # type		= data type string|date|int
 # editable	= can the element be edited binary T|F
 # foreign_table	= table that foreign key is from. used to identfy lookup fields
-
+# drop_down_select = if a table has a foreign_table and is being called as a 
+# 		     drop down menu this lists the columns being called for 
+#		     the drop down menu. Assumes primary key first then
+#		     other element
 #YAML
 
 book_id:
@@ -35,7 +38,7 @@ published:
     from: book
     type: int
     editable: T
-    display: published
+    display: Published
 
 type:
   - select: type
@@ -49,7 +52,9 @@ type_id:
     from: book
     type: int
     editable: T
+    display: Type
     foreign_table: type
+    drop_down_select: type_id, type
 
 series:
   - select: concat(series, ' No. ', series_num)
@@ -83,7 +88,9 @@ read_status_id:
     from: book
     type: int
     editable: T
+    display: Status
     foreign_table: read_status
+    drop_down_select: read_status_id, status
 
 ownership:
   - select: owner_status.status
@@ -97,8 +104,9 @@ owner_status:
     from: book
     type: int
     editable: T
+    display: Ownership
     foreign_table: owner_status
-
+    drop_down_select: owner_status_id, status
 date:
   - select: group_concat(distinct when_read separator ' & ')
     from: when_read
