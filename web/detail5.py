@@ -16,7 +16,7 @@ from loadyaml import LoadYaml
 # get form values 
 form = cgi.FieldStorage()
 book_id= form.getvalue('book_id', '1')
-activity= form.getvalue('activity')
+activity= form.getvalue('activity', 'view')
 
 #build html_header
 if activity == 'edit':
@@ -32,7 +32,7 @@ html_header= '''
 
 #build form_header
 form_header = '''
-    <form method = "POST" action = "detail2.py" name = "form">
+    <form method = "POST" action = "detail.py" name = "form">
 '''
 
 #bulid report using metadata. Vary on activity
@@ -57,6 +57,8 @@ ordered_rows= []
 for item in pages[page]:
     ordered_rows.append(item)
 
+# making a list of lists holding the col name and display names
+# make a list of cols that need drop down menus
 display_names = []
 drop_down = []
 for item in ordered_rows:
@@ -69,6 +71,7 @@ for item in ordered_rows:
     display_names.append(x)
 
 for col, display in display_names:
+#    column = columns[col]
     for rec in results:
         if rec[col]:
             data = rec[col]

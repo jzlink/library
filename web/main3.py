@@ -6,10 +6,7 @@ import cgi
 import cgitb
 cgitb.enable()
 
-from pprint import pprint
-
-from loadyaml import LoadYaml
-from query import Query
+from books import Books
 from htmltable import HtmlTable
 from utils import date2str
 
@@ -40,7 +37,7 @@ print "<h3>Books, Authors, and Notes</h3>"
 ### SEARCH SECTION
 
 print """
-<form method="POST" action="main3.py" name="form1"> 
+<form method="POST" action="main.py" name="form1"> 
 Search Titles For: 
 
 <input type='textfield' name ='term' value='%s'/>
@@ -51,45 +48,24 @@ Search Titles For:
 <input type='hidden' name='order_by' value='%s'/>
 </form>""" % (term, order_by)
 
-where = ''
 if term:
     print 'Search term is %s' %term
-    kwd = "'%" + term + "%'"
-    where = "title like %s" %kwd
     
+
 ### TABLE OF BOOKS
 
-query= Query()
-results = query.getData('main', where, order_by)
-
-loadyaml = LoadYaml()
-columns = loadyaml.loadYaml('columns')
-pages = loadyaml.loadYaml('pages')
+books = Books()
+results = books.retrieveCoreData(term, order_by)
 
 # build html table
 table = HtmlTable(border=1, cellpadding=3)
 
 # table header
-#use ordered list from pages.yml to make an ordered list of lists in this form:
-#['column', 'display name']. Use this list to develop the header.
-
-ordered_cols= []
-for item in pages['main']:
-    ordered_cols.append(item)
-ordered_cols.remove('book_id') #we don't want book_id to be a column heading
-
-display_names = []
-for item in ordered_cols:
-    x = []
-    x.append(item)
-    for element in columns[item]:
-        x.append(element['display'])
-    display_names.append(x)
-
 header = ['#']
-
-#use the display_name list to build a header that enables sorting   
-for field, name in display_names:
+for field, name in [['title'    , 'Title'],
+                    ['author'   , 'Author'],
+                    ['notes'    , 'Notes'],
+                    ['when_read', 'Date']]:
     sortflag =''
     if field == order_by:
         sortflag = ' ^'
@@ -102,11 +78,11 @@ table.addHeader(header)
 # table body
 i = 0
 activity = 'view'
-
-for rec in results: 
+for (book_id, title, author, notes, date) in results:
     i += 1
-    href = '<a href="detail2.py?book_id=%d&activity=%s">%s'% (rec['book_id'], activity, rec['title'])
-    table.addRow([i, href, rec['author'], rec['notes'], rec['date']])
+    href = '<a href="detail.py?book_id=%d&activity=%s">%s' % (book_id, activity, title)
+#    date = '<nobr>%s</nobr>' % date2str(when_read)
+    table.addRow([i, href, author, notes, date])
 
 print table.getTable()
 
@@ -114,4 +90,3 @@ print table.getTable()
 
 print "</body>"
 print "</html>"
-
