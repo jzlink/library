@@ -14,18 +14,20 @@ class Record:
     def __init__(self, book_id, activity):
         self.book_id = book_id
         self.activity = activity
-
+        
         if activity == 'edit':
             self.header = 'Edit Record'
             self.page = 'edit'
-            self.new_activity = 'view'
+            self.new_activity = 'update'
             self.button_text = 'Submit'
+            self.show_blank = ''
 
         if activity == 'view':
             self.header = 'Book Record' 
             self.page = 'record'
             self.new_activity = 'edit'
             self.button_text = 'Edit'
+            self.show_blank = '-'
 
     def build_html_header(self):
         html_header= '''
@@ -36,7 +38,7 @@ class Record:
 
     def build_form_header(self):
         form_header = '''
-        <form method = "POST" action = "detail5.py" name = "form">
+        <form method = "POST" action = "detail.py" name = "form">
         '''
         return form_header
 
@@ -73,7 +75,7 @@ class Record:
                 if rec[col]:
                     data = rec[col]
                 else:
-                    data = '-'
+                    data = self.show_blank
                 
                 if self.activity == 'view':
                     table.addRow([display, data]) 

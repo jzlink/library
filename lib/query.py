@@ -96,7 +96,7 @@ class Query(object):
         options = ''
         for item in table:
             option = '''
-            <option value = "'%d'"> %s</option>
+            <option value = %d> %s</option>
             ''' %(item[0], item[1])
             options += option
           

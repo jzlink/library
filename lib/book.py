@@ -45,63 +45,44 @@ where
         self.data = result[0]
 
 
-    def editRecord (self, editDict):
-        booksql ='''
-update book
-set series_num = %s
-where book_id = %s
-''' % (editDict['series_num'], self.book_id) 
+    def updateRecord (self, update_dict):
+        book = ['title', 'notes', 'published', 'owner_status_id', 'read_status_id', 'series_id', 'type_id', 'series_num']
+        update_book = {}
+        updates = []
+        for key, value  in update_dict.items():
+            if value:
+                value = "'"+value+"'"
+            else:
+                value = 'NULL'
+            if key in book:
+                update_book.update({key: value})
 
-        
-        sql = '''
-update book
-set 
-   title = "%s",
-   notes = "%s",
-   published = %s,
-   read_status_id = %s,
-   owner_status_id = %s,
-   type_id = %s,
-   series_num = %s
-where book_id = %s
-''' % (editDict['title'], 
-       editDict['notes'],
-       editDict['published'],
-       editDict['read_status.status'], 
-       editDict['owner_status.status'], 
-       editDict['type'], 
-       editDict['series_num'], 
-       self.book_id)
-
-        try:
-           # print "booksql:", booksql
-            print 'sql:', sql
+        for item in update_book:
+            sql = '''update book set %s = %s where book.book_id = %s''' %(item, update_book[item], self.book_id)
             result = execute(self.connection, sql)
-            return "OK"
-
-        except Exception, e:
-            #raise
-            return "ERROR: %s" % e
+            updates.append(item)
+        message = "Fields "+ ', '.join(updates)+" have been successfully updated"
+        return message
        
-edits = {
-        'read_status.status'  : 1,
-        'first_name'          : 'Christopher',
-        'last_name'           : 'Moore',
-        'title'               : 'Practical Demonkeeping',
-        'series.series'       : '',
-        'notes'               : '',
-        'series_num'          : 'NULL', 
-        'owner_status.status' : 1,
-        'published'           : 1,
-        'type'                : 1,
-        'when_read.when_read' : 2004-06-01
-        }
+edits ={
+'last_name': 'Mcguire', 
+'type_id': '5', 
+'series_name': None, 
+'date': '2010-06-05', 
+'first_name': 'Seanan', 
+'title': 'A Local Habitation', 
+'owner_status_id': '1', 
+'notes': 'October Daye bk. 2', 
+'series_num': None, 
+'published': '1', 
+'read_status_id': '1'
+}
     
 def test():  
-   book = Book(1, 'view')
+   book = Book(335, 'view')
  # print book.data
-   print book.editRecord(edits)
-   
+   update= book.updateRecord(edits)
+   print update
 
 if __name__ == '__main__':
     test()
