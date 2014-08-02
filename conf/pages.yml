@@ -28,7 +28,7 @@ edit:
   - series_num
   - notes
   - date
-  - owner_status
+  - owner_status_id
   - read_status_id
   - type_id
   - published

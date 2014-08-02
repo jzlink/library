@@ -99,7 +99,7 @@ ownership:
     editable: F
     display: Ownership
 
-owner_status:
+owner_status_id:
   - select: owner_status_id
     from: book
     type: int

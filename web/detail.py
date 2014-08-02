@@ -13,7 +13,7 @@ from utils import date2str
 from htmltable import HtmlTable
 from loadyaml import LoadYaml
 from record import Record
-from book import Book
+from libraryHTML import LibraryHTML
 
 # get general form values 
 form = cgi.FieldStorage()
@@ -28,7 +28,7 @@ series = form.getvalue('series_name')
 series_num = form.getvalue('series_num')
 notes = form.getvalue('notes')
 date = form.getvalue('date')
-o_status = form.getvalue('owner_status')
+o_status = form.getvalue('owner_status_id')
 r_status = form.getvalue('read_status_id')
 type_id = form.getvalue('type_id')
 pub =  form.getvalue('published')
@@ -48,18 +48,18 @@ update_dict = {
 }
 message = ''
 if activity == 'update':
-   book = Book(book_id, activity)
-   update = book.updateRecord(update_dict)
+   record = Record(book_id, activity)
+   update = record.updateRecord(update_dict)
    message = "Message: " + update
    activity = 'view'
 
-record = Record(book_id, activity)
-html_header = record.build_html_header()
-form_header = record.build_form_header()
-report = record.build_report()
-input_button = record.build_input_button()
-form_footer = record.build_form_footer()
-html_footer = record.build_html_footer()
+libraryHTML = LibraryHTML(book_id, activity)
+html_header = libraryHTML.build_html_header()
+form_header = libraryHTML.build_form_header()
+report = libraryHTML.build_report()
+input_button = libraryHTML.build_input_button()
+form_footer = libraryHTML.build_form_footer()
+html_footer = libraryHTML.build_html_footer()
 
 
 print 'Content-Type: text/html\n'
@@ -75,4 +75,5 @@ print form_footer
 print html_footer
 
 #print "Debug: Activity = " + activity
-
+#print "Debug: Update_dict = " 
+#print  update_dict
