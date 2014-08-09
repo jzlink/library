@@ -1,5 +1,7 @@
 #!/usr/bin/python 
+
 from database import *
+from loadyaml import LoadYaml
 
 class Record:
     '''Preside over a single book record in the database'''
@@ -10,6 +12,8 @@ class Record:
         self.activity = activity
         self.connection = getDictConnection()
         self.getData()
+        yaml = LoadYaml()
+        self.columns = yaml.loadYaml('columns')
 
     def getData(self):
         sql = '''
@@ -37,7 +41,6 @@ from
 where 
    book.book_id=%s''' % (self.book_id)
 
-
         result = execute(self.connection, sql)
         if not result:
             raise Exception('Unable to get book for book_id: %s' %self.book_id
@@ -46,22 +49,38 @@ where
 
 
     def updateRecord (self, update_dict):
-        book = ['title', 'notes', 'published', 'owner_status_id', 'read_status_id', 'series_id', 'type_id', 'series_num']
         update_book = {}
+        update_author = {}
+        update_when_read = {}
+        update_series = {}
         updates = []
+       
+        #set empty values to NULL for updateing purposes
         for key, value  in update_dict.items():
             if value:
                 value = "'"+value+"'"
             else:
                 value = 'NULL'
-            if key in book:
+
+            #figure out which table needs to be updated, amend that dict{}
+            update_table = self.columns[key][0]['from']
+
+            if update_table == 'book':
                 update_book.update({key: value})
+            if update_table == 'author':
+                update_author.update({key: value})
+            if update_table == 'when_read':
+                update_when_read.update({key: value})
+            if update_table == 'series':
+                update_series.update({key: value})                
 
         for item in update_book:
-            sql = '''update book set %s = %s where book.book_id = %s''' %(item, update_book[item], self.book_id)
+            sql = 'update book set %s = %s where book.book_id = %s' \
+                % (item, update_book[item], self.book_id)
             result = execute(self.connection, sql)
             updates.append(item)
-        message = "Fields "+ ', '.join(updates)+" have been successfully updated"
+        message = "Fields "+ ', '.join(updates)+\
+            " have been successfully updated"
         return message
        
 edits ={
@@ -79,9 +98,9 @@ edits ={
 }
     
 def test():  
-   book = Book(335, 'view')
+   record = Record(335, 'view')
  # print book.data
-   update= book.updateRecord(edits)
+   update= record.updateRecord(edits)
    print update
 
 if __name__ == '__main__':

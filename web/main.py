@@ -34,7 +34,7 @@ print "<body>"
 
 print "<header role = 'banner'>"
 ##Header
-print "<h3>Julia's Library</h3>"
+print "<h1>Julia's Library</h1>"
 
 ##Search Section
 print """

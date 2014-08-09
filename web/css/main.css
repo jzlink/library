@@ -1,9 +1,44 @@
-h3 {
-    color: 339900;
+h1 {
+    color: black;
+    margin-left: auto;
+    margin-rght:auto;
+    width: 70%;
+}
+
+form { 
+    color: black;
+    margin-left: 225px;
+    margin-rght:auto;
+    width: 70%;
+}
+
+header { 
+    background-color: #3D1F00;
+    backgound-opacity: .9;
+    top: 0px;
+    position: fixed;
+    height: 110px;
+    border:1px solid #CCC;
+    left: 100px;
+    right:100px;
+    z-index: 100;
 }
 
 body {
-    background-color: #ffffcc;
+    background-image: url(fullcatalog.jpg);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin-top: 140px;
+    margin-left:100px;
+    margin-right:100px;
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+    font-weight:bold;
+}
+
+table {
+    background-color: CCB299;
+    opacity: .8;
+    overflow: hidden;
 }
 
 a.navLink {
