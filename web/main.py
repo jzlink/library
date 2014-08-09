@@ -32,15 +32,13 @@ print """
 </head>"""
 print "<body>"
 
+print "<header role = 'banner'>"
+##Header
+print "<h3>Julia's Library</h3>"
 
-### TITLE
-
-print "<h3>Books, Authors, and Notes</h3>"
-
-### SEARCH SECTION
-
+##Search Section
 print """
-<form method="POST" action="main3.py" name="form1"> 
+<form method="POST" action="main.py" name="form1"> 
 Search Titles For: 
 
 <input type='textfield' name ='term' value='%s'/>
@@ -56,7 +54,11 @@ if term:
     print 'Search term is %s' %term
     kwd = "'%" + term + "%'"
     where = "title like %s" %kwd
-    
+
+print "<div id = 'header-fixed'>"
+print "</header>"
+print "</div>"
+
 ### TABLE OF BOOKS
 
 query= Query()
