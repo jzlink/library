@@ -8,6 +8,7 @@ import cgi
 import cgitb
 cgitb.enable()
 
+from database import *
 from query import Query
 from utils import date2str
 from htmltable import HtmlTable
@@ -33,7 +34,7 @@ r_status = form.getvalue('read_status_id')
 type_id = form.getvalue('type_id')
 pub =  form.getvalue('published')
 
-update_dict = {
+record_dict = {
 'title': title,
 'last_name': last,
 'first_name': first,
@@ -49,15 +50,26 @@ update_dict = {
 message = ''
 if activity == 'update':
    record = Record(book_id, activity)
-   update = record.updateRecord(update_dict)
-   message = "Message: " + update
+   update = record.updateRecord(record_dict)
+   message = "Message: " + action
    activity = 'view'
+
+if activity == 'submit_new':
+   record = Record(book_id, 'add')
+   add = record.updateRecord(record_dict)
+   message = "Message: "
+   activity = 'view'
+   connection = getDictConnection()
+   b_id = execute(connection, 'select max(book_id) from book')
+   book_id = b_id[0]['max(book_id)'] 
+   
 
 libraryHTML = LibraryHTML(book_id, activity)
 html_header = libraryHTML.build_html_header()
 form_header = libraryHTML.build_form_header()
 report = libraryHTML.build_report()
 input_button = libraryHTML.build_input_button()
+cancel_button = libraryHTML.build_cancel_button()
 form_footer = libraryHTML.build_form_footer()
 html_footer = libraryHTML.build_html_footer()
 
@@ -71,6 +83,7 @@ print '<br>'
 print report
 print '</br>'
 print input_button
+print cancel_button
 print form_footer
 print html_footer
 

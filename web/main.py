@@ -8,6 +8,7 @@ cgitb.enable()
 
 from pprint import pprint
 
+from database import *
 from loadyaml import LoadYaml
 from query import Query
 from htmltable import HtmlTable
@@ -54,6 +55,20 @@ if term:
     print 'Search term is %s' %term
     kwd = "'%" + term + "%'"
     where = "title like %s" %kwd
+
+
+##Add Book Button
+print '''
+    <input type = "button" onClick = 
+      "location.href='detail.py?book_id=0&activity=add'" value = "Add Record">
+'''
+#connection = getConnection()
+
+#results = execute (connection, "select auto_increment
+#from information_schema.TABLES
+#where table_name = 'book'")
+
+
 
 print "<div id = 'header-fixed'>"
 print "</header>"

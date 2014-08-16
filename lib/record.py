@@ -11,10 +11,12 @@ class Record:
         self.book_id = book_id
         self.activity = activity
         self.connection = getDictConnection()
-        self.getData()
         yaml = LoadYaml()
         self.columns = yaml.loadYaml('columns')
-
+        
+        if activity != 'add':
+            self.getData()
+    
     def getData(self):
         sql = '''
 select 
@@ -48,41 +50,58 @@ where
         self.data = result[0]
 
 
-    def updateRecord (self, update_dict):
-        update_book = {}
-        update_author = {}
-        update_when_read = {}
-        update_series = {}
+    def updateRecord (self, record_dict):
+        book_items = {}
+        author_items = {}
+        when_read_items = {}
+        series_items = {}
         updates = []
        
         #set empty values to NULL for updateing purposes
-        for key, value  in update_dict.items():
+        for key, value  in record_dict.items():
             if value:
                 value = "'"+value+"'"
             else:
                 value = 'NULL'
 
             #figure out which table needs to be updated, amend that dict{}
-            update_table = self.columns[key][0]['from']
+            record_table = self.columns[key][0]['from']
 
-            if update_table == 'book':
-                update_book.update({key: value})
-            if update_table == 'author':
-                update_author.update({key: value})
-            if update_table == 'when_read':
-                update_when_read.update({key: value})
-            if update_table == 'series':
-                update_series.update({key: value})                
+            if record_table == 'book':
+                book_items.update({key: value})
+            if record_table == 'author':
+                author_items.update({key: value})
+            if record_table == 'when_read':
+                when_read_items.update({key: value})
+            if record_table == 'series':
+                series_items.update({key: value})                
 
-        for item in update_book:
-            sql = 'update book set %s = %s where book.book_id = %s' \
-                % (item, update_book[item], self.book_id)
+        message = ''
+        if self.activity =='add':
+            cols = []
+            vals = []
+            for item in book_items:        
+                cols.append(item)
+                vals.append(book_items[item])
+            columns = ', '.join(cols)
+            values = ', '.join(vals)
+            sql = 'insert into book (%s) values(%s)'  \
+                    %(columns, values)
+            
             result = execute(self.connection, sql)
-            updates.append(item)
-        message = "Fields "+ ', '.join(updates)+\
-            " have been successfully updated"
+            message = "Record Sucessfully Inserted"
+
+        if self.activity =='update':
+            for item in book_items:
+                sql = 'update book set %s = %s where book.book_id = %s' \
+                    % (item, book_items[item], self.book_id)
+                result = execute(self.connection, sql)
+                updates.append(item)
+                message = "Fields "+ ', '.join(updates)+\
+                    " have been successfully updated"
         return message
        
+
 edits ={
 'last_name': 'Mcguire', 
 'type_id': '5', 
@@ -96,12 +115,28 @@ edits ={
 'published': '1', 
 'read_status_id': '1'
 }
+
+add_dict ={
+'last_name': 'Juster', 
+'type_id': '6', 
+'series_name': None, 
+'date': '1970-01-01', 
+'first_name': 'Norton', 
+'title': 'The Phantom Tollbooth', 
+'owner_status_id': '1', 
+'notes': 'Annotated edition. Annotations by Leonard Marcus', 
+'series_num': None, 
+'published': '1', 
+'read_status_id': '1'
+}
+
     
 def test():  
-   record = Record(335, 'view')
+   record = Record(0,'add')
  # print book.data
-   update= record.updateRecord(edits)
-   print update
+   result= record.updateRecord(add_dict)
+   print result
+
 
 if __name__ == '__main__':
     test()

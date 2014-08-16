@@ -29,6 +29,8 @@ class LibraryHTML:
             self.button_text = 'Submit'
             self.show_blank = ''
             self.cancel_button_text = 'Cancel'
+            self.cancel_button_address = 'detail.py?book_id=%s&activity=view'\
+                %book_id
 
         if activity == 'view':
             self.header = 'Book Record' 
@@ -39,12 +41,21 @@ class LibraryHTML:
             self.cancel_button_address = 'main.py'
             self.cancel_button_text = 'Back to Catalog'
 
+        if activity == 'add':
+            self.header = 'Enter New Record' 
+            self.page = 'edit'
+            self.new_activity = 'submit_new'
+            self.button_text = 'Save'
+            self.show_blank = ''
+            self.cancel_button_address = 'main.py'
+            self.cancel_button_text = 'Cancel'
+            
         # build the right query for the page and bring in the data 
-        self.query = Query()
-        where = 'book.book_id =' + str(self.book_id)
-        self.recordData = self.query.getData(self.page, where)
-
-
+        if activity != 'add':
+            self.query = Query()
+            where = 'book.book_id =' + str(self.book_id)
+            self.recordData = self.query.getData(self.page, where)
+        
     def build_html_header(self):
         html_header= '''
         <html>
@@ -82,11 +93,12 @@ class LibraryHTML:
 
         for col, display in display_names:
             #special handeling to display null values
-            for rec in self.recordData:
-                if rec[col]:
-                    data = rec[col]
-                else:
-                    data = self.show_blank
+            if self.activity == 'view' or self.activity == 'edit':
+                for rec in self.recordData:
+                    if rec[col]:
+                        data = rec[col]
+                    else:
+                        data = self.show_blank
 
             #build simple table for viewing                
             if self.activity == 'view':
@@ -104,6 +116,21 @@ class LibraryHTML:
                     <input type = "text" name = "%s" value = "%s" size = "100">
                     ''' %(col, data)
                 table.addRow([display, form_field])
+
+            if self.activity == 'add':
+                if col in drop_down:
+                    options = self.getDropDown(col)
+                    form_field = '<select name = "%s"> ' %col
+                    form_field += options
+                    form_field += '</select>'
+                else:
+                    form_field = '''
+                    <input type = "text" name = "%s" value = "" size = "100">
+                    ''' %(col)
+                table.addRow([display, form_field])
+
+
+
         #push final product
         report = table.getTable()
         return report
@@ -118,15 +145,10 @@ class LibraryHTML:
         return input_button
     
     def build_cancel_button(self):
-#not functioning yet DO NOT INVOKE
         cancel_button = '''
-        <form>
-         <input type = "hidden" name = "book_id" value = "%s"/>
-         <input type = "hidden" name = "activity" value = "view"/>
-         <input type = "button" value = "%s"
-              onclick = "javascript: document.form.submit()";/>
-         </form>
-         '''% (self.book_id, self.cancel_button_text)
+          <input type = "button" onClick = 
+          "location.href='%s'" value = "%s">
+           ''' %(self.cancel_button_address, self.cancel_button_text)
         return cancel_button
 
     def build_form_footer(self):
@@ -153,19 +175,20 @@ class LibraryHTML:
         
 #identify currently set value in record
 #if not null make this the default value of the drop down
-        for rec in self.recordData:
-            current_value = rec[column]
+        if self.activity == 'edit':
+            for rec in self.recordData:
+                current_value = rec[column]
 
-        if current_value:
-            current_value_sql = '''
-                 select %s from %s where %s = %s
-                 ''' %(select, from_table, column, current_value)
-            default_value = execute(self.conn, current_value_sql)
+                if current_value:
+                    current_value_sql = '''
+                        select %s from %s where %s = %s
+                        ''' %(select, from_table, column, current_value)
+                    default_value = execute(self.conn, current_value_sql)
 
-            for value in default_value:
-                options = ''' 
-                <option select = "selected" value = %d> %s</option>
-                ''' %(value[0], value[1])
+                for value in default_value:
+                    options = ''' 
+                            <option select = "selected" value = %d> %s</option>
+                            ''' %(value[0], value[1])
 #            table.remove(value)
         else: 
             options ='<option select = "selected" value = "NULL">Pick One</option>'
@@ -192,12 +215,12 @@ def test():
 
 #    print 'hHeader: ' + html_header
     #print 'fHeader: ' + form_header
-    print report
+   # print report
    # print 'button: ' + input_button  
-    #print ' cancel button: ' + cancel_button
+    print ' cancel button: ' + cancel_button
     # print 'fFooter: ' + form_footer
    # print 'hFooter' + html_footer
-    print drop_down
+#    print drop_down
   
 if __name__ == '__main__':
     test()
