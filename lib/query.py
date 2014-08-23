@@ -2,16 +2,16 @@
 
 from pprint import pprint
 
-from loadyaml import LoadYaml
+from metadata import Metadata
 from database import *
 
 class Query(object):
 
     def __init__(self):
-        loadyaml = LoadYaml()
-        self.columns = loadyaml.loadYaml('columns')
-        self.tablejoins = loadyaml.loadYaml('tablejoins')        
-        self.pages = loadyaml.loadYaml('pages')
+        metadata = Metadata()
+        self.columns = metadata.loadYaml('columns')
+        self.tablejoins = metadata.loadYaml('tablejoins')        
+        self.pages = metadata.loadYaml('pages')
         self.connection = getDictConnection()
         self.conn = getConnection()
 

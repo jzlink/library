@@ -1,7 +1,7 @@
 #!/usr/bin/python 
 
 from database import *
-from loadyaml import LoadYaml
+from metadata import Metadata
 
 class Record:
     '''Preside over a single book record in the database'''
@@ -11,8 +11,8 @@ class Record:
         self.book_id = book_id
         self.activity = activity
         self.connection = getDictConnection()
-        yaml = LoadYaml()
-        self.columns = yaml.loadYaml('columns')
+        metadata = Metadata()
+        self.columns = metadata.loadYaml('columns')
         
         if activity != 'add':
             self.getData()

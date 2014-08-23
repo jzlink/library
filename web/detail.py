@@ -3,7 +3,6 @@
 '''Display Book Record Details'''
 
 # call like this: http://julia-link.com/detail.py?book_id=50
-
 import cgi
 import cgitb
 cgitb.enable()
@@ -12,7 +11,6 @@ from database import *
 from query import Query
 from utils import date2str
 from htmltable import HtmlTable
-from loadyaml import LoadYaml
 from record import Record
 from libraryHTML import LibraryHTML
 
@@ -68,6 +66,7 @@ libraryHTML = LibraryHTML(book_id, activity)
 html_header = libraryHTML.build_html_header()
 form_header = libraryHTML.build_form_header()
 report = libraryHTML.build_report()
+series = libraryHTML.build_hidden_section()
 input_button = libraryHTML.build_input_button()
 cancel_button = libraryHTML.build_cancel_button()
 form_footer = libraryHTML.build_form_footer()
@@ -81,6 +80,7 @@ print message
 print form_header
 print '<br>'
 print report
+print series
 print '</br>'
 print input_button
 print cancel_button

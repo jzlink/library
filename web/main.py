@@ -9,7 +9,7 @@ cgitb.enable()
 from pprint import pprint
 
 from database import *
-from loadyaml import LoadYaml
+from metadata import Metadata
 from query import Query
 from htmltable import HtmlTable
 from utils import date2str
@@ -79,29 +79,16 @@ print "</div>"
 query= Query()
 results = query.getData('main', where, order_by)
 
-loadyaml = LoadYaml()
-columns = loadyaml.loadYaml('columns')
-pages = loadyaml.loadYaml('pages')
+metadata = Metadata()
+data = metadata.interrogateMetadata('main', 'display')
+#ordered_cols = data['ordered_cols']
+display_names = data['col_attributes'] 
+#ordered_cols.remove('book_id') #we don't want book_id to be a column heading
 
 # build html table
 table = HtmlTable(border=1, cellpadding=3)
 
 # table header
-#use ordered list from pages.yml to make an ordered list of lists in this form:
-#['column', 'display name']. Use this list to develop the header.
-
-ordered_cols= []
-for item in pages['main']:
-    ordered_cols.append(item)
-ordered_cols.remove('book_id') #we don't want book_id to be a column heading
-
-display_names = []
-for item in ordered_cols:
-    x = []
-    x.append(item)
-    for element in columns[item]:
-        x.append(element['display'])
-    display_names.append(x)
 
 header = ['#']
 

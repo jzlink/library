@@ -74,3 +74,12 @@ td a:hover{
     color:white;
     background-color:black;
 }
+
+
+#series{
+    background-color: red;
+}
+
+#hide_series{
+    font-family: "Comic Sans MS", cursive, sans-serif
+}

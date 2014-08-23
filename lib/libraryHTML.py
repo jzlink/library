@@ -5,7 +5,7 @@
 from query import Query
 from utils import date2str
 from htmltable import HtmlTable
-from loadyaml import LoadYaml
+from metadata import Metadata
 from database import *
 
 class LibraryHTML:
@@ -18,9 +18,9 @@ class LibraryHTML:
         self.connection = getDictConnection()
         self.conn = getConnection()
         #bring in yaml metadata
-        yaml = LoadYaml()
-        self.columns = yaml.loadYaml('columns')
-        self.pages = yaml.loadYaml('pages')
+        metadata = Metadata()
+        self.columns = metadata.loadYaml('columns')
+        self.pages = metadata.loadYaml('pages')
 
         if activity == 'edit':
             self.header = 'Edit Record'
@@ -59,6 +59,16 @@ class LibraryHTML:
     def build_html_header(self):
         html_header= '''
         <html>
+        <script src = "jquery_1.11.1.js"></script>
+        <link href="css/main.css" rel="stylesheet" type="text/css">
+        <script>        
+            $( document ).ready(function() {
+                $( "a" ).click(function( event ) {
+                    alert( "The link will no longer take you to jquery.com" );
+                    event.preventDefault();
+               });
+            });
+        </script>
         <h3>%s</h3>
         '''%self.header
         return html_header
@@ -70,26 +80,16 @@ class LibraryHTML:
         return form_header
 
     def build_report(self):
+        metadata = Metadata()
+        display_data = metadata.interrogateMetadata(self.page, 'display')
+        display_names = display_data['col_attributes']
+        drop_down_data = metadata.interrogateMetadata(
+            self.page, 'foreign_table')
+        drop_down = drop_down_data['col_attributes']
+                                                   
         table = HtmlTable(border=1, cellpadding=3)
         table.addHeader(['Field', 'Entry'])
 
-#build list of rows in order of display
-        ordered_rows= []
-        for item in self.pages[self.page]:
-            ordered_rows.append(item)
-
-#build a list of display_names
-#build a  list of cols needing drop down menus
-        display_names = []
-        drop_down = []
-        for item in ordered_rows:
-            x = []
-            x.append(item)
-            for element in self.columns[item]:
-                if 'foreign_table' in element:
-                    drop_down.append(item)
-                x.append(element['display'])
-            display_names.append(x)
 
         for col, display in display_names:
             #special handeling to display null values
@@ -104,7 +104,7 @@ class LibraryHTML:
             if self.activity == 'view':
                 table.addRow([display, data]) 
                 
-            #build from for editing with drop down menus and text fields
+            #build form for editing with drop down menus and text fields
             if self.activity == 'edit':
                 if col in drop_down:
                     options = self.getDropDown(col)
@@ -129,19 +129,17 @@ class LibraryHTML:
                     ''' %(col)
                 table.addRow([display, form_field])
 
-
-
         #push final product
         report = table.getTable()
         return report
 
     def build_input_button(self):
-        input_button= '''
+        input_button= '''<div>
          <input type = "hidden" name = "book_id" value = "%s"/>
          <input type = "hidden" name = "activity" value = "%s"/>
-         <input type = "button" value = "%s"
+         <input id = switch type = "button" value = "%s"
               onclick = "javascript: document.form.submit()";/>
-         '''% (self.book_id, self.new_activity, self.button_text)
+         </div>'''% (self.book_id, self.new_activity, self.button_text)
         return input_button
     
     def build_cancel_button(self):
@@ -160,10 +158,10 @@ class LibraryHTML:
         return html_footer
 
     def getDropDown(self, column):
-        '''accepts a columns with a foreign table
+        '''accepts a column with a foreign table
            returns html for a dropdown menu for that column'''
 
-#retireve columns to select and table to select from
+        #retireve columns to select and table to select from
         for item in self.columns[column]:
             select = item['drop_down_select']
             from_table = item['foreign_table']
@@ -187,11 +185,12 @@ class LibraryHTML:
 
                 for value in default_value:
                     options = ''' 
-                            <option select = "selected" value = %d> %s</option>
-                            ''' %(value[0], value[1])
+                     <option select = "selected" value = %d> %s</option>
+                     ''' %(value[0], value[1])
 #            table.remove(value)
         else: 
-            options ='<option select = "selected" value = "NULL">Pick One</option>'
+            options ='''
+               <option select = "selected" value = "NULL">Pick One</option>'''
         
         for item in table:
             option = '''
@@ -200,6 +199,23 @@ class LibraryHTML:
             options += option
           
         return options
+
+
+    def build_hidden_section(self):
+        hidden =''' 
+        <div id = series>
+            New Series:
+            <input type = 'text' name = 'series'>
+            </input>
+       </div>
+       <button id = hide_series> Show Series </button>
+       <script>
+           $("#series").hide();
+           $("#hide_series").click(function(){
+               $("#series").show();
+           });
+        </script>'''
+        return hidden
 
 
 def test():  
