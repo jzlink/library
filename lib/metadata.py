@@ -11,12 +11,13 @@ class Metadata(object):
         self.ordered_cols = []
         self.col_attributes = []
         self.matching_cols = []
-        
+        self._metadata = {}
 
     def loadYaml(self, name):
-        filename = '%s/conf/%s.yml' % (self.conf['basedir'], name)
-        dictionary  = yaml.load(open(filename, 'r'))
-        return dictionary
+        if name not in self._metadata:
+            filename = '%s/conf/%s.yml' % (self.conf['basedir'], name)
+            self._metadata[name]  = yaml.load(open(filename, 'r'))
+        return self._metadata[name]
 
     def interrogateMetadata(self, page, attribute):
         '''given a page and column attribute 
@@ -61,6 +62,7 @@ def test():
    # pprint(columns)
 
     test = metadata.interrogateMetadata('main', 'foreign_table')
+    test2 = metadata.interrogateMetadata('edit', 'display')
     print test['matching_cols']
 
 if __name__ == '__main__':
