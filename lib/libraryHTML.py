@@ -61,9 +61,8 @@ class LibraryHTML:
     def build_html_header(self):
         html_header= '''
         <html>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
-        <script src = "jquery_1.11.1.js"></script>
+        <link rel="stylesheet" 
+            href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
@@ -173,16 +172,16 @@ class LibraryHTML:
                 ''' %(colData['drop_down_select'], colData['foreign_table'])
         options = execute(self.conn, sql)
         
-        form_field = '<select>'
+        form_field = '<select name = %s>' %column
 
-        #if there is no default build a null option Pick One - make it default
+        #if there is no default build a null option - make it default
         if default == None:
-             form_field += '''<option select = "selected" 
-                               value = "NULL">Pick One</option>'''
+             form_field += '''<option selected = "selected" 
+                               value = "NULL">(None)</option>'''
         #check if each option should be set to default else build as normal
         for o in options:
             if o[0] == default:
-                form_field +=  '''<option select = "selected" 
+                form_field +=  '''<option selected = "selected" 
                                value = %d> %s </option>''' %(o[0], o[1])
             else: 
                 form_field += '''<option value = %d> %s</option>
