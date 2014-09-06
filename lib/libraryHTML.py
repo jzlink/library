@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 
 '''Display Book Record Details'''
@@ -21,6 +22,7 @@ class LibraryHTML:
         metadata = Metadata()
         self.columns = metadata.loadYaml('columns')
         self.pages = metadata.loadYaml('pages')
+        self.list = []
 
         if activity == 'edit':
             self.header = 'Edit Record'
@@ -59,18 +61,18 @@ class LibraryHTML:
     def build_html_header(self):
         html_header= '''
         <html>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script src = "jquery_1.11.1.js"></script>
-        <link href="css/main.css" rel="stylesheet" type="text/css">
-        <script>        
-            $( document ).ready(function() {
-                $( "a" ).click(function( event ) {
-                    alert( "The link will no longer take you to jquery.com" );
-                    event.preventDefault();
-               });
-            });
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+        <script>
+                $(function(){
+                      $("#autoC").autocomplete({source: %s});
+                });
         </script>
         <h3>%s</h3>
-        '''%self.header
+        '''% (self.list, self.header)
         return html_header
 
     def build_form_header(self):
@@ -83,50 +85,38 @@ class LibraryHTML:
         metadata = Metadata()
         display_data = metadata.interrogateMetadata(self.page, 'display')
         display_names = display_data['col_attributes']
-        drop_down_data = metadata.interrogateMetadata(
-            self.page, 'foreign_table')
-        drop_down = drop_down_data['col_attributes']
-                                                   
         table = HtmlTable(border=1, cellpadding=3)
         table.addHeader(['Field', 'Entry'])
 
 
-        for col, display in display_names:
-            #special handeling to display null values
-            if self.activity == 'view' or self.activity == 'edit':
+        for column, display in display_names:
+            if self.activity == 'view':
+            # make a simple table, not a form
                 for rec in self.recordData:
-                    if rec[col]:
-                        data = rec[col]
+                    if rec[column]:
+                        data = rec[column]
                     else:
                         data = self.show_blank
+                table.addRow([display, data])                 
 
-            #build simple table for viewing                
-            if self.activity == 'view':
-                table.addRow([display, data]) 
-                
-            #build form for editing with drop down menus and text fields
-            if self.activity == 'edit':
-                if col in drop_down:
-                    options = self.getDropDown(col)
-                    form_field = '<select name = "%s"> ' %col
-                    form_field += options
-                    form_field += '</select>'
-                else:
-                    form_field = '''
-                    <input type = "text" name = "%s" value = "%s" size = "100">
-                    ''' %(col, data)
-                table.addRow([display, form_field])
+            else:
+            #use methods to build form
+                form = self.columns[column][0]['form_type']
+#                type_method = {'text'        :' self.getTextField(column)',
+#                               'drop_down'   : 'self.getDropDown(column)',
+#                               'radio_static': 'self.getStaticRadio(column)',
+#                               'autocomplete': 'self.getAutocomplete(column)'
+#                              }
 
-            if self.activity == 'add':
-                if col in drop_down:
-                    options = self.getDropDown(col)
-                    form_field = '<select name = "%s"> ' %col
-                    form_field += options
-                    form_field += '</select>'
-                else:
-                    form_field = '''
-                    <input type = "text" name = "%s" value = "" size = "100">
-                    ''' %(col)
+                if form == 'text':
+                    form_field =self.getTextField(column)
+                if form == 'drop_down':
+                    form_field =self.getDropDown(column)
+                if form == 'radio_static':
+                    form_field =self.getStaticRadio(column)
+                if form == 'autocomplete':
+                    form_field =self.getAutocomplete(column)
+
                 table.addRow([display, form_field])
 
         #push final product
@@ -157,87 +147,101 @@ class LibraryHTML:
         html_footer = '</html>'
         return html_footer
 
-    def getDropDown(self, column):
-        '''accepts a column with a foreign table
-           returns html for a dropdown menu for that column'''
+    def getDefault(self, column):
+        if self.recordData:
+            default = self.recordData[0][column]
+        else:
+            default = None
+        return default
 
-        #retireve columns to select and table to select from
-        for item in self.columns[column]:
-            select = item['drop_down_select']
-            from_table = item['foreign_table']
+    def getTextField(self, column):
+        default = self.getDefault(column)
+        if default == None:
+            default = self.show_blank
 
-        sql = 'select %s from %s' %(select, from_table)
-        table = execute(self.conn, sql)
-       
-        options = ''
+        form_field = '''
+         <input type = "text" name = "%s" value = "%s" size = "100">
+        '''%(column, default)
+        return form_field
+
+    def getDropDown (self, column):
+        default = self.getDefault(column)
+        colData = self.columns[column][0]
+
+        # pull in the values from the static table
+        sql= '''select %s from %s
+                ''' %(colData['drop_down_select'], colData['foreign_table'])
+        options = execute(self.conn, sql)
         
-#identify currently set value in record
-#if not null make this the default value of the drop down
-        if self.activity == 'edit':
-            for rec in self.recordData:
-                current_value = rec[column]
+        form_field = '<select>'
 
-                if current_value:
-                    current_value_sql = '''
-                        select %s from %s where %s = %s
-                        ''' %(select, from_table, column, current_value)
-                    default_value = execute(self.conn, current_value_sql)
+        #if there is no default build a null option Pick One - make it default
+        if default == None:
+             form_field += '''<option select = "selected" 
+                               value = "NULL">Pick One</option>'''
+        #check if each option should be set to default else build as normal
+        for o in options:
+            if o[0] == default:
+                form_field +=  '''<option select = "selected" 
+                               value = %d> %s </option>''' %(o[0], o[1])
+            else: 
+                form_field += '''<option value = %d> %s</option>
+                                      ''' %(o[0], o[1])
+        form_field += '</select>'
+        return form_field
 
-                for value in default_value:
-                    options = ''' 
-                     <option select = "selected" value = %d> %s</option>
-                     ''' %(value[0], value[1])
-#            table.remove(value)
-        else: 
-            options ='''
-               <option select = "selected" value = "NULL">Pick One</option>'''
+    def getStaticRadio(self, column):
+        options = self.columns[column][0]['radio_options']
+        default = self.getDefault(column)
+
+        if default == None and column == 'Published':
+            default = 1
+
+        form_field = ''
+        # loop through options, identify default, build radio group
+        for o in options:
+            if o[0] == default:
+                form_field += '''<input type = "radio" name = %s value = %d 
+                     checked = "true"> %s
+                    ''' %(self.columns[column][0]['radio_group'], o[0], o[1])
+            else: form_field += '''<input type = "radio" name = %s 
+                                 value = %d > %s
+                    ''' %(self.columns[column][0]['radio_group'], o[0], o[1])
         
-        for item in table:
-            option = '''
-            <option value = %d> %s</option>
-            ''' %(item[0], item[1])
-            options += option
-          
-        return options
+        return form_field
 
+    def getAutocomplete (self, column):
+        default = self.getDefault(column)
+        if default == None:
+            default = self.show_blank
+        
+        sql = 'select %s from %s' %(column, column)
+        autoList  = execute(self.conn, sql)
+        
+        for item in autoList:
+            self.list += item
 
-    def build_hidden_section(self):
-        hidden =''' 
-        <div id = series>
-            New Series:
-            <input type = 'text' name = 'series'>
-            </input>
-       </div>
-       <button id = hide_series> Show Series </button>
-       <script>
-           $("#series").hide();
-           $("#hide_series").click(function(){
-               $("#series").show();
-           });
-        </script>'''
-        return hidden
-
+        form_field = '''
+                   <input id = autoC name = %s value = %s>
+                  ''' %(column, default)
+        return form_field
 
 def test():  
-    libraryHTML = LibraryHTML(335, 'edit')
-    html_header = libraryHTML.build_html_header()
-    form_header = libraryHTML.build_form_header()
-    report = libraryHTML.build_report()
-    input_button = libraryHTML.build_input_button()
-    cancel_button = libraryHTML.build_cancel_button()
-    form_footer = libraryHTML.build_form_footer()
-    html_footer = libraryHTML.build_html_footer()
-    drop_down = libraryHTML.getDropDown('owner_status_id')
+    test = TESTLibraryHTML(3, 'edit')
+    report = test.build_report()
+    default = test.getDefault('series')
+    textF = test.getTextField('title')
+    ddF = test.getDropDown('owner_status_id')
+    staticRF = test.getStaticRadio('published')
+    autoCF = test.getAutocomplete('series')
 
-#    print 'hHeader: ' + html_header
-    #print 'fHeader: ' + form_header
-   # print report
-   # print 'button: ' + input_button  
-    print ' cancel button: ' + cancel_button
-    # print 'fFooter: ' + form_footer
-   # print 'hFooter' + html_footer
-#    print drop_down
-  
+    print report
+#    print default
+#    print textF
+#    print ddF
+#    print staticRF
+#    print autoCF
+
 if __name__ == '__main__':
     test()
 

@@ -3,7 +3,7 @@
 # list of possible tables/pages with all columns needed per table. 
 
 #YAML
-main: 
+main:
   - book_id
   - title   
   - author    
@@ -13,21 +13,21 @@ main:
 record:
   - title 
   - author    
-  - series
+  - full_series
   - notes
   - date    
   - ownership  
   - read_status 
   - type 
 
-edit: 
+edit:
   - title
   - last_name
   - first_name
-  - series_name
+  - series
   - series_num
   - notes
-  - date
+  - when_read
   - owner_status_id
   - read_status_id
   - type_id

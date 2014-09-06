@@ -6,10 +6,19 @@
 # type		= data type string|date|int
 # editable	= can the element be edited binary T|F
 # foreign_table	= table that foreign key is from. used to identfy lookup fields
+# form_type     = when element is displaied as a from this is the form field 
+#                  type. Options: text, autocomplete, date, drop_down, 
+#                  radio_static, radio_dynamic. radio_static assumes 
+#                  radio_options and radio group drop_down assumes 
+#                  drop_down_select
 # drop_down_select = if a table has a foreign_table and is being called as a 
 # 		     drop down menu this lists the columns being called for 
 #		     the drop down menu. Assumes primary key first then
 #		     other element
+# radio_options = when a static_radio from type is called this value is 
+#                   checked for the list of static options.
+# radio_group   = name of radio group
+
 #YAML
 
 book_id:
@@ -25,6 +34,7 @@ title:
     type: string 
     editable: T
     display: Title
+    form_type: text
 
 notes:
   - select: notes
@@ -32,6 +42,7 @@ notes:
     type: string 
     editable: T
     display: Notes
+    form_type: text
 
 published:
   - select: published
@@ -39,6 +50,9 @@ published:
     type: int
     editable: T
     display: Published
+    form_type: radio_static
+    radio_options: [[1,'Yes'], [0, 'No']]
+    radio_group: published
 
 type:
   - select: type
@@ -54,20 +68,22 @@ type_id:
     editable: T
     display: Type
     foreign_table: type
+    form_type: drop_down
     drop_down_select: type_id, type
 
-series:
+full_series:
   - select: concat(series, ' No. ', series_num)
     from: series 
     display: Series
     editable: F
 
-series_name: 
+series: 
   - select: series
     from: series
     type: string 
     editable: T
     display: Series
+    form_type: autocomplete
 
 series_num:
   - select: series_num
@@ -75,6 +91,7 @@ series_num:
     type: int 
     editable: T
     display: Series No.
+    form_type:  text
 
 read_status:
   - select: read_status.status
@@ -90,6 +107,7 @@ read_status_id:
     editable: T
     display: Status
     foreign_table: read_status
+    form_type: drop_down
     drop_down_select: read_status_id, status
 
 ownership:
@@ -106,7 +124,9 @@ owner_status_id:
     editable: T
     display: Ownership
     foreign_table: owner_status
+    form_type: drop_down
     drop_down_select: owner_status_id, status
+
 date:
   - select: group_concat(distinct when_read separator ' & ')
     from: when_read
@@ -121,6 +141,7 @@ when_read:
     editable: T
     display: Date
     foreign_table: book
+    form_type: text    
     
 author:
   - select: >
@@ -130,6 +151,7 @@ author:
     type: string 
     editable: F
     display: Author
+    form_type: text
 
 last_name:
   - select: last_name
@@ -137,6 +159,7 @@ last_name:
     type: string 
     editable: T
     display: Last Name
+    form_type: text
 
 first_name:
   - select: first_name
@@ -144,6 +167,7 @@ first_name:
     type: string 
     editable: T
     display: First Name
+    form_type: text
 
 author_id:
   - select: author_id

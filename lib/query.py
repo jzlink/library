@@ -21,6 +21,10 @@ class Query(object):
 
         sql = self.getSQL(page, where, sort)
         results = execute(self.connection, sql)
+
+#        if page == 'edit':
+            
+            
         return results
 
     def getSQL(self, page, filter = None, sort = None):
@@ -88,9 +92,10 @@ class Query(object):
 
 def test():  
     test = Query()
-#    data = test.getSQL('record', 'book.book_id > 475', 'title')
-    data = test.getData('edit', 'book.book_id = 475', None)
+    data = test.getSQL('edit', 'book.book_id = 328', None)
+#    data = test.getData('edit', 'book.book_id = 1', None)
     print data
+
 
 if __name__ == '__main__':
     test()
