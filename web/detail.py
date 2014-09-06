@@ -23,10 +23,10 @@ activity= form.getvalue('activity', 'view')
 title = form.getvalue('title')
 last = form.getvalue('last_name')
 first = form.getvalue('first_name')
-series = form.getvalue('series_name')
+series = form.getvalue('series')
 series_num = form.getvalue('series_num')
 notes = form.getvalue('notes')
-date = form.getvalue('date')
+date = form.getvalue('when_read')
 o_status = form.getvalue('owner_status_id')
 r_status = form.getvalue('read_status_id')
 type_id = form.getvalue('type_id')
@@ -36,7 +36,7 @@ record_dict = {
 'title': title,
 'last_name': last,
 'first_name': first,
-'series_name':series,
+'series':series,
 'series_num': series_num,
 'notes': notes,
 'date': date,
@@ -49,7 +49,7 @@ message = ''
 if activity == 'update':
    record = Record(book_id, activity)
    update = record.updateRecord(record_dict)
-   message = "Message: " + action
+   message = "Message: " + update
    activity = 'view'
 
 if activity == 'submit_new':
@@ -62,31 +62,24 @@ if activity == 'submit_new':
    book_id = b_id[0]['max(book_id)'] 
    
 
-libraryHTML = LibraryHTML(book_id, activity)
-html_header = libraryHTML.build_html_header()
-form_header = libraryHTML.build_form_header()
-report = libraryHTML.build_report()
-series = libraryHTML.build_hidden_section()
-input_button = libraryHTML.build_input_button()
-cancel_button = libraryHTML.build_cancel_button()
-form_footer = libraryHTML.build_form_footer()
-html_footer = libraryHTML.build_html_footer()
-
+html = LibraryHTML(book_id, activity)
+#html_header = html.build_html_header()
+report = html.build_report()
+html_header = html.build_html_header()
+input_button = html.build_input_button()
+cancel_button = html.build_cancel_button()
+form_header = html.build_form_header()
+form_footer = html.build_form_footer()
+html_footer = html.build_html_footer()
 
 print 'Content-Type: text/html\n'
 print html_header
 print '<br>'
 print message
 print form_header
-print '<br>'
 print report
-print series
-print '</br>'
+print '<br>'
 print input_button
 print cancel_button
 print form_footer
 print html_footer
-
-#print "Debug: Activity = " + activity
-#print "Debug: Update_dict = " 
-#print  update_dict

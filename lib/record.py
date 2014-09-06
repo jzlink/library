@@ -56,13 +56,14 @@ where
         when_read_items = {}
         series_items = {}
         updates = []
+        message = ''
        
         #set empty values to NULL for updateing purposes
         for key, value  in record_dict.items():
             if value:
                 value = "'"+value+"'"
             else:
-                value = 'NULL'
+                value = None
 
             #figure out which table needs to be updated, amend that dict{}
             record_table = self.columns[key][0]['from']
@@ -74,9 +75,18 @@ where
             if record_table == 'when_read':
                 when_read_items.update({key: value})
             if record_table == 'series':
-                series_items.update({key: value})                
+                series_items.update({key: value})
+        
+        if book_items:
+            update = self.updateBook(book_items)
+#            message += update
 
+        return update
+
+
+    def updateBook(self, book_items):
         message = ''
+        updates = []
         if self.activity =='add':
             cols = []
             vals = []
@@ -95,17 +105,18 @@ where
             for item in book_items:
                 sql = 'update book set %s = %s where book.book_id = %s' \
                     % (item, book_items[item], self.book_id)
-                result = execute(self.connection, sql)
-                updates.append(item)
-                message = "Fields "+ ', '.join(updates)+\
-                    " have been successfully updated"
-        return message
+           #     result = execute(self.connection, sql)
+                updates.append(sql)
+               # message = "Fields "+ ', '.join(updates)+\
+               #     " have been successfully updated"
+
+        return updates
        
 
 edits ={
 'last_name': 'Mcguire', 
 'type_id': '5', 
-'series_name': None, 
+'series': None, 
 'date': '2010-06-05', 
 'first_name': 'Seanan', 
 'title': 'A Local Habitation', 
@@ -119,7 +130,7 @@ edits ={
 add_dict ={
 'last_name': 'Juster', 
 'type_id': '6', 
-'series_name': None, 
+'series': None, 
 'date': '1970-01-01', 
 'first_name': 'Norton', 
 'title': 'The Phantom Tollbooth', 
@@ -132,11 +143,12 @@ add_dict ={
 
     
 def test():  
-   record = Record(0,'add')
- # print book.data
+   record = Record(0,'update')
    result= record.updateRecord(add_dict)
-   print result
+#   book = record.updateBook(edits)
 
+   print result
+#   print book
 
 if __name__ == '__main__':
     test()

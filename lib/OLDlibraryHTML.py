@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 '''Display Book Record Details'''
@@ -57,12 +56,13 @@ class LibraryHTML:
             self.query = Query()
             where = 'book.book_id =' + str(self.book_id)
             self.recordData = self.query.getData(self.page, where)
-        
+
     def build_html_header(self):
         html_header= '''
         <html>
-        <link rel="stylesheet" 
-            href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+        <script src = "jquery_1.11.1.js"></script>
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
@@ -73,7 +73,7 @@ class LibraryHTML:
         <h3>%s</h3>
         '''% (self.list, self.header)
         return html_header
-
+        
     def build_form_header(self):
         form_header = '''
         <form method = "POST" action = "detail.py" name = "form">
@@ -86,7 +86,6 @@ class LibraryHTML:
         display_names = display_data['col_attributes']
         table = HtmlTable(border=1, cellpadding=3)
         table.addHeader(['Field', 'Entry'])
-
 
         for column, display in display_names:
             if self.activity == 'view':
@@ -146,6 +145,24 @@ class LibraryHTML:
         html_footer = '</html>'
         return html_footer
 
+
+#    def build_hidden_section(self):
+#        hidden =''' 
+#        <div id = series>
+#            New Series:
+#            <input type = 'text' name = 'series'>
+#            </input>
+#       </div>
+#       <input type = "button" id = hide_series> Show Series </input>
+#       <script>
+#           $("#series").hide();
+#           $("#hide_series").click(function(){
+#               $("#series").show();
+#           });
+#        </script>'''
+#        return hidden
+
+
     def getDefault(self, column):
         if self.recordData:
             default = self.recordData[0][column]
@@ -174,14 +191,14 @@ class LibraryHTML:
         
         form_field = '<select name = %s>' %column
 
-        #if there is no default build a null option - make it default
+        #if there is no default build a null option Pick One - make it default
         if default == None:
-             form_field += '''<option selected = "selected" 
-                               value = "NULL">(None)</option>'''
+             form_field += '''<option select = "selected" 
+                               value = "NULL">Pick One</option>'''
         #check if each option should be set to default else build as normal
         for o in options:
             if o[0] == default:
-                form_field +=  '''<option selected = "selected" 
+                form_field +=  '''<option select = "selected" 
                                value = %d> %s </option>''' %(o[0], o[1])
             else: 
                 form_field += '''<option value = %d> %s</option>
@@ -225,22 +242,27 @@ class LibraryHTML:
                   ''' %(column, default)
         return form_field
 
+
 def test():  
-    test = TESTLibraryHTML(3, 'edit')
-    report = test.build_report()
-    default = test.getDefault('series')
-    textF = test.getTextField('title')
-    ddF = test.getDropDown('owner_status_id')
-    staticRF = test.getStaticRadio('published')
-    autoCF = test.getAutocomplete('series')
+    libraryHTML = LibraryHTML(1, 'edit')
+    html_header = libraryHTML.build_html_header()
+    form_header = libraryHTML.build_form_header()
+    report = libraryHTML.build_report()
+    input_button = libraryHTML.build_input_button()
+    cancel_button = libraryHTML.build_cancel_button()
+    form_footer = libraryHTML.build_form_footer()
+    html_footer = libraryHTML.build_html_footer()
+    drop_down = libraryHTML.getDropDown('owner_status_id')
 
-    print report
-#    print default
-#    print textF
-#    print ddF
-#    print staticRF
-#    print autoCF
-
+#    print 'hHeader: ' + html_header
+    #print 'fHeader: ' + form_header
+#    print report
+   # print 'button: ' + input_button  
+   # print ' cancel button: ' + cancel_button
+    # print 'fFooter: ' + form_footer
+   # print 'hFooter' + html_footer
+    print drop_down
+  
 if __name__ == '__main__':
     test()
 
