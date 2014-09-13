@@ -13,48 +13,30 @@ from utils import date2str
 from htmltable import HtmlTable
 from record import Record
 from libraryHTML import LibraryHTML
+from metadata import Metadata
+metadata = Metadata()
+pages = metadata.loadYaml('pages')
 
-# get general form values 
+# get general values 
 form = cgi.FieldStorage()
 book_id= form.getvalue('book_id', '1')
 activity= form.getvalue('activity', 'view')
 
-#get form values about a record
-title = form.getvalue('title')
-last = form.getvalue('last_name')
-first = form.getvalue('first_name')
-series = form.getvalue('series')
-series_num = form.getvalue('series_num')
-notes = form.getvalue('notes')
-date = form.getvalue('when_read')
-o_status = form.getvalue('owner_status_id')
-r_status = form.getvalue('read_status_id')
-type_id = form.getvalue('type_id')
-pub =  form.getvalue('published')
+#build dict of values from the book form
+form_values = {}
+for col in pages['edit']:
+   form_values[col] = form.getvalue(col)
 
-record_dict = {
-'title': title,
-'last_name': last,
-'first_name': first,
-'series':series,
-'series_num': series_num,
-'notes': notes,
-'date': date,
-'owner_status_id': o_status,
-'read_status_id': r_status,
-'type_id': type_id,
-'published': pub
-}
 message = ''
 if activity == 'update':
    record = Record(book_id, activity)
-   update = record.updateRecord(record_dict)
+   update = record.updateRecord(form_values)
    message = "Message: " + update
    activity = 'view'
 
 if activity == 'submit_new':
    record = Record(book_id, 'add')
-   add = record.updateRecord(record_dict)
+   add = record.updateRecord(form_values)
    message = "Message: "
    activity = 'view'
    connection = getDictConnection()
@@ -83,3 +65,4 @@ print input_button
 print cancel_button
 print form_footer
 print html_footer
+

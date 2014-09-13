@@ -184,7 +184,7 @@ class LibraryHTML:
                 ''' %(colData['drop_down_select'], colData['foreign_table'])
         options = execute(self.conn, sql)
         
-        form_field = '<select name = %s>' %column
+        form_field = '<select required name = %s>' %column
 
         #if there is no default build a null option - make it default
         if default == None:
