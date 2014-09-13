@@ -5,10 +5,11 @@ from metadata import Metadata
 from query import Query
 
 class Record:
-    '''Preside over a single book record in the database'''
+    '''Preside over a single record in the database
+        including updating it'''
 
     def __init__(self, book_id, activity):
-        '''Given a book_id fetch the book data'''
+        '''initialize variables and bring in column metadata'''
         self.book_id = book_id
         self.activity = activity
         self.connection = getDictConnection()
@@ -17,20 +18,29 @@ class Record:
         
     
     def updateRecord (self, record_dict):
+        ''' given a dict of column value pairs
+        figure out which should be updated
+        update tables with new vals if necessary
+        return two lists: changes made, values added'''
+
         original_dict = record_dict
         book_items = {}
         author_items = {}
         when_read_items = {}
         series_items = {}
+        updated = {}
+        added = {}
+
+        #call selectDiff function on recieved dict to determine which fields 
+        # should be updated. Update only thoese fields.
         update_dict = self.selectDiffColumns(original_dict)
 
         if update_dict:
-#            message = 'For %s: ' %record_dict['title']
             message = ''
             for column, value  in update_dict.items():
                 record_table = ''
             
-            #prep dic vlaues for database update
+                #prep dic vlaues for database update
                 if value:
                     value  = "'"+value+"'" 
                 elif self.columns[column][0]['type'] == 'string':
@@ -38,7 +48,7 @@ class Record:
                 else:
                     value = 'Null'
 
-            #figure out which table needs to be updated, amend that dict{}
+                #figure out which table needs to be updated, amend that dict{}
                 record_table = self.columns[column][0]['from']
 
                 if record_table == 'book':
@@ -51,49 +61,55 @@ class Record:
                     series_items.update({column: value})
         
             if book_items:
-                message += self.updateBook(book_items)
+                book_updates, book_adds = self.updateBook(book_items)
+                updated.update(book_updates)
+                added.update(book_adds)
 
             if series_items:
-                message += self.updateSeries(series_items)
+                series_updates, series_adds = self.updateSeries(series_items)
+                updated.update(series_updates)
+                added.update(series_adds)
 
             if when_read_items:
-                message += self.updateWhenRead(when_read_items)
+                when_updates, when_adds =  self.updateWhenRead(when_read_items)
+                updated.update(when_updates)
+                added.update(when_adds)
 
-        else:
-            message = 'Nothing to Update'
 
-        return message
+        return updated, added
 
 
     def updateBook(self, book_items):
         message = ''
-        updates = []
+        updates = {}
+        adds = {}
         if self.activity =='add':
             cols = []
             vals = []
             for item in book_items:        
                 cols.append(item)
                 vals.append(book_items[item])
+                adds[item] = book_items[item]
             columns = ', '.join(cols)
             values = ', '.join(vals)
             sql = 'insert into book (%s) values(%s)' %(columns, values)
             
             result = execute(self.connection, sql)
-            message = "book sucessfully added"
 
         if self.activity =='update':
             for item in book_items:
                 sql = 'update book set %s = %s where book.book_id = %s' \
                     % (item, book_items[item], self.book_id)
                 results = execute(self.connection, sql)
-                updates.append(item)
-            message = ', '.join(updates) + " sucessfully updated."
-        return message
+                updates[item]= book_items[item]
+
+        return updates, adds
 
     def updateSeries(self, series_items):
         series_id = 'NULL'
         series = series_items['series']
-        message = ' Series was updated to %s.' %(series)
+        updates = {}
+        adds ={}
 
         #if the series recieved isn't blank, check if it is in the DB yet
         #if not add it and append message with that info
@@ -106,7 +122,7 @@ class Record:
             if not searchResults:
                 addSQL = 'insert into series (series) values (%s)' %series
                 addResults = execute(self.connection, addSQL)
-                message += ' Series %s added to database.' %series
+                adds['series'] = series
             
             IdSQL = 'select series_id from series where series like %s'\
                 %series
@@ -118,16 +134,19 @@ class Record:
         updateSQL = 'update book set series_id = %s where book_id = %s' \
                 % (series_id, self.book_id)
         updateReults = execute(self.connection, updateSQL)
-
-        return message
+        updates['series'] = series
+        return updates, adds
 
     def updateWhenRead(self, when_read_items):
+        updates = {}
+        adds = {}
         when = when_read_items['when_read']
         sql = 'insert into when_read (when_read, book_id) values (%s, %s)'\
             %(when, self.book_id)
         results = execute(self.connection, sql)
-        
-        return 'Date read %s added.' %( when)
+        adds['when_read'] = when
+
+        return updates, adds
 
 
     def selectDiffColumns(self, recievedData):

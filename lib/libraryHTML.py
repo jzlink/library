@@ -32,7 +32,7 @@ class LibraryHTML:
             self.cancel_button_address = 'detail.py?book_id=%s&activity=view'\
                 %book_id
 
-        if activity == 'view':
+        elif activity == 'view':
             self.header = 'Book Record' 
             self.page = 'record'
             self.new_activity = 'edit'
@@ -41,7 +41,7 @@ class LibraryHTML:
             self.cancel_button_address = 'main.py'
             self.cancel_button_text = 'Back to Catalog'
 
-        if activity == 'add':
+        elif activity == 'add':
             self.header = 'Enter New Record' 
             self.page = 'edit'
             self.new_activity = 'submit_new'
@@ -49,7 +49,10 @@ class LibraryHTML:
             self.show_blank = ''
             self.cancel_button_address = 'main.py'
             self.cancel_button_text = 'Cancel'
-            
+          
+        else:
+            raise Exception ("Unrecognized activity: %s" %activity)
+  
         # build the right query for the page and bring in the data 
         if activity != 'add':
             self.query = Query()
@@ -73,8 +76,7 @@ class LibraryHTML:
                       $("#author_autocomplete").autocomplete({source: %s});
                       $("#series_autocomplete").autocomplete({source: %s});
                 });
-        </script>
-        <script>
+
                 $(function() {
                       $( "#when_read_datepicker" ).datepicker();
                 });
@@ -85,6 +87,27 @@ class LibraryHTML:
               self.autoCompleteList['series'], 
               self.header)
         return html_header
+
+    def buildMessage(self, updated, added):
+        updates = ''
+        adds = ''
+        if updated:
+            updates = 'Updated: <br> '
+            for item in updated:
+                updates += '%s changed to:  %s <br>' %(item, updated[item])
+
+        if added:
+            adds = 'Added: <br> '
+            for item in added:
+                adds += '%s: %s ' %(item, added[item])
+
+        message = 'For this record the following fields were <br> %s %s'\
+            %(updates, adds)
+
+        if not added and not updated:
+            message = 'Message: No fields changed, no updates made'
+        
+        return message
 
     def build_form_header(self):
         form_header = '''
@@ -112,21 +135,17 @@ class LibraryHTML:
 
             else:
             #use methods to build form
-                form = self.columns[column][0]['form_type']
-#                type_method = {'text'        :' self.getTextField(column)',
-#                               'drop_down'   : 'self.getDropDown(column)',
-#                               'radio_static': 'self.getStaticRadio(column)',
-#                               'autocomplete': 'self.getAutocomplete(column)'
-#                              }
-
-                if form == 'text':
-                    form_field =self.getTextField(column)
-                if form == 'drop_down':
-                    form_field =self.getDropDown(column)
-                if form == 'radio_static':
-                    form_field =self.getStaticRadio(column)
-                if form == 'autocomplete' or form == 'datepicker':
-                    form_field =self.getJQueryUI(column, form)
+                form_type = self.columns[column][0]['form_type']
+                type_method_func = {'text'        : self.getTextField,
+                                    'drop_down'   : self.getDropDown,
+                                    'radio_static': self.getStaticRadio,
+                                    'autocomplete': self.getJQueryUI,
+                                    'datepicker'  : self.getJQueryUI
+                                    }
+                if form_type == 'autocomplete' or form_type == 'datepicker':
+                    form_field = type_method_func[form_type](column, form_type)
+                else:
+                    form_field = type_method_func[form_type](column)
 
                 table.addRow([display, form_field])
 
@@ -189,7 +208,7 @@ class LibraryHTML:
         #if there is no default build a null option - make it default
         if default == None:
              form_field += '''<option selected = "selected" 
-                               value = "NULL">(None)</option>'''
+                               value = None>(None)</option>'''
         #check if each option should be set to default else build as normal
         for o in options:
             if o[0] == default:
@@ -251,6 +270,11 @@ class LibraryHTML:
 
 
 def test():  
+    u = {'series': 'Cat Power', 'series_num': 1}
+    a = {'series': 'Cat Power'}
+    uu = {}
+    aa = {}
+
     test = LibraryHTML(3, 'edit')
 #    report = test.build_report()
 #    default = test.getDefault('author')
@@ -258,8 +282,8 @@ def test():
 #    ddF = test.getDropDown('owner_status_id')
 #    staticRF = test.getStaticRadio('published')
 #    autoCF = test.getJQueryUI('when_read', 'datepicker')
-    autolist = test.getAutoCList()
-
+#    autolist = test.getAutoCList()
+    message = test.buildMessage(u,a)
 
 #    print report
 #    print default
@@ -267,8 +291,8 @@ def test():
 #    print ddF
 #    print staticRF
 #    print autoCF
-    print autolist
-
+#    print autolist
+    print message
 
 if __name__ == '__main__':
     test()

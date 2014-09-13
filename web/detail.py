@@ -27,32 +27,36 @@ form_values = {}
 for col in pages['edit']:
    form_values[col] = form.getvalue(col)
 
+#updated = {}
+#added = {}
+
 message = ''
 if activity == 'update':
    record = Record(book_id, activity)
-   update = record.updateRecord(form_values)
-   message = "Message: " + update
+   updated, added = record.updateRecord(form_values)
+   message = 'Yes'
    activity = 'view'
 
 if activity == 'submit_new':
    record = Record(book_id, 'add')
-   add = record.updateRecord(form_values)
-   message = "Message: "
+   updated, added = record.updateRecord(form_values)
    activity = 'view'
    connection = getDictConnection()
    b_id = execute(connection, 'select max(book_id) from book')
    book_id = b_id[0]['max(book_id)'] 
+   message = 'Yes'
    
 
 html = LibraryHTML(book_id, activity)
 html_header = html.build_html_header()
 report = html.build_report()
-#html_header = html.build_html_header()
 input_button = html.build_input_button()
 cancel_button = html.build_cancel_button()
 form_header = html.build_form_header()
 form_footer = html.build_form_footer()
 html_footer = html.build_html_footer()
+if message == 'Yes':
+   message = html.buildMessage(updated, added)
 
 print 'Content-Type: text/html\n'
 print html_header
