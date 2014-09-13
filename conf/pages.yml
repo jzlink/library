@@ -22,8 +22,7 @@ record:
 
 edit:
   - title
-  - last_name
-  - first_name
+  - author
   - series
   - series_num
   - notes

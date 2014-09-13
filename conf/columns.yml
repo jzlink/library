@@ -141,7 +141,7 @@ when_read:
     editable: T
     display: Date
     foreign_table: book
-    form_type: text    
+    form_type: datepicker    
     
 author:
   - select: >
@@ -151,7 +151,7 @@ author:
     type: string 
     editable: F
     display: Author
-    form_type: text
+    form_type: autocomplete
 
 last_name:
   - select: last_name

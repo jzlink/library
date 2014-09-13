@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 '''Display Book Record Details'''
@@ -22,7 +21,6 @@ class LibraryHTML:
         metadata = Metadata()
         self.columns = metadata.loadYaml('columns')
         self.pages = metadata.loadYaml('pages')
-        self.list = []
 
         if activity == 'edit':
             self.header = 'Edit Record'
@@ -57,6 +55,11 @@ class LibraryHTML:
             self.query = Query()
             where = 'book.book_id =' + str(self.book_id)
             self.recordData = self.query.getData(self.page, where)
+        else:
+            self.recordData = {}
+
+        #build the dictionary of autocomplete lists
+        self.autoCompleteList = self.getAutoCList()
         
     def build_html_header(self):
         html_header= '''
@@ -67,11 +70,20 @@ class LibraryHTML:
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
                 $(function(){
-                      $("#autoC").autocomplete({source: %s});
+                      $("#author_autocomplete").autocomplete({source: %s});
+                      $("#series_autocomplete").autocomplete({source: %s});
                 });
         </script>
+        <script>
+                $(function() {
+                      $( "#when_read_datepicker" ).datepicker();
+                });
+        </script>
+
         <h3>%s</h3>
-        '''% (self.list, self.header)
+        '''% (self.autoCompleteList['author'], 
+              self.autoCompleteList['series'], 
+              self.header)
         return html_header
 
     def build_form_header(self):
@@ -113,8 +125,8 @@ class LibraryHTML:
                     form_field =self.getDropDown(column)
                 if form == 'radio_static':
                     form_field =self.getStaticRadio(column)
-                if form == 'autocomplete':
-                    form_field =self.getAutocomplete(column)
+                if form == 'autocomplete' or form == 'datepicker':
+                    form_field =self.getJQueryUI(column, form)
 
                 table.addRow([display, form_field])
 
@@ -193,7 +205,7 @@ class LibraryHTML:
         options = self.columns[column][0]['radio_options']
         default = self.getDefault(column)
 
-        if default == None and column == 'Published':
+        if default == None and column == 'published':
             default = 1
 
         form_field = ''
@@ -209,37 +221,51 @@ class LibraryHTML:
         
         return form_field
 
-    def getAutocomplete (self, column):
+    def getJQueryUI (self, column, form_type):
         default = self.getDefault(column)
         if default == None:
             default = self.show_blank
-        
-        sql = 'select %s from %s' %(column, column)
-        autoList  = execute(self.conn, sql)
-        
-        for item in autoList:
-            self.list += item
-
+ 
         form_field = '''
-                   <input id = autoC name = %s value = %s>
-                  ''' %(column, default)
+                   <input id = %s_%s  name = %s value = '%s'>
+                  ''' %(column, form_type, column, default)
         return form_field
 
-def test():  
-    test = TESTLibraryHTML(3, 'edit')
-    report = test.build_report()
-    default = test.getDefault('series')
-    textF = test.getTextField('title')
-    ddF = test.getDropDown('owner_status_id')
-    staticRF = test.getStaticRadio('published')
-    autoCF = test.getAutocomplete('series')
+    def getAutoCList(self):
+        '''Behavior: populate autoCompleteList{}
+           with dic of lists to use by autocomplete fields'''
+        aclist = {}
+        for column in self.pages['edit']:
+            form = self.columns[column][0]['form_type']
+            resultsList = []
+            if form == 'autocomplete':
+                sql = '''select %s from %s group by %s_id
+                ''' % (self.columns[column][0]['select'],
+                       self.columns[column][0]['from'], column)
+                results = execute(self.conn, sql)
+                for item in results:
+                    resultsList.append(item[0])
+                    aclist[column] = resultsList
+ 
+        return aclist
 
-    print report
+def test():  
+    test = LibraryHTML(3, 'edit')
+#    report = test.build_report()
+#    default = test.getDefault('author')
+#    textF = test.getTextField('title')
+#    ddF = test.getDropDown('owner_status_id')
+#    staticRF = test.getStaticRadio('published')
+    autoCF = test.getJQueryUI('when_read', 'datepicker')
+#    autolist = test.getAutoCList()
+
+#    print report
 #    print default
 #    print textF
 #    print ddF
 #    print staticRF
-#    print autoCF
+    print autoCF
+#    print autolist
 
 if __name__ == '__main__':
     test()
