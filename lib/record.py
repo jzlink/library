@@ -55,33 +55,38 @@ where
         author_items = {}
         when_read_items = {}
         series_items = {}
-        updates = []
         message = ''
        
-        #set empty values to NULL for updateing purposes
-        for key, value  in record_dict.items():
+        for column, value  in record_dict.items():
+            record_table = ''
+            
+            #prep dic vlaues for database update
             if value:
-                value = "'"+value+"'"
+                value  = "'"+value+"'" 
+            elif self.columns[column][0]['type'] == 'string':
+                value = "'" + "'"
             else:
-                value = None
+                value = 'Null'
 
             #figure out which table needs to be updated, amend that dict{}
-            record_table = self.columns[key][0]['from']
+            record_table = self.columns[column][0]['from']
 
             if record_table == 'book':
-                book_items.update({key: value})
+                book_items.update({column: value})
             if record_table == 'author':
-                author_items.update({key: value})
+                author_items.update({column: value})
             if record_table == 'when_read':
-                when_read_items.update({key: value})
+                when_read_items.update({column: value})
             if record_table == 'series':
-                series_items.update({key: value})
+                series_items.update({column: value})
         
         if book_items:
-            update = self.updateBook(book_items)
-#            message += update
+            message += self.updateBook(book_items)
 
-        return update
+        if series_items:
+            message += self.updateSeries(series_items)
+
+        return message
 
 
     def updateBook(self, book_items):
@@ -95,8 +100,7 @@ where
                 vals.append(book_items[item])
             columns = ', '.join(cols)
             values = ', '.join(vals)
-            sql = 'insert into book (%s) values(%s)'  \
-                    %(columns, values)
+            sql = 'insert into book (%s) values(%s)' %(columns, values)
             
             result = execute(self.connection, sql)
             message = "Record Sucessfully Inserted"
@@ -105,24 +109,52 @@ where
             for item in book_items:
                 sql = 'update book set %s = %s where book.book_id = %s' \
                     % (item, book_items[item], self.book_id)
-           #     result = execute(self.connection, sql)
-                updates.append(sql)
-               # message = "Fields "+ ', '.join(updates)+\
-               #     " have been successfully updated"
+                results = execute(self.connection, sql)
+            message = "Book Items Sucessfully Updated"
+#                updates.append(sql)
+        return message
 
-        return updates
-       
+    def updateSeries(self, series_items):
+        series_id = 'NULL'
+        series = series_items['series']
+        message = 'Book %s series was updated to %s.' %(self.book_id, series)
+
+        #if the series recieved isn't blank, check if it is in the DB yet
+        #if not add it and append message with that info
+        # retrieve the series_id for the requested series
+        if series !="''":
+            searchSQL = 'select series from series where series like %s'\
+                %series
+            searchResults = execute(self.connection, searchSQL)
+
+            if not searchResults:
+                addSQL = 'insert into series (series) values (%s)' %series
+                addResults = execute(self.connection, addSQL)
+                message += ' Series %s added to database.' %series
+            
+            IdSQL = 'select series_id from series where series like %s'\
+                %series
+            IdResults = execute (self.connection, IdSQL)
+
+            series_id = IdResults[0]['series_id']
+        
+        #set the series_id in the book table to the correct series 
+        updateSQL = 'update book set series_id = %s where book_id = %s' \
+                % (series_id, self.book_id)
+        updateReults = execute(self.connection, updateSQL)
+
+        return message
 
 edits ={
 'last_name': 'Mcguire', 
 'type_id': '5', 
-'series': None, 
+'series': 'October Daye', 
 'date': '2010-06-05', 
 'first_name': 'Seanan', 
 'title': 'A Local Habitation', 
 'owner_status_id': '1', 
 'notes': 'October Daye bk. 2', 
-'series_num': None, 
+'series_num': '2', 
 'published': '1', 
 'read_status_id': '1'
 }
@@ -143,12 +175,13 @@ add_dict ={
 
     
 def test():  
-   record = Record(0,'update')
-   result= record.updateRecord(add_dict)
-#   book = record.updateBook(edits)
+   record = Record(335, 'update')
+#   add = record.updateRecord(add_dict)
+   update  = record.updateRecord(edits)
 
-   print result
-#   print book
+#   print add
+   print update
+
 
 if __name__ == '__main__':
     test()

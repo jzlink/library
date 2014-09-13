@@ -63,9 +63,9 @@ if activity == 'submit_new':
    
 
 html = LibraryHTML(book_id, activity)
-#html_header = html.build_html_header()
-report = html.build_report()
 html_header = html.build_html_header()
+report = html.build_report()
+#html_header = html.build_html_header()
 input_button = html.build_input_button()
 cancel_button = html.build_cancel_button()
 form_header = html.build_form_header()

@@ -59,7 +59,7 @@ class LibraryHTML:
             self.recordData = {}
 
         #build the dictionary of autocomplete lists
-        self.autoCompleteList = self.getAutoCList()
+        self.autoCompleteList = self._getAutoCList()
         
     def build_html_header(self):
         html_header= '''
@@ -231,14 +231,14 @@ class LibraryHTML:
                   ''' %(column, form_type, column, default)
         return form_field
 
-    def getAutoCList(self):
+    def _getAutoCList(self):
         '''Behavior: populate autoCompleteList{}
            with dic of lists to use by autocomplete fields'''
         aclist = {}
-        for column in self.pages['edit']:
-            form = self.columns[column][0]['form_type']
+        for column in self.columns:
             resultsList = []
-            if form == 'autocomplete':
+            if self.columns[column][0].has_key('form_type') and \
+                    self.columns[column][0]['form_type'] == 'autocomplete':
                 sql = '''select %s from %s group by %s_id
                 ''' % (self.columns[column][0]['select'],
                        self.columns[column][0]['from'], column)
@@ -249,6 +249,7 @@ class LibraryHTML:
  
         return aclist
 
+
 def test():  
     test = LibraryHTML(3, 'edit')
 #    report = test.build_report()
@@ -256,16 +257,18 @@ def test():
 #    textF = test.getTextField('title')
 #    ddF = test.getDropDown('owner_status_id')
 #    staticRF = test.getStaticRadio('published')
-    autoCF = test.getJQueryUI('when_read', 'datepicker')
-#    autolist = test.getAutoCList()
+#    autoCF = test.getJQueryUI('when_read', 'datepicker')
+    autolist = test.getAutoCList()
+
 
 #    print report
 #    print default
 #    print textF
 #    print ddF
 #    print staticRF
-    print autoCF
-#    print autolist
+#    print autoCF
+    print autolist
+
 
 if __name__ == '__main__':
     test()
