@@ -27,7 +27,7 @@ activity= form.getvalue('activity', 'view')
 #build dict of values from the book form
 form_values = {}
 for col in pages['edit']:
-   if form.getvalue(col):
+   if col != 'author':
       form_values[col] = form.getvalue(col)
 
 author = Author()
@@ -40,6 +40,7 @@ while count <= author_num:
 message = ''
 if activity == 'update':
    record = Record(book_id, activity)
+#   message = record.debug(form_values)
    updated, added = record.updateRecord(form_values)
    message = 'Yes'
    activity = 'view'
@@ -75,7 +76,5 @@ print '<br>'
 print input_button
 print cancel_button
 print form_footer
-if form_values:
-   print form_values
 print html_footer
 

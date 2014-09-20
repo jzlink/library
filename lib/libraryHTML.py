@@ -92,10 +92,16 @@ class LibraryHTML:
     def buildMessage(self, updated, added):
         updates = ''
         adds = ''
+
         if updated:
             updates = 'Updated: <br> '
             for item in updated:
-                updates += '%s changed to:  %s <br>' %(item, updated[item])
+                if item in self.columns:
+                    d_name = self.columns[item][0]['display']
+                    updates += '%s changed to:  %s <br>'\
+                        %(d_name, updated[item])
+                else:
+                    updates += '%s was %s <br>' %(item, updated[item])
 
         if added:
             adds = 'Added: <br> '

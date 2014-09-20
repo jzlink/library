@@ -3,7 +3,10 @@ TO DO:
 -Styling
 -author class
 -update full record
-
+-add optional add new author field
+-remove author buttons
+-add second date field
+-force choice from autocomplete list
 
 Reading List:
 -Functional Programming
@@ -23,3 +26,4 @@ Reading List:
 Ask Dave:
 -what does a good git repo look like?
 - private methods? 
+- get dict sent to updaterecord for debug? missing values?

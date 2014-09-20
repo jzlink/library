@@ -17,16 +17,18 @@ class Record:
         metadata = Metadata()
         self.columns = metadata.loadYaml('columns')
         self.author = Author()
-    
+
+    def debug(self, record_dict):
+        processDict = dict.copy(record_dict)
+        return record_dict, self.processRecordDict(processDict)
+
     def updateRecord (self, record_dict):
         ''' given a dict of column value pairs
         figure out which should be updated
         update tables with new vals if necessary
-        return two lists: changes made, values added
-        *note not directly responsible for updateing author items
-        the author updater is called by the dict processor'''
+        return two lists: changes made, values added'''
 
-        original_dict = record_dict
+        original_dict = dict.copy(record_dict)
         book_items = {}
         update_dict = {}
         when_read_items = {}
@@ -39,7 +41,8 @@ class Record:
         update_dict, author_items = self.processRecordDict(record_dict)
 
         #send author_items out to be handled
-        author_adds, author_removes = self.updateAuthor(author_items)
+        author_updates = self.updateAuthor(author_items)
+        updated.update(author_updates)
 
         if update_dict:
             for column, value  in update_dict.items():
@@ -144,6 +147,7 @@ class Record:
     def updateAuthor(self, author_items):
         remove = []
         add = []
+        update = {}
         listofAuthors = []
         authorIdDict = self.author.getAuthorIdDict()
         
@@ -170,6 +174,7 @@ class Record:
             sql = '''insert into book_author (author_id, book_id) 
                      values (%s, %s)''' %(author_id, self.book_id)
             results = execute(self.connection, sql)
+            update[item] = 'added to record'
 
         #remove the book_id/author_id pairs from the book_author table
         for item in remove:
@@ -178,8 +183,9 @@ class Record:
                      where book_id = %s and author_id = %s
                      ''' %(self.book_id, author_id)
             results = execute(self.connection, sql)
+            update[item] = 'removed from record'
 
-        return remove, add
+        return update
 
     def processRecordDict(self, record_dict):
         '''given a dict of record items to update prepare them for DB insertion
@@ -203,14 +209,13 @@ class Record:
         update_dict = self.selectDiffColumns(record_dict)
 
         if update_dict:
-            for column, value  in update_dict.items():
-                record_table = ''
-            
+            for column, value in update_dict.items():
+
                 #prep dic vlaues for database update
                 if value:
-                    value  = "'"+value+"'" 
+                    update_dict[column]  = "'"+value+"'" 
                 elif self.columns[column][0]['type'] == 'string':
-                    value = "'" + "'"
+                    update_dict[column] = "'" + "'"
                 else:
                     value = 'Null'            
 
@@ -226,7 +231,10 @@ class Record:
         recordData = query.getData('edit', where)
         remove = []
         for col, val in recordData[0].items():
-            recordData[0][col] = str(val)
+            if val == '':
+                recordData[0][col] = None
+            else:
+                recordData[0][col] = str(val)
 
         for col in recievedData:
             if recievedData[col] == recordData[0][col]:
@@ -237,10 +245,9 @@ class Record:
         return recievedData
 
 
-
 edits ={
 'author_1': 'Gaiman, Neil', 
-'author_2': 'Barry, Dave', 
+'author_2': 'Pratchett, Terry', 
 'notes': 'Re-read, I remember it being better', 
 'owner_status_id': 
 'None', 'published': '1', 
@@ -268,18 +275,18 @@ add_dict ={
 
     
 def test():  
-   record = Record(328, 'update')
+   record = Record(335, 'update')
 #   add = record.updateRecord(add_dict)
 #   update  = record.updateRecord(edits)
-#   diffCols = record.selectDiffColumns(edits)
-   prep = record.processRecordDict(edits)
+   diffCols = record.selectDiffColumns(edits)
+#   prep = record.processRecordDict(edits)
 #   authors = record.updateAuthor(author_items)
 
 
 #   print add
 #   print update
-#   print diffCols 
-   print prep
+   print diffCols 
+#   print prep
 #   print authors
 
 if __name__ == '__main__':
