@@ -14,6 +14,8 @@ from htmltable import HtmlTable
 from record import Record
 from libraryHTML import LibraryHTML
 from metadata import Metadata
+from author import Author
+
 metadata = Metadata()
 pages = metadata.loadYaml('pages')
 
@@ -25,10 +27,15 @@ activity= form.getvalue('activity', 'view')
 #build dict of values from the book form
 form_values = {}
 for col in pages['edit']:
-   form_values[col] = form.getvalue(col)
+   if form.getvalue(col):
+      form_values[col] = form.getvalue(col)
 
-#updated = {}
-#added = {}
+author = Author()
+author_num = len(author.getAuthors(book_id, 'concat'))
+count = 1
+while count <= author_num:
+   form_values['author_%s' %count] = form.getvalue('author_%s' %count)
+   count +=1
 
 message = ''
 if activity == 'update':
@@ -68,5 +75,7 @@ print '<br>'
 print input_button
 print cancel_button
 print form_footer
+if form_values:
+   print form_values
 print html_footer
 

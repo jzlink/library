@@ -7,6 +7,7 @@ from utils import date2str
 from htmltable import HtmlTable
 from metadata import Metadata
 from database import *
+from author import Author
 
 class LibraryHTML:
     '''Given an actitvity to prefrom on a record (view, edit, add)
@@ -21,7 +22,7 @@ class LibraryHTML:
         metadata = Metadata()
         self.columns = metadata.loadYaml('columns')
         self.pages = metadata.loadYaml('pages')
-
+        
         if activity == 'edit':
             self.header = 'Edit Record'
             self.page = 'edit'
@@ -61,7 +62,7 @@ class LibraryHTML:
         else:
             self.recordData = {}
 
-        #build the dictionary of autocomplete lists
+        #build the dictionary of autocomplete lists by 
         self.autoCompleteList = self._getAutoCList()
         
     def build_html_header(self):
@@ -134,17 +135,19 @@ class LibraryHTML:
                 table.addRow([display, data])                 
 
             else:
-            #use methods to build form
-                form_type = self.columns[column][0]['form_type']
-                type_method_func = {'text'        : self.getTextField,
-                                    'drop_down'   : self.getDropDown,
-                                    'radio_static': self.getStaticRadio,
-                                    'autocomplete': self.getJQueryUI,
-                                    'datepicker'  : self.getJQueryUI
-                                    }
-                if form_type == 'autocomplete' or form_type == 'datepicker':
-                    form_field = type_method_func[form_type](column, form_type)
+                if column == 'author':
+                    #use special method to build author part
+                    form_field = self.getAuthorSection()
+
                 else:
+                    #use general methods to build forms
+                    form_type = self.columns[column][0]['form_type']
+                    type_method_func = {'text'        : self.getTextField,
+                                        'drop_down'   : self.getDropDown,
+                                        'radio_static': self.getStaticRadio,
+                                        'autocomplete': self.getJQueryUI,
+                                        'datepicker'  : self.getJQueryUI
+                                        }
                     form_field = type_method_func[form_type](column)
 
                 table.addRow([display, form_field])
@@ -176,6 +179,20 @@ class LibraryHTML:
     def build_html_footer(self):
         html_footer = '</html>'
         return html_footer
+
+    def getAuthorSection(self):
+        author = Author()
+        names = author.getAuthors(self.book_id, 'concat') 
+
+        form_field= ''
+        count = 0
+        for item in names:
+            count += 1
+            form_field += '''
+               <input id = author_autocomplete  name = author_%s value = '%s'>
+                  ''' %(count, item['name'])
+
+        return form_field
 
     def getDefault(self, column):
         if self.recordData:
@@ -240,7 +257,8 @@ class LibraryHTML:
         
         return form_field
 
-    def getJQueryUI (self, column, form_type):
+    def getJQueryUI (self, column):
+        form_type = self.columns[column][0]['form_type']
         default = self.getDefault(column)
         if default == None:
             default = self.show_blank
@@ -251,13 +269,16 @@ class LibraryHTML:
         return form_field
 
     def _getAutoCList(self):
-        '''Behavior: populate autoCompleteList{}
+        '''Behavior: populate acList{}
            with dic of lists to use by autocomplete fields'''
         aclist = {}
+
         for column in self.columns:
             resultsList = []
-            if self.columns[column][0].has_key('form_type') and \
+
+            if 'form_type' in self.columns[column][0] and \
                     self.columns[column][0]['form_type'] == 'autocomplete':
+
                 sql = '''select %s from %s group by %s_id
                 ''' % (self.columns[column][0]['select'],
                        self.columns[column][0]['from'], column)
@@ -265,7 +286,7 @@ class LibraryHTML:
                 for item in results:
                     resultsList.append(item[0])
                     aclist[column] = resultsList
- 
+
         return aclist
 
 
@@ -275,15 +296,16 @@ def test():
     uu = {}
     aa = {}
 
-    test = LibraryHTML(3, 'edit')
+    test = LibraryHTML(328, 'edit')
 #    report = test.build_report()
 #    default = test.getDefault('author')
 #    textF = test.getTextField('title')
 #    ddF = test.getDropDown('owner_status_id')
 #    staticRF = test.getStaticRadio('published')
 #    autoCF = test.getJQueryUI('when_read', 'datepicker')
-#    autolist = test.getAutoCList()
-    message = test.buildMessage(u,a)
+#    autolist = test._getAutoCList()
+#    message = test.buildMessage(u,a)
+    author = test.getAuthorSection()
 
 #    print report
 #    print default
@@ -292,7 +314,9 @@ def test():
 #    print staticRF
 #    print autoCF
 #    print autolist
-    print message
+#    print message
+#    print test.autoCompleteList
+    print author
 
 if __name__ == '__main__':
     test()
