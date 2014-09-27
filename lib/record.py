@@ -40,9 +40,6 @@ class Record:
         #sort and pre-process dict
         update_dict, author_items = self.processRecordDict(record_dict)
 
-        #send author_items out to be handled
-        author_updates = self.updateAuthor(author_items)
-        updated.update(author_updates)
 
         if update_dict:
             for column, value  in update_dict.items():
@@ -73,6 +70,11 @@ class Record:
                 when_updates, when_adds =  self.updateWhenRead(when_read_items)
                 updated.update(when_updates)
                 added.update(when_adds)
+
+            #send author_items out to be handled
+            author_updates = self.updateAuthor(author_items)
+            updated.update(author_updates)
+
 
         return updated, added
 
@@ -154,19 +156,41 @@ class Record:
         #bring in the data currently in the DB
         authorsOnRecord = self.author.getAuthors(self.book_id, 'concat')
         
-        #make a list of names
+        #make a list of full names
         for count in range(len(authorsOnRecord)):
             listofAuthors.append(authorsOnRecord[count]['name'])
 
-        #compare the list of names currently in the DB to the author items
-        # to see what has to be added or removed
+        #compare the list of full names currently in the DB to the
+        # full names in author items to see what has to be added or removed
         for item in listofAuthors:
-            if item not in author_items:
+            if item not in author_items['full_names']:
                 remove.append(item)
         
-        for item in author_items:
+        for item in author_items['full_names']:
             if item not in listofAuthors:
                 add.append(item)
+
+        #check if the new first and last name is in the DB yet
+        if author_items['last_name'] and author_items['first_name']:
+            sql  = '''
+               select author_id from author 
+               where last_name like '%s' and first_name like '%s'
+               ''' %(author_items['last_name'], author_items['first_name'])
+            matches = execute(self.connection, sql)
+        
+            #if the name is not in the DB add it and refresh the authorIdDict
+            if not matches:
+                sql = '''
+                  insert into author (last_name, first_name)
+                  values ('%s', '%s')
+                  '''%(author_items['last_name'], author_items['first_name'])
+                results = execute(self.connection, sql)
+                authorIdDict = self.author.getAuthorIdDict()
+        
+            #concat the first and last name add it to add list
+            name = '%s, %s'\
+                %(author_items['last_name'], author_items['first_name'])
+            add.append(name)
 
         #add the book_id/author_id pairs to the book_author table
         for item in add:
@@ -185,6 +209,8 @@ class Record:
             results = execute(self.connection, sql)
             update[item] = 'removed from record'
 
+            
+        
         return update
 
     def processRecordDict(self, record_dict):
@@ -195,18 +221,30 @@ class Record:
 
         #figure out how many authors this record is expecting
         #move that many items to author_items and delete them from the dict
-        author_items = []
+        #also move last_name and first_name
+        author_items = {}
+        full_names = []
         author_num = len(self.author.getAuthors(self.book_id, 'concat'))
         count = 1
 
         for count in range(author_num):
             count +=1
-            author_items.append(record_dict['author_%s' %count])
+            full_names.append(record_dict['author_%s' %count])
             del record_dict['author_%s' %count]
+            
+        author_items['full_names'] = full_names
+        author_items['last_name'] = record_dict['last_name']
+        author_items['first_name'] = record_dict['first_name']
+        del record_dict['first_name']
+        del record_dict['last_name']
 
-        #call selectDiffCols on the remaining dict
+        #if the acitvity is 'edit'call selectDiffCols on the remaining dict
         #if that returns any values format them for the DB and return them
-        update_dict = self.selectDiffColumns(record_dict)
+        #otherwise all values need to be processed
+        if self.activity == 'update':
+            update_dict = self.selectDiffColumns(record_dict)
+        else:
+            update_dict = record_dict
 
         if update_dict:
             for column, value in update_dict.items():
@@ -217,8 +255,8 @@ class Record:
                 elif self.columns[column][0]['type'] == 'string':
                     update_dict[column] = "'" + "'"
                 else:
-                    value = 'Null'            
-
+                    update_dict[column] = 'Null'
+        
         return update_dict, author_items
 
     def selectDiffColumns(self, recievedData):

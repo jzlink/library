@@ -74,13 +74,20 @@ class LibraryHTML:
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
                 $(function(){
-                      $("#author_autocomplete").autocomplete({source: %s});
-                      $("#series_autocomplete").autocomplete({source: %s});
+                    $("#author_autocomplete").autocomplete({source: %s});
+                    $("#series_autocomplete").autocomplete({source: %s});
                 });
 
                 $(function() {
-                      $( "#when_read_datepicker" ).datepicker();
+                    $( "#when_read_datepicker" ).datepicker();
                 });
+
+                $(function(){
+                    $("#add_new_author").click(function(){
+                        $("#new_author_fields").toggle();
+                     });
+                });
+
         </script>
 
         <h3>%s</h3>
@@ -197,6 +204,18 @@ class LibraryHTML:
             form_field += '''
                <input id = author_autocomplete  name = author_%s value = '%s'>
                   ''' %(count, item['name'])
+            
+        #add hidden section for addtional authors
+        form_field +='''
+         <input type = "button" id = "add_author" value = "Add Author">'''
+
+        #add hidden section for brand new authors
+        form_field +='''
+         <input type ="button" id = "add_new_author" value = "Add New Author" >
+             <div id = "new_author_fields" style = "display:none">
+              Last Name:<input type = "text" name = "last_name">
+              First Name:<input type = "text" name = "first_name">
+              </div>'''
 
         return form_field
 

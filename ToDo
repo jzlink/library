@@ -26,4 +26,6 @@ Reading List:
 Ask Dave:
 -what does a good git repo look like?
 - private methods? 
-- get dict sent to updaterecord for debug? missing values?
+- dynamically figure out what fields are in the form and add them to the dict
+  and send them to update record.
+- use button and js to generate as many new author fields as I want. 
