@@ -9,26 +9,28 @@ class Record:
     '''Preside over a single record in the database
         including updating it'''
 
-    def __init__(self, book_id, activity):
+    def __init__(self, form_dict):
         '''initialize variables and bring in column metadata'''
-        self.book_id = book_id
-        self.activity = activity
+        self.book_id = form_dict['book_id']
+        self.activity = form_dict['activity']
         self.connection = getDictConnection()
         metadata = Metadata()
         self.columns = metadata.loadYaml('columns')
         self.author = Author()
+        self.record_dict = dict.copy(form_dict)
+        del self.record_dict['book_id']
+        del self.record_dict['activity']
+        
 
-    def debug(self, record_dict):
-        processDict = dict.copy(record_dict)
-        return record_dict, self.processRecordDict(processDict)
+    def debug(self):
+        return self.record_dict, self.processRecordDict()
 
-    def updateRecord (self, record_dict):
+    def updateRecord (self):
         ''' given a dict of column value pairs
         figure out which should be updated
         update tables with new vals if necessary
         return two lists: changes made, values added'''
 
-        original_dict = dict.copy(record_dict)
         book_items = {}
         update_dict = {}
         when_read_items = {}
@@ -38,7 +40,7 @@ class Record:
         removed = {}
 
         #sort and pre-process dict
-        update_dict, author_items = self.processRecordDict(record_dict)
+        update_dict, author_items = self.processRecordDict()
 
 
         if update_dict:
@@ -71,9 +73,9 @@ class Record:
                 updated.update(when_updates)
                 added.update(when_adds)
 
-            #send author_items out to be handled
-            author_updates = self.updateAuthor(author_items)
-            updated.update(author_updates)
+        #send author_items out to be handled
+        author_updates = self.updateAuthor(author_items)
+        updated.update(author_updates)
 
 
         return updated, added
@@ -171,7 +173,7 @@ class Record:
                 add.append(item)
 
         #check if the new first and last name is in the DB yet
-        if author_items['last_name'] and author_items['first_name']:
+        if 'last_name' and 'first_name' in author_items:
             sql  = '''
                select author_id from author 
                where last_name like '%s' and first_name like '%s'
@@ -208,43 +210,44 @@ class Record:
                      ''' %(self.book_id, author_id)
             results = execute(self.connection, sql)
             update[item] = 'removed from record'
-
-            
         
         return update
 
-    def processRecordDict(self, record_dict):
+    def processRecordDict(self):
         '''given a dict of record items to update prepare them for DB insertion
         by: segregating author items from dict, calling selectDiffColumns,
         prepping the formats of the remaining values for insertion. Returns
         update_dict and author_items'''
 
-        #figure out how many authors this record is expecting
-        #move that many items to author_items and delete them from the dict
-        #also move last_name and first_name
+        process_dict = dict.copy(self.record_dict)
+
         author_items = {}
         full_names = []
-        author_num = len(self.author.getAuthors(self.book_id, 'concat'))
-        count = 1
+        #find all keys with author in them, add those to author items
+        for item in process_dict:
+            if 'author' in str(item):
+                author_items[item] = process_dict[item]
+                full_names.append(process_dict[item])
 
-        for count in range(author_num):
-            count +=1
-            full_names.append(record_dict['author_%s' %count])
-            del record_dict['author_%s' %count]
-            
+        #if last name or first name is in the record_dict add them to a. items
+        if 'last_name' in process_dict:
+            author_items['last_name'] = process_dict['last_name']
+        if 'first_name' in process_dict:
+            author_items['first_name'] = process_dict['first_name']
+
+        #remove all the stuff in author items from record dict
+        for item in author_items:
+            del process_dict[item]
+        
         author_items['full_names'] = full_names
-        author_items['last_name'] = record_dict['last_name']
-        author_items['first_name'] = record_dict['first_name']
-        del record_dict['first_name']
-        del record_dict['last_name']
 
         #if the acitvity is 'edit'call selectDiffCols on the remaining dict
         #if that returns any values format them for the DB and return them
         #otherwise all values need to be processed
         if self.activity == 'update':
-            update_dict = self.selectDiffColumns(record_dict)
+            update_dict = self.selectDiffColumns(process_dict)
         else:
-            update_dict = record_dict
+            update_dict = process_dict
 
         if update_dict:
             for column, value in update_dict.items():
@@ -295,7 +298,9 @@ edits ={
 'when_read': '1970-01-01'
 }
 
-author_items = ['Gaiman, Neil', 'Barry, Dave'] 
+author_items ={
+ 'full_names': ['Mcguire, Seanan'], 
+ 'author_1': 'Mcguire, Seanan'}
 
 add_dict ={
 'last_name': 'Juster', 
@@ -316,16 +321,16 @@ def test():
    record = Record(335, 'update')
 #   add = record.updateRecord(add_dict)
 #   update  = record.updateRecord(edits)
-   diffCols = record.selectDiffColumns(edits)
+#   diffCols = record.selectDiffColumns(edits)
 #   prep = record.processRecordDict(edits)
-#   authors = record.updateAuthor(author_items)
+   authors = record.updateAuthor(author_items)
 
 
 #   print add
 #   print update
-   print diffCols 
+#   print diffCols 
 #   print prep
-#   print authors
+   print authors
 
 if __name__ == '__main__':
     test()

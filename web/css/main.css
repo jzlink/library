@@ -2,27 +2,34 @@ h1 {
     color: black;
     margin-left: auto;
     margin-rght:auto;
-    width: 70%;
+    text-align: center;
 }
 
 form { 
     color: black;
-    margin-left: 225px;
-    margin-rght:auto;
-    width: 70%;
+  /*  margin-left: 225px;
+    width: 70%;*/
 }
 
 header { 
-    background-color: #3D1F00;
-    backgound-opacity: .9;
+    background-color: 8C450A;
+    backgound-opacity: 1;
     top: 0px;
     position: fixed;
     height: 110px;
     border:1px solid #CCC;
-    left: 100px;
-    right:100px;
+    left: 0;
+    right: 0;
     z-index: 100;
+
 }
+
+.inputs {
+    display: inline-block; 
+    margin-right: 50;
+    margin-left: 100;
+}
+
 
 body {
     background-image: url(fullcatalog.jpg);
@@ -36,9 +43,10 @@ body {
 }
 
 table {
-    background-color: CCB299;
-    opacity: .8;
+    background-color: FAEBBE;
+    opacity: 1;
     overflow: hidden;
+    margin: 20px;
 }
 
 a.navLink {

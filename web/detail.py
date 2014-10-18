@@ -19,47 +19,34 @@ from author import Author
 metadata = Metadata()
 pages = metadata.loadYaml('pages')
 
-# get general values 
+# get form values 
 form = cgi.FieldStorage()
-book_id= form.getvalue('book_id')
-activity= form.getvalue('activity', 'view')
-
-#build dict of values from the book form
 form_values = {}
-for col in pages['edit']:
-   if col != 'author':
-      form_values[col] = form.getvalue(col)
+for k in form.keys():
+   key = str(k)
+   value = str(form.getvalue(key))
+   form_values[key] = value
 
-#add special author values
-author = Author()
-author_num = len(author.getAuthors(book_id, 'concat'))
-count = 1
-while count <= author_num:
-   form_values['author_%s' %count] = form.getvalue('author_%s' %count)
-   count +=1
-
-form_values['last_name'] = form.getvalue('last_name')
-form_values['first_name'] = form.getvalue('first_name')
+book_id= form_values['book_id']
+activity= form_values['activity']
 
 message = ''
 if activity == 'update':
-   record = Record(book_id, activity)
-   message = record.debug(form_values)
-   updated, added = record.updateRecord(form_values)
+   record = Record(form_values)
+#   message = record.debug()
+   updated, added = record.updateRecord()
    message = 'Yes'
    activity = 'view'
 
 if activity == 'submit_new':
    record = Record(None, 'add')
-#   message = record.debug(form_values)
-   updated, added = record.updateRecord(form_values)
+#   message = record.debug()
+   updated, added = record.updateRecord()
    message = 'Yes'
    activity = 'view'
    connection = getDictConnection()
    b_id = execute(connection, 'select max(book_id) from book')
    book_id = b_id[0]['max(book_id)'] 
-
-   
 
 html = LibraryHTML(book_id, activity)
 html_header = html.build_html_header()
@@ -81,6 +68,7 @@ print report
 print '<br>'
 print input_button
 print cancel_button
+#print form_values
 print form_footer
 print html_footer
 

@@ -74,7 +74,7 @@ class LibraryHTML:
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
                 $(function(){
-                    $("#author_autocomplete").autocomplete({source: %s});
+                    $(".author_autocomplete").autocomplete({source: %s});
                     $("#series_autocomplete").autocomplete({source: %s});
                 });
 
@@ -202,8 +202,8 @@ class LibraryHTML:
         for item in names:
             count += 1
             form_field += '''
-               <input id = author_autocomplete  name = author_%s value = '%s'>
-                  ''' %(count, item['name'])
+               <input class = author_autocomplete  name = author_%s 
+                value = '%s'>''' %(count, item['name'])
             
         #add hidden section for addtional authors
         form_field +='''
