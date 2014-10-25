@@ -144,8 +144,9 @@ class Record:
         adds = {}
         when = when_read_items['when_read']
 
-        if when != 'Null':
-            when = datetime.strptime(when, "'%m %d %Y'")
+        if when != '':
+            when = (datetime.strptime(when, '%m/%d/%Y')).date()
+            when = when.isoformat()
             sql = 'insert into when_read (when_read, book_id) values (%s, %s)'\
                 %(when, self.book_id)
             results = execute(self.connection, sql)
@@ -261,14 +262,14 @@ class Record:
 
         if update_dict:
             for column, value in update_dict.items():
+                colType = self.columns[column][0]['type']
 
                 #prep dic vlaues for database update
-                if value:
-                    update_dict[column]  = "'"+value+"'"
-                elif self.columns[column][0]['type'] == 'string':
-                    update_dict[column] = "'" + "'"
-                else:
-                    update_dict[column] = 'NULL'
+                if colType == 'string' or colType == 'int':
+                    if value:
+                        update_dict[column]  = "'"+value+"'"
+                    else:
+                        update_dict[column] = "'" + "'"
         
         return update_dict, author_items
 

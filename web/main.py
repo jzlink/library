@@ -87,8 +87,12 @@ i = 0
 activity = 'view'
 
 for rec in results: 
+    if rec['date'] == None:
+        rec['date'] = '-'
+
     i += 1
-    href = '<a href="detail.py?book_id=%d&activity=%s">%s'% (rec['book_id'], activity, rec['title'])
+    href = '<a href="detail.py?book_id=%d&activity=%s">%s'\
+        % (rec['book_id'], activity, rec['title'])
     table.addRow([i, href, rec['author'], rec['notes'], rec['date']])
 
 ### FOOTER

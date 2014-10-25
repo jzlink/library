@@ -34,7 +34,7 @@ activity= form_values['activity']
 message = ''
 if activity == 'update':
    record = Record(form_values)
-#   message = record.debug()
+   message = record.debug()
    updated, added = record.updateRecord()
    message = 'Yes'
    activity = 'view'
