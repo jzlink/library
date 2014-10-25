@@ -202,7 +202,7 @@ class LibraryHTML:
         for item in names:
             count += 1
             form_field += '''
-               <input class = author_autocomplete  name = author_%s 
+               <input class = author_autocomplete  name = author_fullname_%s 
                 value = '%s'>''' %(count, item['name'])
             
         #add hidden section for addtional authors
@@ -213,8 +213,8 @@ class LibraryHTML:
         form_field +='''
          <input type ="button" id = "add_new_author" value = "Add New Author" >
              <div id = "new_author_fields" style = "display:none">
-              Last Name:<input type = "text" name = "last_name">
-              First Name:<input type = "text" name = "first_name">
+              Last Name:<input type = "text" name = "author_last_name">
+              First Name:<input type = "text" name = "author_first_name">
               </div>'''
 
         return form_field

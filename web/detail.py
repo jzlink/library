@@ -20,8 +20,9 @@ metadata = Metadata()
 pages = metadata.loadYaml('pages')
 
 # get form values 
-form = cgi.FieldStorage()
+form = cgi.FieldStorage(keep_blank_values = 1)
 form_values = {}
+keys =[]
 for k in form.keys():
    key = str(k)
    value = str(form.getvalue(key))
@@ -39,14 +40,12 @@ if activity == 'update':
    activity = 'view'
 
 if activity == 'submit_new':
-   record = Record(None, 'add')
+   record = Record(form_values)
 #   message = record.debug()
-   updated, added = record.updateRecord()
-   message = 'Yes'
+   book_id = record.updateRecord()
+   message = 'The following record was added to the libary:'
    activity = 'view'
    connection = getDictConnection()
-   b_id = execute(connection, 'select max(book_id) from book')
-   book_id = b_id[0]['max(book_id)'] 
 
 html = LibraryHTML(book_id, activity)
 html_header = html.build_html_header()
@@ -56,6 +55,7 @@ cancel_button = html.build_cancel_button()
 form_header = html.build_form_header()
 form_footer = html.build_form_footer()
 html_footer = html.build_html_footer()
+
 if message == 'Yes':
    message = html.buildMessage(updated, added)
 

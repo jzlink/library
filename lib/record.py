@@ -1,5 +1,7 @@
 #!/usr/bin/python 
 
+from datetime import datetime
+
 from database import *
 from metadata import Metadata
 from query import Query
@@ -18,9 +20,19 @@ class Record:
         self.columns = metadata.loadYaml('columns')
         self.author = Author()
         self.record_dict = dict.copy(form_dict)
+        self.added_new_rec = False
+
         del self.record_dict['book_id']
-        del self.record_dict['activity']
-        
+        del self.record_dict['activity']        
+
+        if self.activity == 'submit_new':
+            start_sql = 'insert into book (title) values ("starter")'
+            start = execute (self.connection, start_sql)
+            find_sql = "select book_id from book where title like 'starter'"
+            find = execute(self.connection, find_sql)
+            self.book_id = find[0]['book_id']
+            self.activity = 'update'
+            self.added_new_rec = True
 
     def debug(self):
         return self.record_dict, self.processRecordDict()
@@ -41,7 +53,6 @@ class Record:
 
         #sort and pre-process dict
         update_dict, author_items = self.processRecordDict()
-
 
         if update_dict:
             for column, value  in update_dict.items():
@@ -77,24 +88,15 @@ class Record:
         author_updates = self.updateAuthor(author_items)
         updated.update(author_updates)
 
+        if self.added_new_rec:
+            return self.book_id
 
-        return updated, added
+        else:
+            return updated, added
 
     def updateBook(self, book_items):
         updates = {}
         adds = {}
-        if self.activity =='add':
-            cols = []
-            vals = []
-            for item in book_items:        
-                cols.append(item)
-                vals.append(book_items[item])
-                adds[item] = book_items[item]
-            columns = ', '.join(cols)
-            values = ', '.join(vals)
-            sql = 'insert into book (%s) values(%s)' %(columns, values)
-            
-            result = execute(self.connection, sql)
 
         if self.activity =='update':
             for item in book_items:
@@ -141,76 +143,94 @@ class Record:
         updates = {}
         adds = {}
         when = when_read_items['when_read']
-        sql = 'insert into when_read (when_read, book_id) values (%s, %s)'\
-            %(when, self.book_id)
-        results = execute(self.connection, sql)
-        adds['when_read'] = when
+
+        if when != 'Null':
+            when = datetime.strptime(when, "'%m %d %Y'")
+            sql = 'insert into when_read (when_read, book_id) values (%s, %s)'\
+                %(when, self.book_id)
+            results = execute(self.connection, sql)
+            adds['when_read'] = when
 
         return updates, adds
 
     def updateAuthor(self, author_items):
-        remove = []
-        add = []
-        update = {}
+        firstLast = author_items.copy()
+        fullNames = []
         listofAuthors = []
         authorIdDict = self.author.getAuthorIdDict()
-        
+        add = []
+        remove = []
+        update = {}
+
+        #make a list of full names and a seperate dict for first and last name
+        for item in author_items:
+            if 'full' in str(item):
+                fullNames.append(author_items[item])
+                del firstLast[item]
+
+        #If any item in firstLast has a value set newName to true
+        newName = False
+        for key, value in firstLast.items():
+            if value:
+                newName = True
+
         #bring in the data currently in the DB
         authorsOnRecord = self.author.getAuthors(self.book_id, 'concat')
-        
-        #make a list of full names
+
+        #make a list of full names in the DB                 
         for count in range(len(authorsOnRecord)):
             listofAuthors.append(authorsOnRecord[count]['name'])
 
         #compare the list of full names currently in the DB to the
         # full names in author items to see what has to be added or removed
         for item in listofAuthors:
-            if item not in author_items['full_names']:
+            if item not in fullNames:
                 remove.append(item)
-        
-        for item in author_items['full_names']:
+        for item in fullNames:
             if item not in listofAuthors:
                 add.append(item)
-
-        #check if the new first and last name is in the DB yet
-        if 'last_name' and 'first_name' in author_items:
-            sql  = '''
-               select author_id from author 
-               where last_name like '%s' and first_name like '%s'
-               ''' %(author_items['last_name'], author_items['first_name'])
+      
+        #check if the new first and last name is in the DB yet 
+        if newName:
+            sql  = '''                                                        
+               select author_id from author                                   
+               where last_name like '%s' and first_name like '%s'              
+               ''' %(author_items['author_last_name'],\
+                         author_items['author_first_name'])
             matches = execute(self.connection, sql)
-        
+
             #if the name is not in the DB add it and refresh the authorIdDict
             if not matches:
                 sql = '''
-                  insert into author (last_name, first_name)
-                  values ('%s', '%s')
-                  '''%(author_items['last_name'], author_items['first_name'])
+                      insert into author (last_name, first_name)
+                      values ('%s', '%s')
+                      '''%(author_items['author_last_name'],\
+                           author_items['author_first_name'])
                 results = execute(self.connection, sql)
                 authorIdDict = self.author.getAuthorIdDict()
-        
-            #concat the first and last name add it to add list
-            name = '%s, %s'\
-                %(author_items['last_name'], author_items['first_name'])
+
+            #concat the first and last name add it to add list                 
+            name = '%s, %s' %(author_items['author_last_name'],\
+                                  author_items['author_first_name'])
             add.append(name)
 
-        #add the book_id/author_id pairs to the book_author table
+        #add the book_id/author_id pairs to the book_author table 
         for item in add:
             author_id = authorIdDict[item]
-            sql = '''insert into book_author (author_id, book_id) 
-                     values (%s, %s)''' %(author_id, self.book_id)
+            sql = '''insert into book_author (author_id, book_id)
+                   values (%s, %s)''' %(author_id, self.book_id)
             results = execute(self.connection, sql)
             update[item] = 'added to record'
 
         #remove the book_id/author_id pairs from the book_author table
         for item in remove:
             author_id = authorIdDict[item]
-            sql = '''delete from book_author 
-                     where book_id = %s and author_id = %s
-                     ''' %(self.book_id, author_id)
+            sql = '''delete from book_author
+                  where book_id = %s and author_id = %s                      
+                  ''' %(self.book_id, author_id)
             results = execute(self.connection, sql)
             update[item] = 'removed from record'
-        
+
         return update
 
     def processRecordDict(self):
@@ -222,24 +242,14 @@ class Record:
         process_dict = dict.copy(self.record_dict)
 
         author_items = {}
-        full_names = []
         #find all keys with author in them, add those to author items
         for item in process_dict:
             if 'author' in str(item):
                 author_items[item] = process_dict[item]
-                full_names.append(process_dict[item])
-
-        #if last name or first name is in the record_dict add them to a. items
-        if 'last_name' in process_dict:
-            author_items['last_name'] = process_dict['last_name']
-        if 'first_name' in process_dict:
-            author_items['first_name'] = process_dict['first_name']
 
         #remove all the stuff in author items from record dict
         for item in author_items:
             del process_dict[item]
-        
-        author_items['full_names'] = full_names
 
         #if the acitvity is 'edit'call selectDiffCols on the remaining dict
         #if that returns any values format them for the DB and return them
@@ -254,11 +264,11 @@ class Record:
 
                 #prep dic vlaues for database update
                 if value:
-                    update_dict[column]  = "'"+value+"'" 
+                    update_dict[column]  = "'"+value+"'"
                 elif self.columns[column][0]['type'] == 'string':
                     update_dict[column] = "'" + "'"
                 else:
-                    update_dict[column] = 'Null'
+                    update_dict[column] = 'NULL'
         
         return update_dict, author_items
 

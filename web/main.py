@@ -25,13 +25,12 @@ metadata = Metadata()
 #instantiate query
 query= Query()
 
-
 ### Build HTML
 
 header_info=  """
 <head>
 <title> Read A Book! </title>
-<link href="css/main.css" rel="stylesheet" type="text/css">
+<link href="css/main.css" rel="stylesheet" type="text/css"\>
 </head>"""
 
 ##Header
@@ -40,7 +39,7 @@ header_text =  "<h1>Julia's Library</h1>"
 ##Add Book Button
 add_book = '''
     <input type = "button" class = 'inputs' onClick = 
-      "location.href='detail.py?book_id=0&activity=add'" value = "Add Record">
+      "location.href='detail.py?book_id=0&activity=add'" value = "Add Record"/>
 '''
 
 ##Search Section
@@ -59,7 +58,6 @@ Search Titles For:
 #retrieve system data
 where = ''
 if term:
-    print 'Search term is %s' %term
     kwd = "'%" + term + "%'"
     where = "title like %s" %kwd
 

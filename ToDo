@@ -7,6 +7,10 @@ TO DO:
 -remove author buttons
 -add second date field
 -force choice from autocomplete list
+-correct html closing tags
+-.md -> markdown language
+-lisp (the language)
+-haskall (read what he wrote)
 
 Reading List:
 -Functional Programming
