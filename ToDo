@@ -2,15 +2,18 @@ TO DO:
 -Implement Test Driven Developement
 -Styling
 -author class
--update full record
--add optional add new author field
--remove author buttons
+-add mulitple optional add new author field
+-remove author button
 -add second date field
 -force choice from autocomplete list
 -correct html closing tags
--.md -> markdown language
--lisp (the language)
--haskall (read what he wrote)
+-show multiple dates on the edit page
+- Author page:
+  -expand/colapse list of books under each author
+  - edit author names
+-searching on multiple/other fields
+-Permit apostrophies in form fields to SQL
+- make authors/dates their own modular areas
 
 Reading List:
 -Functional Programming
@@ -26,10 +29,13 @@ Reading List:
 -Eric Raymond The Cathedral and the Bazar
 -Paul Garahm on Lisp
 - functions = 1st class citizens
+-.md -> markdown language
+-lisp (the language)
+-haskall (read what he wrote)
+- don't make me think
+
 
 Ask Dave:
 -what does a good git repo look like?
 - private methods? 
-- dynamically figure out what fields are in the form and add them to the dict
-  and send them to update record.
 - use button and js to generate as many new author fields as I want. 

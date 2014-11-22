@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 
+import yaml
+
 from pprint import pprint
 
-from metadata import Metadata
 from database import *
+from utils import loadYaml
 
 class Query(object):
+    '''responsible for building and executing dynamic queries dependant
+    on metadata'''
 
     def __init__(self):
-        metadata = Metadata()
-        self.columns = metadata.loadYaml('columns')
-        self.tablejoins = metadata.loadYaml('tablejoins')        
-        self.pages = metadata.loadYaml('pages')
+        self.columns = loadYaml('columns')
+        self.pages = loadYaml('pages')
+        self.tablejoins = loadYaml('tablejoins')
         self.connection = getDictConnection()
         self.conn = getConnection()
+
 
     def getData (self, page, where = None, sort = None):
         ''' accepts request for page, calls SQL builder, executes SQL
@@ -22,11 +26,8 @@ class Query(object):
         sql = self.getSQL(page, where, sort)
         results = execute(self.connection, sql)
 
-#        if page == 'edit':
-            
-            
         return results
-
+        
     def getSQL(self, page, filter = None, sort = None):
         '''builds dynamic sql for requested table
            return sql string'''
@@ -70,7 +71,6 @@ class Query(object):
         # Group by
         groupbys = []
         groupbys.append('book.title')
-
         
         #build order clause if sort provided
         order = ''
@@ -90,12 +90,27 @@ class Query(object):
         return sql
 
 
+    def getColumnValues(column):
+        '''accepts a column
+        references metadata
+        returns a list of lits where the frist element in the list is the 
+        id an the second element is the column value of that id.
+        one mini list per table row. suitiable for building options in drop
+        down menues or auto complete lists
+        '''
+        sql= 'select %s from %s'\
+            % (self.columns[column][0]['drop_down_select'],
+               self.columns[column][0]['foreign_table'])
+
+        results = execute(self.conn, sql)
+
+        return results
+
 def test():  
     test = Query()
     data = test.getSQL('edit', 'book.book_id = 328', None)
 #    data = test.getData('edit', 'book.book_id = 1', None)
     print data
-
 
 if __name__ == '__main__':
     test()

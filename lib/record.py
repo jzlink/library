@@ -2,8 +2,8 @@
 
 from datetime import datetime
 
+from utils import loadYaml
 from database import *
-from metadata import Metadata
 from query import Query
 from author import Author
 
@@ -16,8 +16,7 @@ class Record:
         self.book_id = form_dict['book_id']
         self.activity = form_dict['activity']
         self.connection = getDictConnection()
-        metadata = Metadata()
-        self.columns = metadata.loadYaml('columns')
+        self.columns = loadYaml('columns')
         self.author = Author()
         self.record_dict = dict.copy(form_dict)
         self.added_new_rec = False
