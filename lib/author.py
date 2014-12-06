@@ -13,7 +13,7 @@ class Author:
         returns a list of dicts of author first and last names
         one dict per author associated with each book id
         '''
-        sql = '''select last_name, first_name
+        sql = '''select last_name, first_name, a.author_id
                  from author a
                  join book_author ba on a.author_id = ba.author_id
                  where ba.book_id = %s
@@ -21,6 +21,15 @@ class Author:
     
         authors = execute(self.connection, sql)
         
+        return authors
+
+    def getCatAuthors(self):
+        
+        sql = '''select author_id, concat(last_name, ', ', first_name)
+                 from author'''
+
+        authors = execute(self.connection, sql)
+
         return authors
 
     def addBookAuthor(self, book_id, author_id):

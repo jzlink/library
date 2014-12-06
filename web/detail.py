@@ -13,7 +13,7 @@ from HTMLutils import HTMLutils
 
 class Detail():
 
-   def __init__(self, book_id, activity):
+   def __init__(self):
 
       self.htmlUtils = HTMLutils()
 
@@ -26,12 +26,12 @@ class Detail():
          value = str(form.getvalue(key))
          self.form_values[key] = value
 
-      self.book_id= book_id
-      self.activity= activity
+      self.book_id= self.form_values['book_id']
+      self.activity= self.form_values['activity']
 
       self.message = ''
 
-      if activity == 'edit':
+      if self.activity == 'edit':
          self.report = Report('edit')
          self.table = self.report.buildEditBook(self.book_id)
          self.header = 'Edit Record'
@@ -41,9 +41,9 @@ class Detail():
          self.show_blank = ''
          self.cancel_button_text = 'Cancel'
          self.cancel_button_address = 'detail.py?book_id=%s&activity=view'\
-                %book_id
+                %self.book_id
 
-      elif activity == 'view':
+      elif self.activity == 'view':
          self.report = Report('record')
          self.table = self.report.buildDetail(self.book_id)
          self.header = 'Book Record' 
@@ -54,7 +54,7 @@ class Detail():
          self.cancel_button_address = 'main.py'
          self.cancel_button_text = 'Back to Catalog'
 
-      elif activity == 'add':
+      elif self.activity == 'add':
          self.header = 'Enter New Record' 
          self.page = 'edit'
          self.new_activity = 'submit_new'
@@ -66,24 +66,22 @@ class Detail():
       else:
          raise Exception ("Unrecognized activity: %s" %activity)
 
-      if activity == 'update':
+      if self.activity == 'update':
          record = Record(form_values)
          #message = record.debug()
          self.updated, self.added = record.updateRecord()
          self.message = 'Yes'
          activity = 'view'
 
-      if activity == 'submit_new':
+      if self.activity == 'submit_new':
          record = Record(form_values)
          book_id = record.updateRecord()
          message = 'The following record was added to the libary:'
          activity = 'view'
-
+ 
    def buildPage(self):
       page = ''
 
-      #input_button = self.htmlUtils.build_input_button()
-      #cancel_button = self.htmlUtils.build_cancel_button()
       form_header = \
           self.htmlUtils.build_form_header('POST', 'detail.py', 'form')
       form_footer = self.htmlUtils.build_form_footer()
@@ -99,6 +97,7 @@ class Detail():
       page += 'Content-Type: text/html\n'
       page += header
       page += '<br>'
+#      page += self.book_id
       page += self.message
       page += form_header
       page += self.table
@@ -178,7 +177,7 @@ class Detail():
       hidden_activity = self.htmlUtils.getHidden\
           ('activity', self.new_activity)
       button = self.htmlUtils.getButton\
-          (self.button_text, 'javascript: document.form.submit()')
+          (self.button_text,  'javascript:document.form.submit()')
 
       inputValues = hidden_bookID + hidden_activity + button
       
@@ -190,10 +189,10 @@ class Detail():
       return cancel
 
 
-def test():
-   test = Detail(335, 'view')
+def page():
+   page = Detail()
 #   print test.buildHeader()
-   print test.buildPage()
+   print page.buildPage()
 
 if __name__ == '__main__':
-    test()
+    page()

@@ -90,7 +90,7 @@ class Query(object):
         return sql
 
 
-    def getColumnValues(column):
+    def getColumnValues(self, column):
         '''accepts a column
         references metadata
         returns a list of lits where the frist element in the list is the 

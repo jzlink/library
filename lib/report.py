@@ -2,10 +2,12 @@
 
 import yaml
 
-from utils import loadYaml
+from utils import loadYaml, date2str
 from query import Query
 from htmltable import HtmlTable
 from HTMLutils import HTMLutils
+from author import *
+from whenRead import *
 
 class Report():
 
@@ -45,7 +47,7 @@ class Report():
             if rec['date'] == None:
                 rec['date'] = '-'
             i += 1
-            href = '<a href="newdetail.py?book_id=%d&activity=%s">%s'\
+            href = '<a href="detail.py?book_id=%d&activity=%s">%s'\
                 % (rec['book_id'], activity, rec['title'])
 
             mainTable.addRow(\
@@ -80,8 +82,7 @@ class Report():
         for column, display in self.display_names:
             form_type = self.columns[column][0]['form_type']
             default = bookData[0][column]
-
-            if column == 'author':
+            if column == 'author' or column == 'when_read':
                 pass
             
             else:
@@ -121,37 +122,50 @@ class Report():
                     form_field = form_type
 
                 editBookTable.addRow([display, form_field])
+                
+        editBookT =  editBookTable.getTable()
+        editAuthorT = self.buildEditAuthor(book_id)
+        editDateT = self.buildEditDate(book_id)
 
-        return editBookTable.getTable()
+        subTables = HtmlTable(border=0, cellpadding = 20)
+        subTables.addRow([editAuthorT])
+        subTables.addRow([editDateT])
+        subT = subTables.getTable()
 
-    def buildEditAuthor(self):
+        editModules = HtmlTable(border=0, cellpadding=30)
+        editModules.addRow([editBookT, subT])
+
+        return editModules.getTable()
+
+    def buildEditAuthor(self, book_id):
         author = Author()
-        names = author.getAuthors(self.book_id, 'concat') 
+        bookAuthor = author.getBookAuthor(book_id)
+        editAuthorTable = HtmlTable(border=1, cellpadding=3)
+        editAuthorTable.addHeader(['Author', 'Add New Author'])
 
-        form_fields = []
-        buttons = []
-        count = 0
-        for item in names:
-            count += 1
-            form_field = '''
-               <input class = author_autocomplete  name = author_fullname_%s 
-                value = '%s'>''' %(count, item['name'])
-            form_fields.append(form_field)
+        for author in bookAuthor:
+            catAuthor = '%s %s' %(author['first_name'], author['last_name'])
+            remove = 'Remove author %s' %author['author_id']
 
-        #add hidden section for addtional authors
-        buttons.append('''
-         <input type = "button" id = "add_author" value = "Add Author">''')
+            editAuthorTable.addRow([catAuthor, remove])
 
-        #add hidden section for brand new authors
-        buttons.append('''
-         <input type ="button" id = "add_new_author" value = "Add New Author" >
-             <div id = "new_author_fields" style = "display:none">
-              Last Name:<input type = "text" name = "author_last_name">
-              First Name:<input type = "text" name = "author_first_name">
-              </div>''')
-        author_data = {'form_fields': form_fields, 'buttons':buttons}
+        return editAuthorTable.getTable()
 
-        return author_data
+
+    def buildEditDate(self, book_id):
+        when = WhenRead()
+        bookDate = when.getWhenRead(book_id)
+
+        editDateTable = HtmlTable(border=1, cellpadding=3)
+        editDateTable.addHeader(['Date', 'Add Addtional Date'])
+
+        for bD in bookDate:
+            remove = 'Forget this date'
+
+            editDateTable.addRow([str(bD[0]), remove])
+
+#        return bookDate
+        return editDateTable.getTable()        
 
     def getDisplayNames(self, page):
         '''given a page and column attribute 
@@ -182,18 +196,25 @@ class Report():
         return orderedColDisplay
 
 def test():
-    mainTest = Report('main')
+    dateTest = Report('record')
+    dateTable = dateTest.buildEditDate(328)
+    for d in dateTable:
+        print d[0]
+
+#    authorTest = Report('record')
+#    authorTable = authorTest.buildEditAuthor(328)
+#    print authorTable
+#    mainTest = Report('main')
 #    mainTable = mainTest.buildMain()
 #    mainCols = mainTest.getDisplayNames('main')
-    print mainTest.display_names
-    print mainTest.pages
+#    print mainTest.display_names
+#    print mainTest.pages
 
 #    detailTest = Report('record')
 #    detailTable = detailTest.buildDetail(335)
 
 #    eBookTest = Report('edit')
-#    editBookTable = eBookTest.buildEditBook(335)
-    
+#    editBookTable = eBookTest.buildEditBook(328)
 #    print editBookTable
 
 if __name__ == '__main__':

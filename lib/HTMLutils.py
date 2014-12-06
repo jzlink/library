@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!usr/bin/env python
 
 class HTMLutils():
     '''holds helper methods that can build various HTML form types'''
@@ -86,7 +86,7 @@ class HTMLutils():
         return hidden
 
     def getButton(self, value, onClick):
-        button = '<input type = "button" value = %s onclick = %s'\
+        button = '<input type = "button" value = %s onclick = %s>'\
             % (value, onClick)
 
         return button
