@@ -21,11 +21,13 @@ class Book():
 
                 if record_table == 'book' and edit == 'T':
                     update = self.getDiff(book_id, column, value)
+
                     if update:
                         if varType == 'string':
                             value = '"%s"' %value
                         if varType == 'int':
                             value = int(value)
+
                         sql ='update book set %s = %s where book.book_id = %s'\
                             % (column, value, book_id)
                         results = execute(self.connection, sql)
