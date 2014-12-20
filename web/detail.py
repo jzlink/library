@@ -7,16 +7,18 @@ import cgi
 import cgitb
 cgitb.enable()
 
-from record import Record
+from book import Book
 from report import Report
 from HTMLutils import HTMLutils
+from utils import loadYaml
 
 class Detail():
 
    def __init__(self):
 
       self.htmlUtils = HTMLutils()
-
+      
+      self.columns = loadYaml('columns')
       #get form values
       form = cgi.FieldStorage(keep_blank_values = 1)
       self.form_values = {}
@@ -30,55 +32,62 @@ class Detail():
       self.activity= self.form_values['activity']
 
       self.message = ''
+      
+      check_again = True
 
-      if self.activity == 'edit':
-         self.report = Report('edit')
-         self.table = self.report.buildEditBook(self.book_id)
-         self.header = 'Edit Record'
-         self.page = 'edit'
-         self.new_activity = 'update'
-         self.button_text = 'Submit'
-         self.show_blank = ''
-         self.cancel_button_text = 'Cancel'
-         self.cancel_button_address = 'detail.py?book_id=%s&activity=view'\
+      while check_again:
+         if self.activity == 'edit':
+            self.report = Report('edit')
+            self.table = self.report.buildEditBook(self.book_id)
+            self.header = 'Edit Record'
+            self.page = 'edit'
+            self.new_activity = 'update'
+            self.button_text = 'Submit'
+            self.show_blank = None
+            self.cancel_button_text = 'Cancel'
+            self.cancel_button_address = 'detail.py?book_id=%s&activity=view'\
                 %self.book_id
+            check_again = False
 
-      elif self.activity == 'view':
-         self.report = Report('record')
-         self.table = self.report.buildDetail(self.book_id)
-         self.header = 'Book Record' 
-         self.page = 'record'
-         self.new_activity = 'edit'
-         self.button_text = 'Edit'
-         self.show_blank = '-'
-         self.cancel_button_address = 'main.py'
-         self.cancel_button_text = 'Back to Catalog'
+         elif self.activity == 'view':
+            self.report = Report('record')
+            self.table = self.report.buildDetail(self.book_id)
+            self.header = 'Book Record' 
+            self.page = 'record'
+            self.new_activity = 'edit'
+            self.button_text = 'Edit'
+            self.show_blank = '-'
+            self.cancel_button_address = 'main.py'
+            self.cancel_button_text = 'Back to Catalog'
+            check_again = False
+            
+         elif self.activity == 'add':
+            self.header = 'Enter New Record' 
+            self.page = 'edit'
+            self.new_activity = 'submit_new'
+            self.button_text = 'Save'
+            self.show_blank = ''
+            self.cancel_button_address = 'main.py'
+            self.cancel_button_text = 'Cancel'          
+            check_again = False
 
-      elif self.activity == 'add':
-         self.header = 'Enter New Record' 
-         self.page = 'edit'
-         self.new_activity = 'submit_new'
-         self.button_text = 'Save'
-         self.show_blank = ''
-         self.cancel_button_address = 'main.py'
-         self.cancel_button_text = 'Cancel'
-          
-      else:
-         raise Exception ("Unrecognized activity: %s" %activity)
-
-      if self.activity == 'update':
-         record = Record(form_values)
+         elif self.activity == 'update':
+            book = Book()
+            self.updated = book.updateBook(self.form_values)
          #message = record.debug()
-         self.updated, self.added = record.updateRecord()
-         self.message = 'Yes'
-         activity = 'view'
+            self.message = 'Yes'
+            self.activity = 'view'
 
-      if self.activity == 'submit_new':
-         record = Record(form_values)
-         book_id = record.updateRecord()
-         message = 'The following record was added to the libary:'
-         activity = 'view'
- 
+         elif self.activity == 'submit_new':
+            record = Record(self.form_values)
+            book_id = record.updateRecord()
+            self.message = 'The following record was added to the libary:'
+            self.activity = 'view'
+
+         else:
+            raise Exception ("Unrecognized activity: %s" %self.activity)
+      
+
    def buildPage(self):
       page = ''
 
@@ -88,8 +97,8 @@ class Detail():
       html_footer = self.htmlUtils.build_html_footer()
 
       if self.message == 'Yes':
-         self.message = self.buildMessage(self.updated, self.added)
-         
+         self.message = self.buildMessage(updated = self.updated)
+
       header = self.buildHeader()
       submit = self.buildInput()
       cancel = self.buildCancel()
@@ -104,13 +113,13 @@ class Detail():
       page += '<br>'
       page += submit
       page += cancel
-#      page += form_values
+      page += str(self.form_values)
       page += form_footer
       page += html_footer
 
       return page
 
-   def buildMessage(self, updated, added):
+   def buildMessage(self, updated, added= None):
       updates = ''
       adds = ''
       
@@ -159,8 +168,8 @@ class Detail():
                 });
 
                 $(function(){
-                    $("#add_new_author").click(function(){
-                        $("#new_author_fields").toggle();
+                    $("#debug").click(function(){
+                        $("#debug").toggle();
                      });
                 });
 
@@ -189,10 +198,6 @@ class Detail():
       return cancel
 
 
-def page():
-   page = Detail()
-#   print test.buildHeader()
-   print page.buildPage()
-
 if __name__ == '__main__':
-    page()
+    page = Detail()
+    print page.buildPage()
