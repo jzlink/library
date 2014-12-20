@@ -43,7 +43,7 @@ class Book():
         if bookVal == value:
             different = False
 
-        return different, value, bookVal
+        return different
 
 
 def test():
