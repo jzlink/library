@@ -17,17 +17,19 @@ class Book():
             if column in self.columns:
                 record_table = self.columns[column][0]['from']
                 edit = self.columns[column][0]['editable']
+                varType = self.columns[column][0]['type']
 
                 if record_table == 'book' and edit == 'T':
                     update = self.getDiff(book_id, column, value)
                     if update:
-                        if type(value) == str:
+                        if varType == 'string':
                             value = '"%s"' %value
-                            sql = \
-                            'update book set %s = %s where book.book_id = %s'\
-                                % (column, value, book_id)
-                            results = execute(self.connection, sql)
-                            updates[column]= value
+                        if varType == 'int':
+                            value = int(value)
+                        sql ='update book set %s = %s where book.book_id = %s'\
+                            % (column, value, book_id)
+                        results = execute(self.connection, sql)
+                        updates[column]= value
 
         return updates
 
@@ -37,20 +39,21 @@ class Book():
         results = execute(self.connection, sql)
         bookVal = str(results[0][column])
 
-        if bookVal == None or bookVal == 'NULL':
+        if bookVal == 'None':
             bookVal = ''
 
         if bookVal == value:
             different = False
-
+            
+        #return different, value, bookVal
         return different
-
+    
 
 def test():
     testDict = {'book_id': 328 , 'title': 'Good Omens', 'notes': 'Re-read, I remember it being better'}
 
     test = Book()
-    print  test.getDiff(328, 'notes', 'Re-read, I remember it being better')
+    print  test.getDiff(328, 'series_num', '')
 #    updates = test.updateBook(testDict)
 #    print "Updated the following columns: %s" %updates
 
