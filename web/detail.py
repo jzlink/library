@@ -8,6 +8,7 @@ import cgitb
 cgitb.enable()
 
 from book import Book
+from series import Series
 from report import Report
 from HTMLutils import HTMLutils
 from utils import loadYaml
@@ -17,7 +18,8 @@ class Detail():
    def __init__(self):
 
       self.htmlUtils = HTMLutils()
-      
+      self.series = Series()
+
       self.columns = loadYaml('columns')
       #get form values
       form = cgi.FieldStorage(keep_blank_values = 1)
@@ -151,8 +153,15 @@ class Detail():
 
    def buildHeader(self):
       authors = ['list', 'of', 'authors']
-      series = ['list', 'of', 'series']
-      
+
+      # From a dict {1: 'Trilogy', 3: 'Inheritance', ...}
+      # Construct a string of Javascript for Autocomplete()
+      #   '[{label: 1, value: "Trilogy"}, {label: 3, value: 'Inheritance'} ...'
+      ac_series = '['
+      for k,v in Series().getAsDict().items():
+         ac_series += '{label: "%s", value: %s}, ' % (v,k)
+      ac_series += ']'
+
       html_header= '''
         <html>
         <link rel="stylesheet" 
@@ -178,7 +187,7 @@ class Detail():
         </script>
 
         <h3>%s</h3>
-        '''% (authors, series, self.header)
+        '''% (authors, ac_series, self.header)
 
       return html_header
 

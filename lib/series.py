@@ -38,6 +38,17 @@ class Series:
         
         return "Series %s  added to Database" %(series)
 
+    def getAsDict(self):
+        '''Return all series records as a dict with key, values
+           of id and name
+        '''
+        sql = 'select series_id as id, series as name from series'
+        results = execute(self.connection, sql)
+        asDict = {}
+        for row in results:
+            asDict[row['id']] = row['name']
+        return asDict
+
 def test():
     test = Series()
     getSeries = test.getSeries(1)
