@@ -15,10 +15,16 @@ class Report():
         self.query = Query()
         self.forms = HTMLutils()
 
+        self.report = report
         self.columns = loadYaml('columns')
         self.pages = loadYaml('pages')
 
-        self.display_names = self.getDisplayNames(report)
+        if report == 'add':
+            page = 'edit'
+        else:
+            page = report
+
+        self.display_names = self.getDisplayNames(page)
 
     def buildMain(self, where= None, order_by = None):
         bookData = self.query.getData('main', where, order_by)
@@ -72,16 +78,22 @@ class Report():
 
         return detailTable.getTable()
 
-    def buildEditBook(self, book_id):
-        where = 'book.book_id =' + str(book_id)
-        bookData = self.query.getData('edit', where)
+    def buildBookForm(self, book_id= None):
+        if self.report == 'edit' and book_id != None:
+            where = 'book.book_id =' + str(book_id)
+            bookData = self.query.getData('edit', where)
 
-        editBookTable = HtmlTable(border=1, cellpadding=3)
-        editBookTable.addHeader(['Field', 'Entry'])
+        bookTable = HtmlTable(border=1, cellpadding=3)
+        bookTable.addHeader(['Field', 'Entry'])
 
         for column, display in self.display_names:
             form_type = self.columns[column][0]['form_type']
-            default = bookData[0][column]
+
+            if self.report == 'edit':
+                default = bookData[0][column]
+            else:
+                default = None
+
             if column == 'author' or column == 'when_read':
                 pass
             
@@ -121,19 +133,24 @@ class Report():
                 else:
                     form_field = form_type
 
-                editBookTable.addRow([display, form_field])
+                bookTable.addRow([display, form_field])
                 
-        editBookT =  editBookTable.getTable()
-        editAuthorT = self.buildEditAuthor(book_id)
-        editDateT = self.buildEditDate(book_id)
+        bookT = bookTable.getTable()
+
+        if self.report == 'edit': 
+            authorT= self.buildEditAuthor(book_id)
+            dateT = self.buildEditDate(book_id)
+        else:
+            authorT = self.buildAddAuthor()
+            dateT = self.buildAddDate()
 
         subTables = HtmlTable(border=0, cellpadding = 20)
-        subTables.addRow([editAuthorT])
-        subTables.addRow([editDateT])
+        subTables.addRow([authorT])
+        subTables.addRow([dateT])
         subT = subTables.getTable()
 
         editModules = HtmlTable(border=0, cellpadding=30)
-        editModules.addRow([editBookT, subT])
+        editModules.addRow([bookT, subT])
 
         return editModules.getTable()
 
@@ -152,6 +169,19 @@ class Report():
         return editAuthorTable.getTable()
 
 
+    def buildAddAuthor(self):
+        addAuthorTable = HtmlTable(border=0, cellpadding=3)
+        autoClist =  self.forms.getJQueryUI('author_id','', 'autocomplete')
+        last = self.forms.getTextField('last_name', '')
+        first = self.forms.getTextField('first_name', '')
+        
+
+        addAuthorTable.addHeader(['Author Exists in Library', 'Add New Author'])
+        addAuthorTable.addRow([autoClist, 'First Name:', first])
+        addAuthorTable.addRow(['', 'Last Name:', last])
+        
+        return addAuthorTable.getTable()                     
+
     def buildEditDate(self, book_id):
         when = WhenRead()
         bookDate = when.getWhenRead(book_id)
@@ -166,6 +196,14 @@ class Report():
 
 #        return bookDate
         return editDateTable.getTable()        
+
+    def buildAddDate(self):
+        datepicker =  self.forms.getJQueryUI('when_read','', 'datepicker')
+        addDateTable = HtmlTable(border=1, cellpadding=3)
+        
+        addDateTable.addRow(['Date', datepicker])
+
+        return addDateTable.getTable()
 
     def getDisplayNames(self, page):
         '''given a page and column attribute 
@@ -214,8 +252,8 @@ def test():
 #    detailTable = detailTest.buildDetail(335)
 
 #    eBookTest = Report('edit')
-#    editBookTable = eBookTest.buildEditBook(328)
-#    print editBookTable
+#    bookTable = eBookTest.buildEditBook(328)
+#    print bookTable
 
 if __name__ == '__main__':
     test()

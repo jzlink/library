@@ -10,15 +10,30 @@ class Book():
         self.connection = getDictConnection()
         self.columns = loadYaml('columns')
 
+
+    def addBook(self, formDict):
+        addSQL = 'insert into book (title) values ("STARTER")'
+        addDummy = execute(self.connection, addSQL)
+
+        findSQL = 'select book_id from book where title = "STARTER"'
+        book_id = execute(self.connection, findSQL)
+
+        formDict['book_id'] = book_id[0]['book_id']
+
+        update = self.updateBook(formDict)
+
+        return book_id[0]['book_id']
+
     def updateBook(self, formDict):
         updates = {}
         book_id = formDict['book_id']
         for column, value in formDict.items():
+            rTable = {}
             if column in self.columns:
                 record_table = self.columns[column][0]['from']
                 edit = self.columns[column][0]['editable']
                 varType = self.columns[column][0]['type']
-
+        
                 if record_table == 'book' and edit == 'T':
                     update = self.getDiff(book_id, column, value)
 
@@ -37,6 +52,7 @@ class Book():
 
     def getDiff(self, book_id, column, value):
         different = True
+
         sql = 'select %s from book where book_id = %s' % (column, book_id)
         results = execute(self.connection, sql)
         bookVal = str(results[0][column])

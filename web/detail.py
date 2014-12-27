@@ -38,7 +38,7 @@ class Detail():
       while check_again:
          if self.activity == 'edit':
             self.report = Report('edit')
-            self.table = self.report.buildEditBook(self.book_id)
+            self.table = self.report.buildBookForm(book_id = self.book_id)
             self.header = 'Edit Record'
             self.page = 'edit'
             self.new_activity = 'update'
@@ -62,6 +62,8 @@ class Detail():
             check_again = False
             
          elif self.activity == 'add':
+            self.report = Report('add')
+            self.table = self.report.buildBookForm()
             self.header = 'Enter New Record' 
             self.page = 'edit'
             self.new_activity = 'submit_new'
@@ -79,8 +81,8 @@ class Detail():
             self.activity = 'view'
 
          elif self.activity == 'submit_new':
-            record = Record(self.form_values)
-            book_id = record.updateRecord()
+            book = Book()
+            self.book_id = book.addBook(self.form_values)
             self.message = 'The following record was added to the libary:'
             self.activity = 'view'
 
@@ -113,7 +115,7 @@ class Detail():
       page += '<br>'
       page += submit
       page += cancel
-      page += str(self.form_values)
+#      page += str(self.form_values)
       page += form_footer
       page += html_footer
 
