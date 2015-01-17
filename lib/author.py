@@ -23,14 +23,21 @@ class Author:
         
         return authors
 
-    def getCatAuthors(self):
-        
-        sql = '''select author_id, concat(last_name, ', ', first_name)
+    def getAsDict(self):
+        '''Return all author records as a dict with key, values
+           of id and name contenated last name, first name
+        '''
+        sql = '''select author_id as id,
+                        concat(last_name, ', ', first_name) as name
                  from author'''
 
         authors = execute(self.connection, sql)
 
-        return authors
+        asDict = {}
+        for row in authors:
+            asDict[row['id']] = row['name']
+
+        return asDict
 
     def addBookAuthor(self, book_id, author_id):
         ''' accepts a book_id and author_id

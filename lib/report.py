@@ -123,12 +123,20 @@ class Report():
                     form_field =\
                         self.forms.getStaticRadio(column, default, options)
  
-                elif form_type == 'autocomplete' or 'datepicker':
+                elif form_type == 'datepicker':
                     if default == None:
                         default = ''
 
                     form_field =\
                         self.forms.getJQueryUI(column, default, form_type)
+
+                elif form_type == 'autocomplete':
+                    if default == None:
+                        default = ''
+
+                    form_field =\
+                        self.forms.getAutoComplete(column, default)
+
 
                 else:
                     form_field = form_type

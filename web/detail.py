@@ -117,7 +117,7 @@ class Detail():
       page += '<br>'
       page += submit
       page += cancel
-#      page += str(self.form_values)
+      page += str(self.form_values)
       page += form_footer
       page += html_footer
 
@@ -166,13 +166,24 @@ class Detail():
         <html>
         <link rel="stylesheet" 
            href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-        <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+           <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+           <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
-                $(function(){
-                    $(".author_autocomplete").autocomplete({source: %s});
-                    $("#series_autocomplete").autocomplete({source: %s});
-                });
+
+               $(function() {
+                            $("#series_autocomplete").autocomplete({
+                               source: %s,
+                               focus: function(event, ui) {
+                                      event.preventDefault();
+                                      $(this).val(ui.item.label);
+                                     },
+                               select: function(event, ui) {
+                                       event.preventDefault();
+                                       $(this).val(ui.item.label);
+                                       $("#series_ac_key").val(ui.item.value);
+                                      }
+                              });
+                          });
 
                 $(function() {
                     $( "#when_read_datepicker" ).datepicker();
@@ -187,7 +198,7 @@ class Detail():
         </script>
 
         <h3>%s</h3>
-        '''% (authors, ac_series, self.header)
+        '''% (ac_series, self.header)
 
       return html_header
 

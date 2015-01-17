@@ -78,6 +78,15 @@ class HTMLutils():
                   ''' %(column, form_type, column, default)
         return form_field
 
+    def getAutoComplete (self, column, default):
+
+        form_field = '''
+                   <input id = %s_autocomplete  name = %s value = '%s'>
+                   <input id = %s_ac_key type = "hidden" name = "%s_id">
+                  ''' %(column, column, default, column, column)
+        return form_field
+
+
     def getHidden(self, name, value):
         
         hidden = '<input type = "hidden" name = %s value = %s>' \
