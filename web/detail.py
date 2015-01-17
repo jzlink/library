@@ -117,7 +117,7 @@ class Detail():
       page += '<br>'
       page += submit
       page += cancel
-      page += str(self.form_values)
+#      page += str(self.form_values)
       page += form_footer
       page += html_footer
 

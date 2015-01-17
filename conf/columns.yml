@@ -93,6 +93,14 @@ series_num:
     display: Series No.
     form_type:  text
 
+series_id:
+  - select: series_id
+    from: book
+    type: int 
+    editable: T
+    display: Series ID
+    form_type: text
+
 read_status:
   - select: read_status.status
     from: read_status
