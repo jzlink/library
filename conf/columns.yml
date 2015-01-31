@@ -154,7 +154,7 @@ when_read:
 author:
   - select: >
             group_concat(distinct concat(last_name, ', ', first_name)
-            order by last_name separator ' & ') 
+            order by last_name separator '; ') 
     from: author
     type: string 
     editable: F

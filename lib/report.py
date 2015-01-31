@@ -166,7 +166,8 @@ class Report():
         author = Author()
         bookAuthor = author.getBookAuthor(book_id)
         editAuthorTable = HtmlTable(border=1, cellpadding=3)
-        editAuthorTable.addHeader(['Author', 'Add New Author'])
+        add = '<a href="addAuthor.py?book_id=%s&activity=enter">Add New Author</a>' %book_id 
+        editAuthorTable.addHeader(['Author', add])
 
         for author in bookAuthor:
             catAuthor = '%s %s' %(author['first_name'], author['last_name'])

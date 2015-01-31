@@ -25,13 +25,19 @@ class HTMLutils():
 
 
 ##Form Fields
-    def getTextField(self, fieldName, default):
+    def getTextField(self, fieldName, default, readonly = False):
         ''' given the name of a field and the desired default
         build a simple text form field'''
+       
+        if readonly:
+             form_field = '''
+                <input id = "%s" type = "text" name = "%s" value = "%s"\
+               size = "100" readonly> '''%(fieldName, fieldName,  default)
+        else:
+             form_field = '''
+         <input id = "%s" type = "text" name = "%s" value = "%s" size = "100">
+        '''%(fieldName, fieldName,  default)
 
-        form_field = '''
-         <input type = "text" name = "%s" value = "%s" size = "100">
-        '''%(fieldName, default)
 
         return form_field
 

@@ -24,20 +24,20 @@ class Author:
         return authors
 
     def getAsDict(self):
-        '''Return all author records as a dict with key, values
-           of id and name contenated last name, first name
+        '''Return all author records as a list of dicts with key, values
+           of last name, first name, if as in:
+           [{last_name:Pratchett, first_name:Terry, author_id:10},
+           {last:smith, first:john, id:4}, etc.]
         '''
-        sql = '''select author_id as id,
-                        concat(last_name, ', ', first_name) as name
+        sql = '''select author_id as value,
+                        first_name,
+                        last_name,
+                        concat(last_name, ', ', first_name) as label
                  from author'''
 
         authors = execute(self.connection, sql)
 
-        asDict = {}
-        for row in authors:
-            asDict[row['id']] = row['name']
-
-        return asDict
+        return authors
 
     def addBookAuthor(self, book_id, author_id):
         ''' accepts a book_id and author_id
@@ -82,8 +82,9 @@ def test():
     #addAuthor = test.addNewAuthor('Eager', 'Edward')
     #add = test.addBookAuthor(328, 224)
     #remove = test.removeBookAuthor(328,224)
-    getAuthors = test.getBookAuthor(328)
-    print getAuthors
+ #   getAuthors = test.getBookAuthor(328)
+    authordict =test.getAsDict()
+    print authordict
 
 if __name__ == '__main__':
     test()
