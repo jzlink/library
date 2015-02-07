@@ -233,8 +233,8 @@ class HtmlTable (object):
                     value = self.table.get(key, '')
                     if isinstance(value, (int, long, list, dict)):
                         value = unicode(value)
-                    o += value
-                    #o += unicode(self.table[key]).encode('utf-8')
+                    #o += value
+                    o += unicode(self.table[key]).encode('utf-8')
                 except Exception, e:
                     if DEBUG_UNICODE_ERROR:
                         from datetime import datetime
