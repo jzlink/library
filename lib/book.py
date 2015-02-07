@@ -55,10 +55,7 @@ class Book():
 
         sql = 'select %s from book where book_id = %s' % (column, book_id)
         results = execute(self.connection, sql)
-        bookVal = str(results[0][column])
-
-        if bookVal == 'None':
-            bookVal = ''
+        bookVal = str(results[0][column] or '')
 
         if bookVal == value:
             different = False
