@@ -50,14 +50,23 @@ class Report():
         activity = 'view'
 
         for rec in bookData: 
-            if rec['date'] == None:
-                rec['date'] = '-'
             i += 1
             href = '<a href="detail.py?book_id=%d&activity=%s">%s'\
                 % (rec['book_id'], activity, rec['title'])
 
+            # format dates
+            if rec['date']:
+                dates = '<br>'.join(['<nobr>%s</nobr>' % d.strip()
+                                     for d in rec['date'].split('&')])
+            else:
+                dates = '-'
+
             mainTable.addRow(\
-                [i, href, rec['author'], rec['notes'], rec['date']])
+                [i,
+                 href,
+                 rec['author'] or '' ,
+                 rec['notes' ]       ,
+                 dates])
 
         return mainTable.getTable()
 
