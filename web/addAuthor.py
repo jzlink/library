@@ -35,8 +35,8 @@ class addAuthor():
          value = str(form.getvalue(key))
          self.form_values[key] = value
 
-      self.book_id= self.form_values['book_id']
-      self.activity= self.form_values['activity']
+      self.book_id= 328
+      self.activity= 'view'
 
 
    def buildPage(self):
@@ -53,36 +53,42 @@ class addAuthor():
 
       page += 'Content-Type: text/html\n'
       page += header
-      page += '<br>'
+      page += '<div id = "authorDiv" style = "display: block">'
       page += form_header
       page += form
-      page += '<br>'
       page += submit
       page += str(self.form_values)
       page += form_footer
+      page += '</div>'
+      page += '<button id = "authorToggle"> Add Author </button>'
       page += html_footer
 
       return page
 
    def buildHeader(self):
       authors = self.author.getAsDict()
-
       ac_authors = json.dumps(authors)
-      
-      authorFunc = autoCAuthor(ac_authors)
+      authorHandler = autoCAuthor(ac_authors)
+
+      toggleAuthor = toggle('#authorToggle', '#authorDiv')
 
       html_header= '''
         <html>
         <link rel="stylesheet" 
            href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-           <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-           <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+       <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+       <script src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+
+       <script>
+         %s
+       </script>
+
         <script>
-            %s
+           %s
         </script>
 
         <h3>Adding Authors</h3>
-        '''% (authorFunc)
+        ''' % (authorHandler, toggleAuthor)
 
       return html_header
 

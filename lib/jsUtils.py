@@ -67,3 +67,16 @@ def datePicker(self):
 
 '''
     return function
+
+def toggle(toggler, element):
+
+     e = '"'+ element + '"'
+     t = '"'+ toggler + '"'
+     function = '''
+     $(function(){
+               $(%s).click(function(){
+                         $(%s).toggle();
+                          });
+                });
+ ''' % (t, e)
+     return function
