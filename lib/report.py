@@ -155,7 +155,7 @@ class Report():
         bookT = bookTable.getTable()
 
         if self.report == 'edit': 
-            authorT= self.buildEditAuthor(book_id)
+            authorT, authorF= self.buildEditAuthor(book_id)
             dateT = self.buildEditDate(book_id)
         else:
             authorT = self.buildAddAuthor()
@@ -163,6 +163,7 @@ class Report():
 
         subTables = HtmlTable(border=0, cellpadding = 20)
         subTables.addRow([authorT])
+        subTables.addRow([authorF])
         subTables.addRow([dateT])
         subT = subTables.getTable()
 
@@ -175,7 +176,12 @@ class Report():
         author = Author()
         bookAuthor = author.getBookAuthor(book_id)
         editAuthorTable = HtmlTable(border=1, cellpadding=3)
-        add = '<a href="addAuthor.py?book_id=%s&activity=enter">Add New Author</a>' %book_id 
+        add ='<button id = "authorToggle"> Add Author </button>'
+
+        addAuthor = '<div id = "addAuthor" style = "display: none">'
+        addAuthor += self.buildAddAuthor()
+        addAuthor += '</div>'
+
         editAuthorTable.addHeader(['Author', add])
 
         for author in bookAuthor:
@@ -184,21 +190,20 @@ class Report():
 
             editAuthorTable.addRow([catAuthor, remove])
 
-        return editAuthorTable.getTable()
+        return editAuthorTable.getTable(), addAuthor
 
 
     def buildAddAuthor(self):
-        addAuthorTable = HtmlTable(border=0, cellpadding=3)
-        autoClist =  self.forms.getJQueryUI('author_id','', 'autocomplete')
-        last = self.forms.getTextField('last_name', '')
-        first = self.forms.getTextField('first_name', '')
-        
-
-        addAuthorTable.addHeader(['Author Exists in Library', 'Add New Author'])
-        addAuthorTable.addRow([autoClist, 'First Name:', first])
-        addAuthorTable.addRow(['', 'Last Name:', last])
-        
-        return addAuthorTable.getTable()                     
+      autocomplete = 'Author Name: ' + \
+          self.forms.getAutoComplete('author', '',) + \
+          '(Last Name, First Name)'
+      first_name = 'First Name: ' + \
+          self.forms.getTextField ('first_name', '', readonly = True)
+      last_name = 'Last Name: '+ \
+          self.forms.getTextField ('last_name', '', readonly = True)
+      authorForm = autocomplete + '</br>' + first_name + '</br>'+ \
+          last_name
+      return authorForm
 
     def buildEditDate(self, book_id):
         when = WhenRead()

@@ -14,6 +14,7 @@ from report import Report
 from HTMLutils import HTMLutils
 from utils import loadYaml
 from author import Author
+from jsUtils import *
 
 class addAuthor():
 
@@ -34,8 +35,8 @@ class addAuthor():
          value = str(form.getvalue(key))
          self.form_values[key] = value
 
-      self.book_id= self.form_values['book_id']
-      self.activity= self.form_values['activity']
+      self.book_id= 328
+      self.activity= 'view'
 
 
    def buildPage(self):
@@ -52,95 +53,55 @@ class addAuthor():
 
       page += 'Content-Type: text/html\n'
       page += header
-      page += '<br>'
-      page += form_header
+      page += '<div id = "authorDiv" style = "display: none">'
       page += form
       page += submit
       page += str(self.form_values)
       page += form_footer
+      page += '</div>'
+      page += '<button id = "authorToggle"> Add Author </button>'
       page += html_footer
 
       return page
 
    def buildHeader(self):
       authors = self.author.getAsDict()
-
-      # From a dict {1: 'Trilogy', 3: 'Inheritance', ...}
-      # Construct a string of Javascript for Autocomplete()
-      #   '[{label: 1, value: "Trilogy"}, {label: 3, value: 'Inheritance'} ...'
-      ac_series = '['
-      for k,v in Series().getAsDict().items():
-         ac_series += '{label: "%s", value: %s}, ' % (v,k)
-      ac_series += ']'
-
       ac_authors = json.dumps(authors)
-      
+      authorHandler = autoCAuthor(ac_authors)
+
+      toggleAuthor = toggle('#authorToggle', '#authorDiv')
 
       html_header= '''
         <html>
         <link rel="stylesheet" 
            href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
-           <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-           <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+       <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+       <script src="//code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+
+       <script>
+         %s
+       </script>
+
         <script>
-
-               $(function() {
-                            $("#author_autocomplete").autocomplete({
-                               source: %s,
-                               focus: function(event, ui) {
-                                      event.preventDefault();
-                                      $(this).val(ui.item.label);
-                                     },
-                               change: function(event, ui) {
-                                     event.preventDefault();
-                                     if (!ui.item){
-                                        var fullname = this.value.split(', ');
-                                        var first = fullname[1];
-                                        var last = fullname[0];
-                            var add = confirm('Add '+first +' ' + last + ' to the DB?');
-                            if (add){
-                                     $("#first_name").val(first);
-                                     $("#last_name").val(last);
-};
-                                     }
-                                     else{
-                                     event.preventDefault();
-                                     $(this).val(ui.item.label);
-                                     $("#author_ac_key").val(ui.item.value);
-                                     $("#author_id").val(ui.item.value);
-                                     $("#first_name").val(ui.item.first_name);
-                                     $("#last_name").val(ui.item.last_name);
-                                     };
-                               }
-                              });
-                          });
-
-                $(function() {
-                    $( "#when_read_datepicker" ).datepicker();
-                });
-
-                $(function(){
-                    $("#debug").click(function(){
-                        $("#debug").toggle();
-                     });
-                });
-
+           %s
         </script>
 
         <h3>Adding Authors</h3>
-        '''% (ac_authors)
+        ''' % (authorHandler, toggleAuthor)
 
       return html_header
 
    def buildForm(self):
       autocomplete = 'Author Name: ' + \
-          self.htmlUtils.getAutoComplete('author', '') + \
-          '(Last Name, First Name)'
+          self.htmlUtils.getAutoComplete('author', '',\
+                           className = 'addAuthor') + '(Last Name, First Name)'
       first_name = 'First Name: ' + \
-          self.htmlUtils.getTextField('first_name', '', readonly = True)
+          self.htmlUtils.getTextField\
+          ('first_name', '', readonly = True, className = 'addAuthor')
       last_name = 'Last Name: '+ \
-          self.htmlUtils.getTextField('last_name', '', readonly = True)
-      authorForm = autocomplete + '</br> <p>' + first_name + '</br> <p>'+ \
+          self.htmlUtils.getTextField\
+          ('last_name', '', readonly = True, className = 'addAuthor')
+      authorForm = autocomplete + '</br><p>' + first_name + '</p></br>'+ \
           last_name
       return authorForm
 

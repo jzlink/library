@@ -6,12 +6,15 @@
 import cgi
 import cgitb
 cgitb.enable()
+import json
 
 from book import Book
 from series import Series
+from author import Author
 from report import Report
 from HTMLutils import HTMLutils
 from utils import loadYaml
+from jsUtils import *
 
 class Detail():
 
@@ -19,6 +22,7 @@ class Detail():
 
       self.htmlUtils = HTMLutils()
       self.series = Series()
+      self.author = Author()
 
       self.columns = loadYaml('columns')
       #get form values
@@ -152,15 +156,23 @@ class Detail():
 
 
    def buildHeader(self):
-      authors = ['list', 'of', 'authors']
-
+      
       # From a dict {1: 'Trilogy', 3: 'Inheritance', ...}
       # Construct a string of Javascript for Autocomplete()
       #   '[{label: 1, value: "Trilogy"}, {label: 3, value: 'Inheritance'} ...'
+      
       ac_series = '['
       for k,v in Series().getAsDict().items():
          ac_series += '{label: "%s", value: %s}, ' % (v,k)
       ac_series += ']'
+
+      seriesHandler = autoCSeries(ac_series)
+
+      authors = self.author.getAsDict()
+      ac_authors = json.dumps(authors)
+      authorHandler = autoCAuthor(ac_authors)
+
+      toggleAuthor = toggle('#authorToggle', '#addAuthor')
 
       html_header= '''
         <html>
@@ -169,36 +181,17 @@ class Detail():
            <script src="//code.jquery.com/jquery-1.10.2.js"></script>
            <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
-
-               $(function() {
-                            $("#series_autocomplete").autocomplete({
-                               source: %s,
-                               focus: function(event, ui) {
-                                      event.preventDefault();
-                                      $(this).val(ui.item.label);
-                                     },
-                               select: function(event, ui) {
-                                       event.preventDefault();
-                                       $(this).val(ui.item.label);
-                                       $("#series_ac_key").val(ui.item.value);
-                                      }
-                              });
-                          });
-
-                $(function() {
-                    $( "#when_read_datepicker" ).datepicker();
-                });
-
-                $(function(){
-                    $("#debug").click(function(){
-                        $("#debug").toggle();
-                     });
-                });
-
+           %s
+        </script>
+        <script>
+           %s
+        </script>
+        <script>
+           %s
         </script>
 
         <h3>%s</h3>
-        '''% (ac_series, self.header)
+        '''% (seriesHandler, authorHandler, toggleAuthor, self.header)
 
       return html_header
 

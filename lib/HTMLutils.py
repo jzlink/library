@@ -25,19 +25,22 @@ class HTMLutils():
 
 
 ##Form Fields
-    def getTextField(self, fieldName, default, readonly = False):
+    def getTextField(self, fieldName, default, readonly = False, className=''):
         ''' given the name of a field and the desired default
         build a simple text form field'''
-       
-        if readonly:
-             form_field = '''
-                <input id = "%s" type = "text" name = "%s" value = "%s"\
-               size = "100" readonly> '''%(fieldName, fieldName,  default)
-        else:
-             form_field = '''
-         <input id = "%s" type = "text" name = "%s" value = "%s" size = "100">
-        '''%(fieldName, fieldName,  default)
+        
+        form_field = '''
+           <input id = "%s" type = "text" name = "%s" value = "%s"
+              size = "100"
+              ''' %(fieldName, fieldName,  default)
 
+        if readonly:
+             form_field += ' readonly'
+
+        if className:
+            form_field += ' class = "%s"' %className
+
+        form_field += '></input>'
 
         return form_field
 
@@ -84,12 +87,19 @@ class HTMLutils():
                   ''' %(column, form_type, column, default)
         return form_field
 
-    def getAutoComplete (self, column, default):
+    def getAutoComplete (self, column, default, className = ''):
 
-        form_field = '''
-                   <input id = %s_autocomplete  name = %s value = '%s'>
-                   <input id = %s_ac_key type = "hidden" name = "%s_id">
-                  ''' %(column, column, default, column, column)
+        form_field = "<input id = %s_autocomplete  name = %s value = '%s'" \
+            %(column, column, default)
+
+        if className:
+            form_field += "class = '%s'" %className 
+
+        form_field += '> </input>'
+
+        form_field += ''' 
+             <input id = %s_ac_key type = "hidden" name = "%s_id"></input> 
+                 ''' %( column, column)
         return form_field
 
 
