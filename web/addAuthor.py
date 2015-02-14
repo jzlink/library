@@ -53,8 +53,7 @@ class addAuthor():
 
       page += 'Content-Type: text/html\n'
       page += header
-      page += '<div id = "authorDiv" style = "display: block">'
-      page += form_header
+      page += '<div id = "authorDiv" style = "display: none">'
       page += form
       page += submit
       page += str(self.form_values)
@@ -94,13 +93,15 @@ class addAuthor():
 
    def buildForm(self):
       autocomplete = 'Author Name: ' + \
-          self.htmlUtils.getAutoComplete('author', '') + \
-          '(Last Name, First Name)'
+          self.htmlUtils.getAutoComplete('author', '',\
+                           className = 'addAuthor') + '(Last Name, First Name)'
       first_name = 'First Name: ' + \
-          self.htmlUtils.getTextField('first_name', '', readonly = True)
+          self.htmlUtils.getTextField\
+          ('first_name', '', readonly = True, className = 'addAuthor')
       last_name = 'Last Name: '+ \
-          self.htmlUtils.getTextField('last_name', '', readonly = True)
-      authorForm = autocomplete + '</br> <p>' + first_name + '</br> <p>'+ \
+          self.htmlUtils.getTextField\
+          ('last_name', '', readonly = True, className = 'addAuthor')
+      authorForm = autocomplete + '</br><p>' + first_name + '</p></br>'+ \
           last_name
       return authorForm
 

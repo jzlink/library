@@ -1,6 +1,6 @@
 #!usr/bin/env python
 
-def autoCSeries(self, source):
+def autoCSeries(source):
      function = '''
  $(function() {                                                  
          $("#series_autocomplete").autocomplete({
@@ -74,8 +74,9 @@ def toggle(toggler, element):
      t = '"'+ toggler + '"'
      function = '''
      $(function(){
-               $(%s).click(function(){
+               $(%s).click(function(e){
                          $(%s).toggle();
+                         e.preventDefault();
                           });
                 });
  ''' % (t, e)
