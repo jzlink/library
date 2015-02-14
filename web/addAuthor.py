@@ -14,6 +14,7 @@ from report import Report
 from HTMLutils import HTMLutils
 from utils import loadYaml
 from author import Author
+from jsUtils import *
 
 class addAuthor():
 
@@ -55,6 +56,7 @@ class addAuthor():
       page += '<br>'
       page += form_header
       page += form
+      page += '<br>'
       page += submit
       page += str(self.form_values)
       page += form_footer
@@ -65,16 +67,9 @@ class addAuthor():
    def buildHeader(self):
       authors = self.author.getAsDict()
 
-      # From a dict {1: 'Trilogy', 3: 'Inheritance', ...}
-      # Construct a string of Javascript for Autocomplete()
-      #   '[{label: 1, value: "Trilogy"}, {label: 3, value: 'Inheritance'} ...'
-      ac_series = '['
-      for k,v in Series().getAsDict().items():
-         ac_series += '{label: "%s", value: %s}, ' % (v,k)
-      ac_series += ']'
-
       ac_authors = json.dumps(authors)
       
+      authorFunc = autoCAuthor(ac_authors)
 
       html_header= '''
         <html>
@@ -83,52 +78,11 @@ class addAuthor():
            <script src="//code.jquery.com/jquery-1.10.2.js"></script>
            <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
-
-               $(function() {
-                            $("#author_autocomplete").autocomplete({
-                               source: %s,
-                               focus: function(event, ui) {
-                                      event.preventDefault();
-                                      $(this).val(ui.item.label);
-                                     },
-                               change: function(event, ui) {
-                                     event.preventDefault();
-                                     if (!ui.item){
-                                        var fullname = this.value.split(', ');
-                                        var first = fullname[1];
-                                        var last = fullname[0];
-                            var add = confirm('Add '+first +' ' + last + ' to the DB?');
-                            if (add){
-                                     $("#first_name").val(first);
-                                     $("#last_name").val(last);
-};
-                                     }
-                                     else{
-                                     event.preventDefault();
-                                     $(this).val(ui.item.label);
-                                     $("#author_ac_key").val(ui.item.value);
-                                     $("#author_id").val(ui.item.value);
-                                     $("#first_name").val(ui.item.first_name);
-                                     $("#last_name").val(ui.item.last_name);
-                                     };
-                               }
-                              });
-                          });
-
-                $(function() {
-                    $( "#when_read_datepicker" ).datepicker();
-                });
-
-                $(function(){
-                    $("#debug").click(function(){
-                        $("#debug").toggle();
-                     });
-                });
-
+            %s
         </script>
 
         <h3>Adding Authors</h3>
-        '''% (ac_authors)
+        '''% (authorFunc)
 
       return html_header
 
