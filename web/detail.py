@@ -14,7 +14,7 @@ from author import Author
 from report import Report
 from HTMLutils import HTMLutils
 from utils import loadYaml
-from jsUtils import *
+from dynamicJS import DynamicJS
 
 class Detail():
 
@@ -23,6 +23,7 @@ class Detail():
       self.htmlUtils = HTMLutils()
       self.series = Series()
       self.author = Author()
+      self.dynamicJS = DynamicJS()
 
       self.columns = loadYaml('columns')
       #get form values
@@ -121,7 +122,7 @@ class Detail():
       page += '<br>'
       page += submit
       page += cancel
-#      page += str(self.form_values)
+      page += str(self.form_values)
       page += form_footer
       page += html_footer
 
@@ -156,23 +157,12 @@ class Detail():
 
 
    def buildHeader(self):
-      
-      # From a dict {1: 'Trilogy', 3: 'Inheritance', ...}
-      # Construct a string of Javascript for Autocomplete()
-      #   '[{label: 1, value: "Trilogy"}, {label: 3, value: 'Inheritance'} ...'
-      
-      ac_series = '['
-      for k,v in Series().getAsDict().items():
-         ac_series += '{label: "%s", value: %s}, ' % (v,k)
-      ac_series += ']'
+      '''call in dynamic js functions, add them to the header, return header'''
+ 
 
-      seriesHandler = autoCSeries(ac_series)
-
-      authors = self.author.getAsDict()
-      ac_authors = json.dumps(authors)
-      authorHandler = autoCAuthor(ac_authors)
-
-      toggleAuthor = toggle('#authorToggle', '#addAuthor')
+      seriesHandler = self.dynamicJS.autoCSeries()
+      authorHandler = self.dynamicJS.autoCAuthor()
+      toggleAuthor = self.dynamicJS.toggle('#authorToggle', '#addAuthor')
 
       html_header= '''
         <html>
@@ -182,11 +172,7 @@ class Detail():
            <script src="//code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
         <script>
            %s
-        </script>
-        <script>
            %s
-        </script>
-        <script>
            %s
         </script>
 

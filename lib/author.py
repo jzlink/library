@@ -23,7 +23,7 @@ class Author:
         
         return authors
 
-    def getAsDict(self):
+    def getAsAutoCDict(self):
         '''Return all author records as a list of dicts with key, values
            of last name, first name, if as in:
            [{last_name:Pratchett, first_name:Terry, author_id:10},

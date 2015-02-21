@@ -71,6 +71,8 @@ class Report():
         return mainTable.getTable()
 
     def buildDetail(self, book_id):
+        '''Static table to view book details'''
+
         where = 'book.book_id =' + str(book_id)
         bookData = self.query.getData('record', where)
 
@@ -88,6 +90,17 @@ class Report():
         return detailTable.getTable()
 
     def buildBookForm(self, book_id= None):
+        '''dynamic composite table. made of three parts:
+        the book form which has all form elements for all elements related to
+        the book except the date, and author which a book has a many:many 
+        relationship with. 
+        Date is a sperate form (INACTIVE currently)
+        Author has two parts: the edit author table holds all author
+        information, eventually removing authors will be enabled. It has a 
+        sub table of add author.
+        Returns composite table of all above sub-parts.
+        '''
+
         if self.report == 'edit' and book_id != None:
             where = 'book.book_id =' + str(book_id)
             bookData = self.query.getData('edit', where)
@@ -176,7 +189,7 @@ class Report():
         author = Author()
         bookAuthor = author.getBookAuthor(book_id)
         editAuthorTable = HtmlTable(border=1, cellpadding=3)
-        add ='<button id = "authorToggle"> Add Author </button>'
+        add ='<button type = "button" id="authorToggle"> Add Author </button>'
 
         addAuthor = '<div id = "addAuthor" style = "display: none">'
         addAuthor += self.buildAddAuthor()

@@ -14,7 +14,7 @@ from report import Report
 from HTMLutils import HTMLutils
 from utils import loadYaml
 from author import Author
-from jsUtils import *
+from dynamicJS import DynamicJS
 
 class addAuthor():
 
@@ -23,6 +23,7 @@ class addAuthor():
       self.htmlUtils = HTMLutils()
       self.series = Series()
       self.author = Author()
+      self.dynamicJS = DynamicJS()
 
       self.columns = loadYaml('columns')
       #get form values
@@ -65,11 +66,10 @@ class addAuthor():
       return page
 
    def buildHeader(self):
-      authors = self.author.getAsDict()
-      ac_authors = json.dumps(authors)
-      authorHandler = autoCAuthor(ac_authors)
 
-      toggleAuthor = toggle('#authorToggle', '#authorDiv')
+      authorHandler = self.dynamicJS.autoCAuthor()
+
+      toggleAuthor = self.dynamicJS.toggle('#authorToggle', '#authorDiv')
 
       html_header= '''
         <html>
@@ -80,10 +80,7 @@ class addAuthor():
 
        <script>
          %s
-       </script>
-
-        <script>
-           %s
+         %s
         </script>
 
         <h3>Adding Authors</h3>
