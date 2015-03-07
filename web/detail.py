@@ -93,7 +93,7 @@ class Detail():
                   if home == 'author':
                      author_form[field] = self.form_values[field]
             self.bookUpdate = self.book.updateBook(book_form)
-#            self.authorUpdate = self.author.updateAuthor(author_form)
+            self.authorUpdate = self.author.updateAuthor(author_form)
 
             #self.message = 'Yes'
             self.activity = 'view'

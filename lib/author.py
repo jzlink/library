@@ -39,6 +39,51 @@ class Author:
 
         return authors
 
+    def updateAuthor(self, formDict):
+        '''accepts dict from edit author module
+        checks is values need to be added to DB and calls functions to
+        add them if necessary. Returns list of updated fields'''
+
+        updates = {}
+        author_id = formDict['author_id']
+        book_id = formDict['book_id']
+
+        if author_id:
+            sql = '''select ba_id  from book_author 
+                      where author_id = %s and book_id = %s
+                 ''' % (author_id, book_id)
+
+            results = execute(self.connection, sql)
+            
+            if 'ba_id' not in results:
+                add = self.addBookAuthor(book_id, author_id)
+                updates['author_id'] = author_id
+
+        if author_id == '' and 'first_name' in formDict\
+                and 'last_name' in formDict:
+
+            name_sql = ''' select author_id from author
+              where first_name = '%s' and last_name = '%s'
+              '''%(formDict['first_name'], formDict['last_name'])
+
+            results = execute(self.connection, name_sql)
+            
+            if len(results) < 1:
+                add = self.addNewAuthor(formDict['last_name'],\
+                                        formDict['first_name'])
+
+                updates['first_name'] = formDict['first_name']
+                updates['last_name']  = formDict['last_name']
+
+                sql = '''select max(author_id) as author_id from author'''
+
+                results = execute(self.connection, sql)
+
+            add = self.addBookAuthor(book_id, results[0]['author_id'])
+            updates['author_id'] = results[0]['author_id']    
+            
+        return results
+
     def addBookAuthor(self, book_id, author_id):
         ''' accepts a book_id and author_id
         updates book_author table to include that author on that book
@@ -83,8 +128,11 @@ def test():
     #add = test.addBookAuthor(328, 224)
     #remove = test.removeBookAuthor(328,224)
  #   getAuthors = test.getBookAuthor(328)
-    authordict =test.getAsDict()
-    print authordict
+   # authordict =test.getAsDict()
+    testDict = {'author': 'Martin, George R. R.', 'author_id': '',\
+        'book_id': '131', 'first_name': 'Rex', 'last_name': 'T'}
+
+    print test.updateAuthor(testDict)
 
 if __name__ == '__main__':
     test()

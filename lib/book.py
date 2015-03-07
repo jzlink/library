@@ -42,8 +42,8 @@ class Book():
                     if varType == 'int':
                         value = int(value)
                         
-                    sql ='update book set %s = %s where book.book_id = %s'\
-                        % (column, value, book_id)
+                    sql =''''update book set %s = %s where book_id = %s
+                       ''' % (column, value, book_id)
                     results = execute(self.connection, sql)
                     updates[column]= value
 
