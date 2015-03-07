@@ -1,7 +1,7 @@
 # Dev config for library system
 
-basedir: $HOME/library
-logdir:  $HOME/log
+basedir: /home/jzlink/library
+logdir:  /home/jzlink/log
 
 database:
   - host    : localhost
