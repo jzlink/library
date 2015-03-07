@@ -23,6 +23,7 @@ class Detail():
       self.htmlUtils = HTMLutils()
       self.series = Series()
       self.author = Author()
+      self.book = Book()
       self.dynamicJS = DynamicJS()
 
       self.columns = loadYaml('columns')
@@ -81,10 +82,20 @@ class Detail():
             check_again = False
 
          elif self.activity == 'update':
-            book = Book()
-            self.updated = book.updateBook(self.form_values)
-         #message = record.debug()
-            self.message = 'Yes'
+            book_form = {}
+            author_form = {}
+            author_form['book_id'] = self.book_id
+            for field in self.form_values:
+               if field in self.columns:
+                  home = self.columns[field][0]['from']
+                  if home == 'book':
+                     book_form[field] = self.form_values[field]
+                  if home == 'author':
+                     author_form[field] = self.form_values[field]
+            self.bookUpdate = self.book.updateBook(book_form)
+#            self.authorUpdate = self.author.updateAuthor(author_form)
+
+            #self.message = 'Yes'
             self.activity = 'view'
 
          elif self.activity == 'submit_new':

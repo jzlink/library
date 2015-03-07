@@ -9,8 +9,6 @@ columns = yaml.load(open('conf/columns.yml'))
 #pprint(pages['main'])
 #print pages['main']
 
-col_order= []
-for item in pages['main']:
-    col_order.append(item)
+for col in columns:
+    print col +': '+  columns[col][0]['type']
 
-print col_order

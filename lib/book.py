@@ -28,25 +28,24 @@ class Book():
         updates = {}
         book_id = formDict['book_id']
         for column, value in formDict.items():
-            rTable = {}
-            if column in self.columns:
-                record_table = self.columns[column][0]['from']
-                edit = self.columns[column][0]['editable']
-                varType = self.columns[column][0]['type']
+            edit = self.columns[column][0]['editable']
+            varType = self.columns[column][0]['type']
         
-                if record_table == 'book' and edit == 'T':
-                    update = self.getDiff(book_id, column, value)
-
-                    if update:
-                        if varType == 'string':
-                            value = '"%s"' %value
-                        if varType == 'int':
-                            value = int(value)
-
-                        sql ='update book set %s = %s where book.book_id = %s'\
-                            % (column, value, book_id)
-                        results = execute(self.connection, sql)
-                        updates[column]= value
+            if edit == 'T':
+                if value == '':
+                    value == None
+                update = self.getDiff(book_id, column, value)
+                
+                if update and value:
+                    if varType == 'string':
+                        value = str(value)
+                    if varType == 'int':
+                        value = int(value)
+                        
+                    sql ='update book set %s = %s where book.book_id = %s'\
+                        % (column, value, book_id)
+                    results = execute(self.connection, sql)
+                    updates[column]= value
 
         return updates
 
