@@ -1,5 +1,10 @@
 #!/usr/bin/env python
+
+from datetime import datetime
+
 import MySQLdb
+
+DEBUG = 1
 
 _db = MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
 
@@ -13,9 +18,21 @@ def getDictConnection():
 
 def execute(cursor, sql):
     #print "Database.execute: sql:",sql
+    if DEBUG:
+        log(sql)
     result = cursor.execute(sql)
     _db.commit()
     return cursor.fetchall()
+
+def log(sql):
+    '''Used for DEBUG. Write to a log'''
+    import config
+    config_ = config.getInstance()
+
+    logfile = '%s/library_sql.log' % config_['logdir']
+    fp = open(logfile, 'a')
+    fp.write('%s: %s\n' % (datetime.now(), sql))
+    fp.close()
 
 if __name__ == '__main__':
     # test
