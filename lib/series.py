@@ -48,6 +48,9 @@ class Series:
 
         return results
 
+    def updateSeries(self, var):
+        pass
+
 def test():
     test = Series()
     getSeries = test.getSeries(1)

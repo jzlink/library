@@ -46,12 +46,11 @@ class HTMLutils():
 
     def getDropDown (self, column, default, options):
         
-        form_field = '<select required name = %s>' %column
+        form_field = '<select name = %s>' %column
 
         #if there is no default build a null option - make it default
         if default == None:
-             form_field += '''<option selected = "selected" 
-                               value = None>(None)</option>'''
+             form_field += '''<option selected = "selected"</option>'''
 
         #check if each option should be set to default else build as normal
         for option in options:

@@ -84,7 +84,10 @@ class Detail():
          elif self.activity == 'update':
             book_form = {}
             author_form = {}
+            series_form = {}
             author_form['book_id'] = self.book_id
+            series_form['book_id'] = self.book_id
+            series_form['series_id'] = self.form_values['series_id']
             for field in self.form_values:
                if field in self.columns:
                   home = self.columns[field][0]['from']
@@ -92,8 +95,12 @@ class Detail():
                      book_form[field] = self.form_values[field]
                   if home == 'author':
                      author_form[field] = self.form_values[field]
+                  if home == 'series':
+                     series_form[field] = self.form_values[field]
+            del book_form['series_id']
             self.bookUpdate = self.book.updateBook(book_form)
             self.authorUpdate = self.author.updateAuthor(author_form)
+            self.seriesUpdate = self.series.updateSeries(series_form)
 
             #self.message = 'Yes'
             self.activity = 'view'

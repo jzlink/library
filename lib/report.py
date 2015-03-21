@@ -198,10 +198,11 @@ class Report():
         editAuthorTable.addHeader(['Author', add])
 
         for author in bookAuthor:
-            catAuthor = '%s %s' %(author['first_name'], author['last_name'])
-            remove = 'Remove author %s' %author['author_id']
+            catAuthor = '<nobr>%s %s</nobr>' %(author['first_name'], author['last_name'])
+            remove = 'Remove author %s*' %author['author_id']
 
             editAuthorTable.addRow([catAuthor, remove])
+        editAuthorTable.addRow(['', '*remove author feature not avalible yet'])
 
         return editAuthorTable.getTable(), addAuthor
 

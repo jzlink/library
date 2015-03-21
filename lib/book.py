@@ -32,17 +32,16 @@ class Book():
             varType = self.columns[column][0]['type']
         
             if edit == 'T':
-                if value == '':
-                    value == None
+               # if value == '':
+               #     value = None
                 update = self.getDiff(book_id, column, value)
-                
-                if update and value:
-                    if varType == 'string':
-                        value = str(value)
-                    if varType == 'int':
-                        value = int(value)
+
+                if update:
+                    value ='"'+ str(value)+'"'
+                   # if varType == 'int' and value != None:
+                   #     value = int(value)
                         
-                    sql =''''update book set %s = %s where book_id = %s
+                    sql ='''update book set %s = %s where book_id = %s
                        ''' % (column, value, book_id)
                     results = execute(self.connection, sql)
                     updates[column]= value
@@ -54,7 +53,9 @@ class Book():
 
         sql = 'select %s from book where book_id = %s' % (column, book_id)
         results = execute(self.connection, sql)
-        bookVal = str(results[0][column] or '')
+        bookVal = str(results[0][column])
+        if bookVal == 'None':
+            bookVal = ''
 
         if bookVal == value:
             different = False
@@ -64,12 +65,11 @@ class Book():
     
 
 def test():
-    testDict = {'book_id': 328 , 'title': 'Good Omens', 'notes': 'Re-read, I remember it being better'}
-
+    testDict = {'book_id': '335', 'notes': 'bk. 3', 'owner_status_id': 'None', 'published': '1', 'read_status_id': '1', 'series_num': '', 'title': 'Destiny', 'type_id': 'None'}
     test = Book()
-    print  test.getDiff(328, 'series_num', '')
-#    updates = test.updateBook(testDict)
-#    print "Updated the following columns: %s" %updates
+   # print  test.getDiff(241, 'series_num', None)
+    print test.updateBook({'series_num': ''})
+
 
 if __name__ == '__main__':
     test()

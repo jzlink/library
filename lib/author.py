@@ -59,8 +59,9 @@ class Author:
                 add = self.addBookAuthor(book_id, author_id)
                 updates['author_id'] = author_id
 
-        if author_id == '' and 'first_name' in formDict\
-                and 'last_name' in formDict:
+        if author_id == '' and \
+                (formDict['first_name'] !='' or\
+                formDict['last_name'] != ''):
 
             name_sql = ''' select author_id from author
               where first_name = '%s' and last_name = '%s'
@@ -82,7 +83,7 @@ class Author:
             add = self.addBookAuthor(book_id, results[0]['author_id'])
             updates['author_id'] = results[0]['author_id']    
             
-        return results
+        return updates
 
     def addBookAuthor(self, book_id, author_id):
         ''' accepts a book_id and author_id
