@@ -22,11 +22,9 @@ record:
 
 edit:
   - title
-  - author
   - series
   - series_num
   - notes
-  - when_read
   - owner_status_id
   - read_status_id
   - type_id

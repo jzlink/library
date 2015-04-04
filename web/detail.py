@@ -46,7 +46,7 @@ class Detail():
       while check_again:
          if self.activity == 'edit':
             self.report = Report('edit')
-            self.table = self.report.buildBookForm(book_id = self.book_id)
+            self.table = self.report.buildRecordForm(book_id = self.book_id)
             self.header = 'Edit Record'
             self.page = 'edit'
             self.new_activity = 'update'
@@ -71,7 +71,7 @@ class Detail():
             
          elif self.activity == 'add':
             self.report = Report('add')
-            self.table = self.report.buildBookForm()
+            self.table = self.report.buildRecordForm()
             self.header = 'Enter New Record' 
             self.page = 'edit'
             self.new_activity = 'submit_new'

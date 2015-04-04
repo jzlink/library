@@ -13,7 +13,10 @@ class Report():
 
     def __init__(self, report):
         self.query = Query()
+
         self.forms = HTMLutils()
+        self.author = Author()
+        self.when = WhenRead()
 
         self.report = report
         self.columns = loadYaml('columns')
@@ -27,6 +30,9 @@ class Report():
         self.display_names = self.getDisplayNames(page)
 
     def buildMain(self, where= None, order_by = None):
+        '''build table seen on main page using all books. Accepts optional
+        arguements to filter (search) or sort. Returns table'''
+
         bookData = self.query.getData('main', where, order_by)
 
         # start html table
@@ -89,158 +95,193 @@ class Report():
 
         return detailTable.getTable()
 
-    def buildBookForm(self, book_id= None):
-        '''dynamic composite table. made of three parts:
-        the book form which has all form elements for all elements related to
-        the book except the date, and author which a book has a many:many 
-        relationship with. 
-        Date is a sperate form (INACTIVE currently)
-        Author has two parts: the edit author table holds all author
-        information, eventually removing authors will be enabled. It has a 
-        sub table of add author.
-        Returns composite table of all above sub-parts.
+    def buildRecordForm (self, book_id = None):
+        '''responisble for building the composite form for book records by
+        gathering all data, calling necessary helper methods, and adding all
+        sub-forms together. Form has 3 sub-parts:
+        (1) the book form which holds all data fields with a 1:1 relationship
+        to a book_id 
+        (2) the edit author from which itself has 2 sub-parts:
+        (2a) the remove author feature (currently inactive) 
+        (2b) add author section which defaults to hidden
+        (3) the dates read add/remove (currently inactive)
+        form is used for adding records and editing records. If a book_id is
+        recieved current values for that book_id are pulled from the DB and
+        used to pre-populate form fields (used for edit). Otherwise the form
+        is built blank, with no default values (used for add).
+        Returns composite form as an HTML table
         '''
 
-        if self.report == 'edit' and book_id != None:
+        #create holder variables
+        bookData = None
+        authorData = None
+        dateData = None
+
+        #bring in data if book_id is present
+        if book_id:
             where = 'book.book_id =' + str(book_id)
             bookData = self.query.getData('edit', where)
+            authorData = self.author.getBookAuthor(book_id)
+            dateData = self.when.getWhenRead(book_id) 
+        
+        #call helper methods to build all sub-parts
+        bookForm = self.buildBookForm(bookData)
+        removeAuthor, addAuthor = self.buildEditAuthor(authorData)
+        dateForm = self.buildEditDate(dateData)
 
-        bookTable = HtmlTable(border=1, cellpadding=3)
-        bookTable.addHeader(['Field', 'Entry'])
+        #put tables with many:many relationships together in a sub-table table
+        subTs = HtmlTable(border=0, cellpadding = 20)
+        subTs.addRow([removeAuthor])
+        subTs.addRow([addAuthor]) 
+        subTs.addRow([dateForm])  
+        subTables = subTs.getTable()
 
+        #put all form tables together 
+        recordForm  = HtmlTable(border=0, cellpadding=30)
+        recordForm. addRow([bookForm, subTables])
+
+        return recordForm.getTable()
+
+    def buildBookForm(self, bookData):
+        '''Accepts bookData, which may be blank. 
+        Builds book form. If bookData !None pre-populates form with default
+        values from bookData.
+        returns book form HTML table
+        '''
+        #initialze book from table
+        bookForm = HtmlTable(border=1, cellpadding=3)
+        bookForm.addHeader(['Field', 'Entry'])
+
+        #loop through display names (the ordered list of column names)
+        #for each: determine the default value and form type
         for column, display in self.display_names:
             form_type = self.columns[column][0]['form_type']
 
-            if self.report == 'edit':
+            if self.report == 'edit' and bookData !=None:
                 default = bookData[0][column]
             else:
                 default = None
 
-            if column == 'author' or column == 'when_read':
-                pass
-            
-            else:
-                #use general methods to build forms
-                if form_type == 'text':
-                    if default == None:
-                        default = ''
-                        
-                    form_field = self.forms.getTextField(column, default)
+            #buld a form field of the correct type
+            if form_type == 'text':
+                if default == None:
+                    default = ''
+                form_field = self.forms.getTextField(column, default)
 
-                elif form_type == 'drop_down':
-                    #pull in the values from the home table to make a 
-                    #list of options
+            elif form_type == 'drop_down':
+                #pull in the values from the home table to make a 
+                #list of options
+                options = self.query.getColumnValues(column)
+                form_field = self.forms.getDropDown(column, default, options)
 
-                    options = self.query.getColumnValues(column)
+            elif form_type == 'radio_static':
+                if default == None and column == 'published':
+                    default = 1
 
-                    form_field = \
-                        self.forms.getDropDown(column, default, options)
-
-                elif form_type == 'radio_static':
-                    if default == None and column == 'published':
-                        default = 1
-
-                    options = self.columns[column][0]['radio_options']
-
-                    form_field =\
-                        self.forms.getStaticRadio(column, default, options)
+                #pull in status radio options from metadata
+                options = self.columns[column][0]['radio_options']
+                form_field =self.forms.getStaticRadio(column, default, options)
  
-                elif form_type == 'datepicker':
-                    if default == None:
-                        default = ''
+            elif form_type == 'datepicker':
+                if default == None:
+                    default = ''
 
-                    form_field =\
-                        self.forms.getJQueryUI(column, default, form_type)
+                form_field = self.forms.getJQueryUI(column, default, form_type)
 
-                elif form_type == 'autocomplete':
-                    if default == None:
-                        default = ''
+            elif form_type == 'autocomplete':
+                if default == None:
+                    default = ''
 
-                    form_field =\
-                        self.forms.getAutoComplete(column, default)
+                form_field =self.forms.getAutoComplete(column, default)
 
+            else:
+                #debug feature that will make a cell in the table declare
+                #what form type it thinks it should be if the form type is not
+                #found above
+                form_field = form_type
 
-                else:
-                    form_field = form_type
-
-                bookTable.addRow([display, form_field])
+            #add the display name and form field as a new row in the book form
+            bookForm.addRow([display, form_field])
                 
-        bookT = bookTable.getTable()
+        return bookForm.getTable()
 
-        if self.report == 'edit': 
-            authorT, authorF= self.buildEditAuthor(book_id)
-            dateT = self.buildEditDate(book_id)
-        else:
-            authorT = self.buildAddAuthor()
-            dateT = self.buildAddDate()
+    def buildEditAuthor(self, authorData):
+        '''Accept authorData which may be None
+        Build author sub-table. if authorData !None include the list of authors
+        and set the add author section to hidden. Else set add author section
+        to be visable. Return 2 seperate sections: remove author and add author
+        '''
 
-        subTables = HtmlTable(border=0, cellpadding = 20)
-        subTables.addRow([authorT])
-        subTables.addRow([authorF])
-        subTables.addRow([dateT])
-        subT = subTables.getTable()
-
-        editModules = HtmlTable(border=0, cellpadding=30)
-        editModules.addRow([bookT, subT])
-
-        return editModules.getTable()
-
-    def buildEditAuthor(self, book_id):
-        author = Author()
-        bookAuthor = author.getBookAuthor(book_id)
+        #initialize Author form
         editAuthorTable = HtmlTable(border=1, cellpadding=3)
+        #create button that will toggle open the add author section
         add ='<button type = "button" id="authorToggle"> Add Author </button>'
 
-        addAuthor = '<div id = "addAuthor" style = "display: none">'
-        addAuthor += self.buildAddAuthor()
-        addAuthor += '</div>'
-
+        #add the header row of the table with the add button
         editAuthorTable.addHeader(['Author', add])
 
-        for author in bookAuthor:
-            catAuthor = '<nobr>%s %s</nobr>' %(author['first_name'], author['last_name'])
-            remove = 'Remove author %s*' %author['author_id']
+        #build (currently disabled) remove author section
+        #section shows list of authors currenlty paired with the book
+        #if no authors are pared with the book yet toggle the add author 
+        #section open
+        if authorData:
+            for author in authorData:
+                catAuthor = '<nobr>%s %s</nobr>'\
+                    %(author['first_name'], author['last_name'])
+                remove = 'Remove author %s*' %author['author_id']
 
-            editAuthorTable.addRow([catAuthor, remove])
-        editAuthorTable.addRow(['', '*remove author feature not avalible yet'])
+                editAuthorTable.addRow([catAuthor, remove])
+
+            #add a note at the bottom of the table re: removing authors
+            editAuthorTable.addRow(['',\
+                                  '*remove author feature not avalible yet'])
+
+             #initialize hidden add author section
+            addAuthor = '<div id = "addAuthor" style = "display: none">'
+
+        else:
+            #initialize visable add author section
+            addAuthor = '<div id = "addAuthor" style = "display: default">'
+
+        #complete the addAuthor section
+        addAuthor += self.buildAddAuthor()
+        addAuthor += '</div>'
 
         return editAuthorTable.getTable(), addAuthor
 
 
     def buildAddAuthor(self):
-      autocomplete = 'Author Name: ' + \
-          self.forms.getAutoComplete('author', '',) + \
+        '''build a table that will be a subtable of the edit author table
+        it will be the toggleable section for adding authors to the
+        DB and the book record. Only called by buildEditAuthor. Returns table.
+        This table will be interacting with the autocomplete js functions.
+        '''
+        autocomplete = 'Author Name: ' + \
+          self.forms.getAutoComplete('author', '',) +\
           '(Last Name, First Name)'
-      first_name = 'First Name: ' + \
+        first_name = 'First Name: ' + \
           self.forms.getTextField ('first_name', '', readonly = True)
-      last_name = 'Last Name: '+ \
+        last_name = 'Last Name: '+ \
           self.forms.getTextField ('last_name', '', readonly = True)
-      authorForm = autocomplete + '</br>' + first_name + '</br>'+ \
+        authorForm = autocomplete + '</br>' + first_name + '</br>'+ \
           last_name
-      return authorForm
+        return authorForm
 
-    def buildEditDate(self, book_id):
-        when = WhenRead()
-        bookDate = when.getWhenRead(book_id)
+    def buildEditDate(self, dateData):
+        '''build table that will be a sub-table of the main edit table to
+        hold dates and date addtion/subtraction features. Accepts a book id,
+        find associated dates. Returns table'''
 
+        #initilize date table
         editDateTable = HtmlTable(border=1, cellpadding=3)
         editDateTable.addHeader(['Date', 'Add Addtional Date'])
 
-        for bD in bookDate:
-            remove = 'Forget this date'
+        if dateData:
+            for d  in dateData:
+                remove = 'Forget this date'
+                editDateTable.addRow([str(d[0]), remove])
 
-            editDateTable.addRow([str(bD[0]), remove])
-
-#        return bookDate
         return editDateTable.getTable()        
-
-    def buildAddDate(self):
-        datepicker =  self.forms.getJQueryUI('when_read','', 'datepicker')
-        addDateTable = HtmlTable(border=1, cellpadding=3)
-        
-        addDateTable.addRow(['Date', datepicker])
-
-        return addDateTable.getTable()
 
     def getDisplayNames(self, page):
         '''given a page and column attribute 
@@ -271,26 +312,9 @@ class Report():
         return orderedColDisplay
 
 def test():
-    dateTest = Report('record')
-    dateTable = dateTest.buildEditDate(328)
-    for d in dateTable:
-        print d[0]
+    test = Report('add')
+    print test.buildRecordForm()
 
-#    authorTest = Report('record')
-#    authorTable = authorTest.buildEditAuthor(328)
-#    print authorTable
-#    mainTest = Report('main')
-#    mainTable = mainTest.buildMain()
-#    mainCols = mainTest.getDisplayNames('main')
-#    print mainTest.display_names
-#    print mainTest.pages
-
-#    detailTest = Report('record')
-#    detailTable = detailTest.buildDetail(335)
-
-#    eBookTest = Report('edit')
-#    bookTable = eBookTest.buildEditBook(328)
-#    print bookTable
 
 if __name__ == '__main__':
     test()
