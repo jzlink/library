@@ -11,16 +11,12 @@ class Book():
         self.columns = loadYaml('columns')
 
 
-    def addBook(self, formDict):
+    def addBook(self):
         addSQL = 'insert into book (title) values ("STARTER")'
         addDummy = execute(self.connection, addSQL)
 
         findSQL = 'select book_id from book where title = "STARTER"'
         book_id = execute(self.connection, findSQL)
-
-        formDict['book_id'] = book_id[0]['book_id']
-
-        update = self.updateBook(formDict)
 
         return book_id[0]['book_id']
 

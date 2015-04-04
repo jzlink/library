@@ -4,7 +4,7 @@ from datetime import datetime
 
 import MySQLdb
 
-DEBUG = 0
+DEBUG = 1
 
 _db = MySQLdb.connect('localhost', 'jlink', 'eggplant', 'library')
 

@@ -79,6 +79,7 @@ class Detail():
             self.show_blank = ''
             self.cancel_button_address = 'main.py'
             self.cancel_button_text = 'Cancel'          
+
             check_again = False
 
          elif self.activity == 'update':
@@ -106,10 +107,9 @@ class Detail():
             self.activity = 'view'
 
          elif self.activity == 'submit_new':
-            book = Book()
-            self.book_id = book.addBook(self.form_values)
-            self.message = 'The following record was added to the libary:'
-            self.activity = 'view'
+            self.book_id = self.book.addBook()
+            self.form_values['book_id'] = self.book_id
+            self.activity = 'update'
 
          else:
             raise Exception ("Unrecognized activity: %s" %self.activity)
