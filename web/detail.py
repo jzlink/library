@@ -44,6 +44,8 @@ class Detail():
       check_again = True
 
       while check_again:
+         #set builder variables for each possible activity page
+
          if self.activity == 'edit':
             self.report = Report('edit')
             self.table = self.report.buildRecordForm(book_id = self.book_id)
@@ -67,8 +69,9 @@ class Detail():
             self.show_blank = '-'
             self.cancel_button_address = 'main.py'
             self.cancel_button_text = 'Back to Catalog'
-            check_again = False
             
+            check_again = False
+
          elif self.activity == 'add':
             self.report = Report('add')
             self.table = self.report.buildRecordForm()
@@ -79,7 +82,6 @@ class Detail():
             self.show_blank = ''
             self.cancel_button_address = 'main.py'
             self.cancel_button_text = 'Cancel'          
-
             check_again = False
 
          elif self.activity == 'update':
