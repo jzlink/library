@@ -1,0 +1,140 @@
+2015-05-03 00:41:05.555953: select series_id from series where series = ("Discworld")
+2015-05-03 00:41:05.556575: select series_id from book where book_id = 
+2015-05-03 00:43:42.047216: select series_id from series where series = ("Discworld")
+2015-05-03 00:43:42.047807: select series_id from book where book_id = 
+2015-05-03 00:44:01.340913: insert into book (title) values ("STARTER")
+2015-05-03 00:44:01.342952: select book_id from book where title = "STARTER"
+2015-05-03 00:44:01.343533: select series_id from series where series = ("Discworld")
+2015-05-03 00:44:01.343824: select series_id from book where book_id = 531
+2015-05-03 00:44:01.344127: update book set series_id = "32" where book_id = 531
+                       
+2015-05-03 00:46:22.740069:  select author_id from author
+              where first_name = 'Terry' and last_name = 'Pratchett'
+              
+2015-05-03 00:46:22.740802:  insert into book_author (book_id, author_id)
+                  values ('531', '147')
+              
+2015-05-03 00:47:03.095141: select title from book where book_id = 531
+2015-05-03 00:47:03.095758: update book set title = "Moving Pictures" where book_id = 531
+                       
+2015-05-03 00:47:03.098468: select owner_status_id from book where book_id = 531
+2015-05-03 00:47:03.098833: update book set owner_status_id = "2" where book_id = 531
+                       
+2015-05-03 00:47:03.099460: select notes from book where book_id = 531
+2015-05-03 00:47:03.099746: select type_id from book where book_id = 531
+2015-05-03 00:47:03.100073: update book set type_id = "1" where book_id = 531
+                       
+2015-05-03 00:47:03.100710: select published from book where book_id = 531
+2015-05-03 00:47:03.100998: select read_status_id from book where book_id = 531
+2015-05-03 00:47:03.101304: update book set read_status_id = "1" where book_id = 531
+                       
+2015-05-03 00:54:17.706723: insert into book (title) values ("STARTER")
+2015-05-03 00:54:17.708314: select book_id from book where title = "STARTER"
+2015-05-03 00:54:17.708889: select title from book where book_id = 532
+2015-05-03 00:54:17.709222: update book set title = "Guards! Guards!" where book_id = 532
+                       
+2015-05-03 00:54:17.720883: select owner_status_id from book where book_id = 532
+2015-05-03 00:54:17.721253: update book set owner_status_id = "2" where book_id = 532
+                       
+2015-05-03 00:54:17.721786: select notes from book where book_id = 532
+2015-05-03 00:54:17.722113: select type_id from book where book_id = 532
+2015-05-03 00:54:17.722411: update book set type_id = "1" where book_id = 532
+                       
+2015-05-03 00:54:17.723108: select published from book where book_id = 532
+2015-05-03 00:54:17.723405: select read_status_id from book where book_id = 532
+2015-05-03 00:54:17.723685: update book set read_status_id = "1" where book_id = 532
+                       
+2015-05-03 00:54:17.724390:  select author_id from author
+              where first_name = 'Terry' and last_name = 'Pratchett'
+              
+2015-05-03 00:54:17.724746:  insert into book_author (book_id, author_id)
+                  values ('532', '147')
+              
+2015-05-03 00:54:17.725230: select series_id from series where series = ("Discworld")
+2015-05-03 00:54:17.725505: select series_id from book where book_id = 532
+2015-05-03 00:54:17.725782: update book set series_id = "32" where book_id = 532
+                       
+2015-05-03 00:57:24.818377: insert into book (title) values ("STARTER")
+2015-05-03 00:57:24.819896: select book_id from book where title = "STARTER"
+2015-05-03 00:57:24.820490: select title from book where book_id = 533
+2015-05-03 00:57:24.820781: update book set title = "Sourcery" where book_id = 533
+                       
+2015-05-03 00:57:24.821265: select owner_status_id from book where book_id = 533
+2015-05-03 00:57:24.821546: update book set owner_status_id = "2" where book_id = 533
+                       
+2015-05-03 00:57:24.822061: select notes from book where book_id = 533
+2015-05-03 00:57:24.822358: select type_id from book where book_id = 533
+2015-05-03 00:57:24.822655: update book set type_id = "1" where book_id = 533
+                       
+2015-05-03 00:57:24.823120: select published from book where book_id = 533
+2015-05-03 00:57:24.823415: select read_status_id from book where book_id = 533
+2015-05-03 00:57:24.823690: update book set read_status_id = "1" where book_id = 533
+                       
+2015-05-03 00:57:24.824164:  select author_id from author
+              where first_name = 'Terry' and last_name = 'Pratchett'
+              
+2015-05-03 00:57:24.824523:  insert into book_author (book_id, author_id)
+                  values ('533', '147')
+              
+2015-05-03 00:57:24.825012: select series_id from series where series = ("Discworld")
+2015-05-03 00:57:24.825294: select series_id from book where book_id = 533
+2015-05-03 00:57:24.825571: update book set series_id = "32" where book_id = 533
+                       
+2015-05-03 01:03:12.711090: insert into book (title) values ("STARTER")
+2015-05-03 01:03:12.930551: select book_id from book where title = "STARTER"
+2015-05-03 01:03:12.948528: select title from book where book_id = 534
+2015-05-03 01:03:12.948906: update book set title = "Wyrd Sisters" where book_id = 534
+                       
+2015-05-03 01:03:12.951524: select owner_status_id from book where book_id = 534
+2015-05-03 01:03:12.956992: update book set owner_status_id = "2" where book_id = 534
+                       
+2015-05-03 01:03:12.957657: select notes from book where book_id = 534
+2015-05-03 01:03:12.957950: select type_id from book where book_id = 534
+2015-05-03 01:03:12.958255: update book set type_id = "1" where book_id = 534
+                       
+2015-05-03 01:03:12.958904: select published from book where book_id = 534
+2015-05-03 01:03:12.959191: select read_status_id from book where book_id = 534
+2015-05-03 01:03:12.959452: update book set read_status_id = "1" where book_id = 534
+                       
+2015-05-03 01:03:12.960090:  select author_id from author
+              where first_name = 'Terry' and last_name = 'Pratchett'
+              
+2015-05-03 01:03:12.961264:  insert into book_author (book_id, author_id)
+                  values ('534', '147')
+              
+2015-05-03 01:03:12.961753: select series_id from series where series = ("Discworld")
+2015-05-03 01:03:12.962049: select series_id from book where book_id = 534
+2015-05-03 01:03:12.962347: update book set series_id = "32" where book_id = 534
+                       
+2015-05-03 01:03:12.962838: select series_num from book where book_id = 534
+2015-05-03 01:03:12.963117: update book set series_num = "6" where book_id = 534
+                       
+2015-05-03 01:15:17.198139: insert into book (title) values ("STARTER")
+2015-05-03 01:15:17.269439: select book_id from book where title = "STARTER"
+2015-05-03 01:15:17.292857: select title from book where book_id = 535
+2015-05-03 01:15:17.293235: update book set title = "Jigo" where book_id = 535
+                       
+2015-05-03 01:15:17.296286: select owner_status_id from book where book_id = 535
+2015-05-03 01:15:17.296593: update book set owner_status_id = "2" where book_id = 535
+                       
+2015-05-03 01:15:17.297533: select notes from book where book_id = 535
+2015-05-03 01:15:17.297820: select type_id from book where book_id = 535
+2015-05-03 01:15:17.298124: update book set type_id = "1" where book_id = 535
+                       
+2015-05-03 01:15:17.299051: select published from book where book_id = 535
+2015-05-03 01:15:17.299322: select read_status_id from book where book_id = 535
+2015-05-03 01:15:17.299591: update book set read_status_id = "1" where book_id = 535
+                       
+2015-05-03 01:15:17.300638:  select author_id from author
+              where first_name = 'Terry' and last_name = 'Pratchett'
+              
+2015-05-03 01:15:17.301008:  insert into book_author (book_id, author_id)
+                  values ('535', '147')
+              
+2015-05-03 01:15:17.301468: select series_id from series where series = ("Discworld")
+2015-05-03 01:15:17.301742: select series_id from book where book_id = 535
+2015-05-03 01:15:17.302057: update book set series_id = "32" where book_id = 535
+                       
+2015-05-03 01:15:17.302505: select series_num from book where book_id = 535
+2015-05-03 01:15:17.302780: update book set series_num = "21" where book_id = 535
+                       

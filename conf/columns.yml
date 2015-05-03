@@ -72,7 +72,7 @@ type_id:
     drop_down_select: type_id, type
 
 full_series:
-  - select: concat(title, coalesce(concat(' No. ', series_num), ''))
+  - select: concat(series, coalesce(concat(' No. ', series_num), ''))
     from: series 
     display: Series
     editable: F

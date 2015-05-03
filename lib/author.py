@@ -3,7 +3,7 @@
 from database import *
 
 class Author:
-    'oversees all actions taken on the author table'
+    'oversees all actions taken on the author and book_author tables'
 
     def __init__(self):
         self.connection = getDictConnection()

@@ -29,6 +29,7 @@ def log(sql):
     import config
     config_ = config.getInstance()
 
+#    logfile = 'command_line.log'
     logfile = '%s/library_sql.log' % config_['logdir']
     fp = open(logfile, 'a')
     fp.write('%s: %s\n' % (datetime.now(), sql))

@@ -1,0 +1,29 @@
+# delimiter: New line, 2 spaces, dash, space. "\n  - example".
+# attributes:
+# list of update methods with all columns each method will access.
+
+#YAML
+series:
+  - book_id
+  - series_id
+  - series
+  - series_num
+ 
+author:
+  - book_id
+  - author_id
+  - first_name
+  - last_name
+
+book:
+  - book_id
+  - title
+  - notes
+  - published
+  - owner_status_id
+  - read_status_id
+  - type_id
+
+when_read:
+  - book_id
+  - when_read

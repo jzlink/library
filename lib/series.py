@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 from database import *
+from book import Book
+
 
 class Series:
     'oversees all actions taken on the series table'
 
     def __init__(self):
         self.connection = getDictConnection()
+        self.book = Book()
 
     def getSeries(self, book_id):
         ''' accepts a book id and 
@@ -75,21 +78,14 @@ class Series:
             else:
                series_id =  self.addNewSeries(series_name)
 
-        #check if the series_id and book_id are already paired
-        sql = 'select series_id from book where book_id = ("%s")'\
-            %formDict['book_id']
-        results = execute(self.connection, sql)
+        #pass series_id and num to book table updater for further processing
+        series_dict = {}
+        series_dict['book_id'] = formDict['book_id']
+        series_dict['series_id'] = series_id
+        series_dict['series_num'] = formDict['series_num']
 
-        #if they are pass, else add them.
-        if results[0]['series_id'] == series_id:
-            pass
-        else:
-            sql = 'update book set series_id = ("%s") where book_id = ("%s")'\
-                %(series_id, formDict['book_id'])
-            
-            results = execute(self.connection, sql)
-            x = 'updated series_id in book table'
-        return 'update activate'
+        return self.book.updateBook(series_dict)
+
 
 def test():
     test = Series()

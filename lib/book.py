@@ -38,7 +38,7 @@ class Book():
         checks if each column in editable if it is
         call the getDiff method to check if an update should be made
         if an update is necessary update the record
-        return dictionary of changed columns and thier new values
+        return dictionary of changed columns and their new values
         '''
         updates = {}
         book_id = formDict['book_id']

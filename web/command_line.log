@@ -1,0 +1,27 @@
+2015-05-03 01:37:42.696820: select title as title, group_concat(distinct concat(last_name, ', ', first_name) order by last_name separator '; ') 
+ as author, concat(title, coalesce(concat(' No. ', series_num), '')) as full_series, notes as notes, group_concat(distinct when_read separator ' & ') as date, owner_status.status as ownership, read_status.status as read_status, type as type from book left join owner_status on book.owner_status_id=owner_status.owner_status_id left join book_author on book.book_id= book_author.book_id left join author on book_author.author_id=author.author_id
+ left join series on book.series_id=series.series_id left join read_status on book.read_status_id= read_status.read_status_id left join type on book.type_id=type.type_id left join when_read on book.book_id= when_read.book_id where book.book_id =335 group by book.title 
+2015-05-03 01:37:42.788434: select series_id as value, series as label from series
+2015-05-03 01:37:42.816405: select author_id as value,
+                        first_name,
+                        last_name,
+                        concat(last_name, ', ', first_name) as label
+                 from author
+2015-05-03 01:38:49.119755: select title as title, group_concat(distinct concat(last_name, ', ', first_name) order by last_name separator '; ') 
+ as author, concat(title, coalesce(concat(' No. ', series_num), '')) as full_series, notes as notes, group_concat(distinct when_read separator ' & ') as date, owner_status.status as ownership, read_status.status as read_status, type as type from book left join owner_status on book.owner_status_id=owner_status.owner_status_id left join book_author on book.book_id= book_author.book_id left join author on book_author.author_id=author.author_id
+ left join series on book.series_id=series.series_id left join read_status on book.read_status_id= read_status.read_status_id left join type on book.type_id=type.type_id left join when_read on book.book_id= when_read.book_id where book.book_id =335 group by book.title 
+2015-05-03 01:38:49.155520: select series_id as value, series as label from series
+2015-05-03 01:38:49.156374: select author_id as value,
+                        first_name,
+                        last_name,
+                        concat(last_name, ', ', first_name) as label
+                 from author
+2015-05-03 01:39:09.880350: select title as title, group_concat(distinct concat(last_name, ', ', first_name) order by last_name separator '; ') 
+ as author, concat(title, coalesce(concat(' No. ', series_num), '')) as full_series, notes as notes, group_concat(distinct when_read separator ' & ') as date, owner_status.status as ownership, read_status.status as read_status, type as type from book left join owner_status on book.owner_status_id=owner_status.owner_status_id left join book_author on book.book_id= book_author.book_id left join author on book_author.author_id=author.author_id
+ left join series on book.series_id=series.series_id left join read_status on book.read_status_id= read_status.read_status_id left join type on book.type_id=type.type_id left join when_read on book.book_id= when_read.book_id where book.book_id =335 group by book.title 
+2015-05-03 01:39:09.915977: select series_id as value, series as label from series
+2015-05-03 01:39:09.916539: select author_id as value,
+                        first_name,
+                        last_name,
+                        concat(last_name, ', ', first_name) as label
+                 from author
