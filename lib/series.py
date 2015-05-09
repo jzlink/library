@@ -57,9 +57,9 @@ class Series:
 
     def updateSeries(self, formDict):
         ''' update series by checking if the given series is in the DB yet,
-        adding it if it is not, then adding the series to the book, return
-        success message'''
-        #get series_id
+        adding it if it is not,
+        returns series_id'''
+
         series_id = formDict['series_id']
         series_name = formDict['series']
        
@@ -78,14 +78,7 @@ class Series:
             else:
                series_id =  self.addNewSeries(series_name)
 
-        #pass series_id and num to book table updater for further processing
-        series_dict = {}
-        series_dict['book_id'] = formDict['book_id']
-        series_dict['series_id'] = series_id
-        series_dict['series_num'] = formDict['series_num']
-
-        return self.book.updateBook(series_dict)
-
+        return series_id
 
 def test():
     test = Series()

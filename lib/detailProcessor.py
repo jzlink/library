@@ -18,7 +18,8 @@ class DetailProcessor():
       #establish list of fields the book method is purely responsible for
       # updating
       self.bookOnlyFields = ['book_id', 'title', 'notes', 'published',
-                        'owner_status_id', 'read_status_id', 'type_id']
+                             'owner_status_id', 'read_status_id', 'type_id', 
+                             'series_num']
 
    def processForm(self, formDict):
 
@@ -38,8 +39,11 @@ class DetailProcessor():
       for field in self.bookOnlyFields:
          bookDict[field] = formDict[field]
 
+      #run the seriesUpdate method which will add a series to the DB if
+      # necessary. append the new series id to the  bookDict
       seriesUpdate = self.series.updateSeries(formDict)
-      
+      bookDict['series_id'] = seriesUpdate
+
       bookUpdate = self.book.updateBook(bookDict)
       authorUpdate = self.author.updateAuthor(formDict)
 

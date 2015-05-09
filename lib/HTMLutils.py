@@ -104,8 +104,8 @@ class HTMLutils():
 
     def getHidden(self, name, value):
         
-        hidden = '<input type = "hidden" name = %s value = %s>' \
-            % (name, value)
+        hidden = '<input id = %s type = "hidden" name = %s value = %s>' \
+            % (name, name, value)
 
         return hidden
 
