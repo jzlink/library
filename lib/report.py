@@ -60,7 +60,7 @@ class Report():
             href = '<a href="detail.py?book_id=%d&activity=%s">%s'\
                 % (rec['book_id'], activity, rec['title'])
 
-            # format dates
+            # format date
             if rec['date']:
                 dates = '<br>'.join(['<nobr>%s</nobr>' % d.strip()
                                      for d in rec['date'].split('&')])
@@ -232,10 +232,6 @@ class Report():
 
                 editAuthorTable.addRow([catAuthor, remove])
 
-            #add a note at the bottom of the table re: removing authors
-            editAuthorTable.addRow(['',\
-                                  '*remove author feature not avalible yet'])
-
              #initialize hidden add author section
             addAuthor = '<div id = "addAuthor" style = "display: none">'
 
@@ -274,12 +270,15 @@ class Report():
 
         #initilize date table
         editDateTable = HtmlTable(border=1, cellpadding=3)
-        editDateTable.addHeader(['Date', 'Add Addtional Date'])
+        editDateTable.addHeader(['Date(s) Read'])
 
         if dateData:
             for d  in dateData:
-                remove = 'Forget this date'
-                editDateTable.addRow([str(d[0]), remove])
+                editDateTable.addRow([str(d[0])])
+
+        addNew = 'Add Addtional Date:'
+        addNew +=  self.forms.getJQueryUI('when_read', '', 'datepicker')
+        editDateTable.addRow([addNew])
 
         return editDateTable.getTable()        
 

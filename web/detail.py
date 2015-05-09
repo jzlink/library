@@ -8,12 +8,8 @@ import cgitb
 cgitb.enable()
 import json
 
-#from book import Book
-#from series import Series
-#from author import Author
 from report import Report
 from HTMLutils import HTMLutils
-#from utils import loadYaml
 from dynamicJS import DynamicJS
 from detailProcessor import DetailProcessor
 
@@ -46,8 +42,7 @@ class Detail():
              self.detailProcessor.processForm(self.form_values)
          self.activity = 'view'
 
- #     else:
-         #set builder variables for each possible activity page
+      #set builder variables for each possible activity page
       if self.activity == 'edit':
          self.report = Report('edit')
          self.table = self.report.buildRecordForm(book_id = self.book_id)
@@ -118,6 +113,7 @@ class Detail():
 
       seriesHandler = self.dynamicJS.autoCSeries()
       authorHandler = self.dynamicJS.autoCAuthor()
+      dateHandler = self.dynamicJS.datePicker()
       toggleAuthor = self.dynamicJS.toggle('#authorToggle', '#addAuthor')
 
       html_header= '''
@@ -130,10 +126,12 @@ class Detail():
            %s
            %s
            %s
+           %s
         </script>
 
         <h3>%s</h3>
-        '''% (seriesHandler, authorHandler, toggleAuthor, self.header)
+        '''% (seriesHandler, authorHandler, toggleAuthor, dateHandler,\
+                 self.header)
 
       return html_header
 

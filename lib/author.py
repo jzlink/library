@@ -48,6 +48,9 @@ class Author:
         author_id = formDict['author_id']
         book_id = formDict['book_id']
 
+
+        # if there is an author id check if the author is paired with the
+        # book yet.
         if author_id:
             sql = '''select ba_id  from book_author 
                       where author_id = %s and book_id = %s
@@ -55,10 +58,14 @@ class Author:
 
             results = execute(self.connection, sql)
             
+            #if the author and book are not yet paired add them to book author
             if 'ba_id' not in results:
                 add = self.addBookAuthor(book_id, author_id)
                 updates['author_id'] = author_id
 
+        # if there is no author id and there is a first or last name (meaning
+        # an author name has been hand entered into the form) check if the 
+        # author is in the DB yet.
         if author_id == '' and \
                 (formDict['first_name'] !='' or\
                 formDict['last_name'] != ''):
@@ -69,6 +76,7 @@ class Author:
 
             results = execute(self.connection, name_sql)
             
+            #if the author is not in the DB yet add it to the author table
             if len(results) < 1:
                 add = self.addNewAuthor(formDict['last_name'],\
                                         formDict['first_name'])
@@ -79,7 +87,8 @@ class Author:
                 sql = '''select max(author_id) as author_id from author'''
 
                 results = execute(self.connection, sql)
-
+            
+            #pair the new author with the book in the book_author table
             add = self.addBookAuthor(book_id, results[0]['author_id'])
             updates['author_id'] = results[0]['author_id']    
             
