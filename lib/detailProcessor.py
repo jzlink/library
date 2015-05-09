@@ -3,6 +3,7 @@
 from book import Book
 from series import Series
 from author import Author
+from whenRead import WhenRead
 from utils import loadYaml
 
 class DetailProcessor():
@@ -12,6 +13,7 @@ class DetailProcessor():
       self.series = Series()
       self.author = Author()
       self.book = Book()
+      self.whenRead = WhenRead()
 
       #establish list of fields the book method is purely responsible for
       # updating
@@ -35,10 +37,14 @@ class DetailProcessor():
       # updating itself.
       for field in self.bookOnlyFields:
          bookDict[field] = formDict[field]
+
+      seriesUpdate = self.series.updateSeries(formDict)
       
       bookUpdate = self.book.updateBook(bookDict)
       authorUpdate = self.author.updateAuthor(formDict)
-      seriesUpdate = self.series.updateSeries(formDict)
+
+      if formDict['when_read'] != '':
+         dateUpdate = self.whenRead.updateWhenRead(formDict)
 
       #message =  self.buildMessasge() # insert all update return values
       return message, book_id

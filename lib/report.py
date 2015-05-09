@@ -126,13 +126,12 @@ class Report():
         
         #call helper methods to build all sub-parts
         bookForm = self.buildBookForm(bookData)
-        removeAuthor, addAuthor = self.buildEditAuthor(authorData)
+        removeAuthor = self.buildEditAuthor(authorData)
         dateForm = self.buildEditDate(dateData)
 
         #put tables with many:many relationships together in a sub-table table
         subTs = HtmlTable(border=0, cellpadding = 20)
         subTs.addRow([removeAuthor])
-        subTs.addRow([addAuthor]) 
         subTs.addRow([dateForm])  
         subTables = subTs.getTable()
 
@@ -218,32 +217,32 @@ class Report():
         add ='<button type = "button" id="authorToggle"> Add Author </button>'
 
         #add the header row of the table with the add button
-        editAuthorTable.addHeader(['Author', add])
+        editAuthorTable.addHeader(['Author'])
 
-        #build (currently disabled) remove author section
         #section shows list of authors currenlty paired with the book
-        #if no authors are pared with the book yet toggle the add author 
-        #section open
         if authorData:
             for author in authorData:
                 catAuthor = '<nobr>%s %s</nobr>'\
                     %(author['first_name'], author['last_name'])
-                remove = 'Remove author %s*' %author['author_id']
 
-                editAuthorTable.addRow([catAuthor, remove])
+                editAuthorTable.addRow([catAuthor])
 
              #initialize hidden add author section
-            addAuthor = '<div id = "addAuthor" style = "display: none">'
+#            addAuthor = '<div id = "addAuthor" style = "display: none">'
 
-        else:
+#        else:
             #initialize visable add author section
-            addAuthor = '<div id = "addAuthor" style = "display: default">'
+#            addAuthor = '<div id = "addAuthor" style = "display: default">'
+
 
         #complete the addAuthor section
+        addAuthor = '<div id = "addAuthor" style = "display: default">'
         addAuthor += self.buildAddAuthor()
         addAuthor += '</div>'
 
-        return editAuthorTable.getTable(), addAuthor
+        editAuthorTable.addRow([addAuthor])
+
+        return editAuthorTable.getTable()
 
 
     def buildAddAuthor(self):
@@ -252,13 +251,13 @@ class Report():
         DB and the book record. Only called by buildEditAuthor. Returns table.
         This table will be interacting with the autocomplete js functions.
         '''
-        autocomplete = 'Author Name: ' + \
+        autocomplete = 'Add Author: ' + \
           self.forms.getAutoComplete('author', '',) +\
-          '(Last Name, First Name)'
-        first_name = 'First Name: ' + \
-          self.forms.getTextField ('first_name', '', readonly = True)
-        last_name = 'Last Name: '+ \
-          self.forms.getTextField ('last_name', '', readonly = True)
+          '</br>(Last Name, First Name)'
+        first_name =\
+          self.forms.getHidden('first_name', '')
+        last_name = \
+          self.forms.getHidden('last_name', '')
         authorForm = autocomplete + '</br>' + first_name + '</br>'+ \
           last_name
         return authorForm
@@ -276,7 +275,7 @@ class Report():
             for d  in dateData:
                 editDateTable.addRow([str(d[0])])
 
-        addNew = 'Add Addtional Date:'
+        addNew = 'Add Date:'
         addNew +=  self.forms.getJQueryUI('when_read', '', 'datepicker')
         editDateTable.addRow([addNew])
 

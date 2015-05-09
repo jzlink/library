@@ -11,6 +11,15 @@ class WhenRead:
         self.connection = getDictConnection() #connection return a dict
         self.conn = getConnection() #connection returns list
 
+    def convertDate(self, date):
+        '''accepts a date in mm/dd/yyy format
+        converts it to DB friendly format
+        returns new date'''
+
+        date = (datetime.strptime(date, '%m/%d/%Y')).date()
+        date = date.isoformat()
+        
+        return date
 
     def getWhenRead(self, book_id):
         ''' accepts a book id and 
@@ -27,14 +36,28 @@ class WhenRead:
         
         return when
 
+    def updateWhenRead(self, formDict):
+        '''accept a dictionary of form elements
+        adress the whenread key, assumes incoming date is in form format 
+        (mm/dd/yyyy), update if necessary'''
+
+        whenRead = self.convertDate(formDict['when_read'])
+        book_id = formDict['book_id']
+
+        sql = '''select when_id 
+                 from when_read
+                 where book_id = %s and when_read = %s''' % (book_id, whenRead)
+
+        results = execute(self.connection, sql)
+
+        if len(results) == 0:
+            update = self.addWhenRead(book_id, whenRead)
+
     def addWhenRead(self, book_id, date):
-        ''' accepts a book_id date in mm/dd/yyy format
+        ''' accepts a book_id and  date
         adds the date and book_id pair to when_read table
         returns sucess message'''
         
-        date = (datetime.strptime(date, '%m/%d/%Y')).date()
-        date = date.isoformat()
-
         sql = "insert into when_read (book_id, when_read) values ('%s', '%s')"\
             % (book_id, date)
 
